@@ -35,6 +35,8 @@ namespace DiplomovaPracaLB
             InputDataPoints = MatlabDataIntoGrid(MatlabDataLoadText(file_name));
 
             Inicialize(_typInterpolacie, LOD);
+
+            //test zmeny na Gite
         }
 
 
