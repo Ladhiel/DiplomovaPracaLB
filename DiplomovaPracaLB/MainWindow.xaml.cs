@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Collections.Generic;
-using System.Windows.Controls;
+using swc = System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -22,6 +22,7 @@ using msg = System.Windows;   //vytvorím alias pre namespace, lebo 2 rozne name
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using System.Windows.Media.Media3D;
 
 
 namespace DiplomovaPracaLB
@@ -36,6 +37,12 @@ namespace DiplomovaPracaLB
         double RightX, RightY;
         bool IsRightDown;
         bool show_Axes, show_Points, show_Wireframe, show_Quads, point_color_gradients, quad_color_gradient;
+
+        //light settings
+        float[] light_ambient, light_diffuse, light_specular;
+        float light_dist = 8, light_r = 10, light_eps = 1;
+        float[] light_position = { 1.0f, 1.0f, 1.0f };
+        float[][] LightPositionsPyramid, LightPositionsAboveModelHemiSphere;
 
         //color settings
         float[] FarebnaLegendaHodnoty;
@@ -61,14 +68,15 @@ namespace DiplomovaPracaLB
             quad_color_gradient = true;
 
             //Spracovanie
-            TerrainData MatlabDataSet1 = new MatlabTerrainData(typInterpolacie.NEINTERPOLUJ,LevelOfDetail, "TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
-            TerrainData  HeightmapData1 = new HeightmapTerrainData( typInterpolacie.CATMULLROM, LevelOfDetail, "HeightmapSmaller.png");
+            // TerrainData MatlabDataSet1 = new MatlabTerrainData(typInterpolacie.NEINTERPOLUJ,LevelOfDetail, "TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
+            //TerrainData  HeightmapData1 = new HeightmapTerrainData( typInterpolacie.CATMULLROM, LevelOfDetail, "HeightmapSmaller.png");
             TerrainData GeoTiff1 = new GeoTiffTerrainData(typInterpolacie.CATMULLROM, LevelOfDetail, "2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
 
             //Ktory sa ma zobrazit
             //DisplayedTerrain = MatlabDataSet1;
             //DisplayedTerrain = HeightmapData1;
             DisplayedTerrain = GeoTiff1;
+
 
         }
 
@@ -134,8 +142,8 @@ namespace DiplomovaPracaLB
             //GL.ShadeModel(ShadingModel.Smooth);
 
             // color of the window
-            GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
+            // GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+            GL.ClearColor(0.5f, 0.5f, 0.5f, 1.0f);
             GL.ClearDepth(1.0f);
 
             //enable z-buffering
@@ -151,10 +159,15 @@ namespace DiplomovaPracaLB
             GL.Enable(EnableCap.PointSmooth);
 
             // illumination
-            float[] light_ambient = { 0.5f, 0.5f, 0.5f, 1.0f };
-            float[] light_diffuse = { 0.5f, 0.5f, 0.5f, 1.0f };
-            float[] light_specular = { 0.2f, 0.2f, 0.2f, 1.0f };
-            float[] light_position = { 10.0f, 10.0f, 200.0f };
+            /* povodne hodnoty
+            light_ambient = { 0.5f, 0.5f, 0.5f, 1.0f };
+            light_diffuse = { 0.5f, 0.5f, 0.5f, 1.0f };
+            light_specular = { 0.2f, 0.2f, 0.2f, 1.0f };
+             */
+            light_ambient = new float[] { 0.9f, 0.9f, 0.9f, 1.0f };
+            light_diffuse = new float[] { 0.5f, 0.5f, 0.5f, 1.0f };
+            light_specular =  new float[] { 0.2f, 0.2f, 0.2f, 0.8f };
+
             GL.Light(LightName.Light0, LightParameter.Ambient, light_ambient);
             GL.Light(LightName.Light0, LightParameter.Diffuse, light_diffuse);
             GL.Light(LightName.Light0, LightParameter.Specular, light_specular);
@@ -163,13 +176,13 @@ namespace DiplomovaPracaLB
             GL.Enable(EnableCap.Light0);
 
             // parameters for the camera
-            Phi = 0.6f; Theta = 0.6f; Dist = 3.8f;
+            Phi = -0.6f; Theta = 0.6f; Dist = 3.8f;
 
             //farby terénu
             FarebnaLegendaHodnoty = new float[] { -0.5f, 200, 500, 1000, 1500 };
             FarebnaLegendaFarby = new float[][] {
                 new float[3] { 0.0f, 0.4f, 0.55f }, //modrá
-                new float[3] { 0.54f, 0.77f, 0.36f }, //zelená
+                new float[3] { 0.34f, 0.57f, 0.16f }, //zelená
                 new float[3] { 0.95f, 0.89f, 0.33f },//žltá
                 new float[3] { 0.95f, 0.75f, 0.4f },//svetlohnedá
                 new float[3] { .8f, .44f, .28f },//hnedá
@@ -179,6 +192,32 @@ namespace DiplomovaPracaLB
             {
                 msg.MessageBox.Show("Počet výškových hodnôt legendy musí byť o 1 menší ako počet farieb v legende. Program sa skončí.");
             }
+
+            //pozicie svetla 
+            LightPositionsPyramid = new float[][] {
+                new float[3] {-1.0f,  1.0f, light_dist},
+                new float[3] { 0.0f,  1.0f, light_dist},
+                new float[3] { 1.0f,  1.0f, light_dist},
+                new float[3] {-1.0f,  0.0f, light_dist},
+                new float[3] { 0.0f,  0.0f, light_dist+light_eps},
+                new float[3] { 1.0f,  0.0f, light_dist},
+                new float[3] {-1.0f, -1.0f, light_dist},
+                new float[3] { 0.0f, -1.0f, light_dist},
+                new float[3] { 1.0f, -1.0f, light_dist}
+            };
+
+            float s = 0.7071067811865475244f;
+            LightPositionsAboveModelHemiSphere = new float[][] {
+                new float[3] { -s * light_r,  s * light_r, light_dist},
+                new float[3] {         0.0f,      light_r, light_dist},
+                new float[3] {  s * light_r,  s * light_r, light_dist},
+                new float[3] {    - light_r,         0.0f, light_dist},
+                new float[3] {         0.0f,         0.0f, light_dist + light_r*light_eps},
+                new float[3] {      light_r,         0.0f, light_dist},
+                new float[3] { -s * light_r, -s * light_r, light_dist},
+                new float[3] {         0.0f,     -light_r, light_dist},
+                new float[3] {  s * light_r, -s * light_r, 500+light_dist}
+            };
         }
 
         // drawing 
@@ -189,7 +228,7 @@ namespace DiplomovaPracaLB
             GL.LoadIdentity();
             Matrix4 matLook = Matrix4.LookAt((float)(Dist * Math.Cos(Theta) * Math.Cos(Phi)), (float)(Dist * Math.Sin(Phi) * Math.Cos(Theta)), (float)(Dist * Math.Sin(Theta)), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
             GL.LoadMatrix(ref matLook);
-
+            
             // perspective projection
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
@@ -198,11 +237,12 @@ namespace DiplomovaPracaLB
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+
             //TU SA KRESLIA PRIMITIVY BEZ MATERIALU
             if (show_Axes) DrawAxes();
-            //if (show_Points) DrawPoints(DisplayedTerrain.InterpolationPoints, point_color_gradients);
             if (show_Points) DrawPoints(DisplayedTerrain.InputDataPoints, point_color_gradients);
             if (show_Wireframe) DrawWireframe(DisplayedTerrain.InterpolationPoints);
+            DrawPositionLight();
 
             GL.Enable(EnableCap.Lighting);
             GL.Enable(EnableCap.DepthTest);
@@ -214,6 +254,22 @@ namespace DiplomovaPracaLB
 
             // the buffers need to swapped, so the scene is drawn, kvoli float bufferu
             glControl.SwapBuffers();
+        }
+
+
+        public void DrawPositionLight()
+        {
+            // float[] light_position = { 10.0f, 10.0f, 200.0f };
+            float[] origin = { 0.0f, 0.0f, 0.0f };
+
+            float[] p1 = { -1.0f, -1.0f, 0.0f };
+
+            float[] light_color = { 1.0f, 0.95f, 0.0f };
+            GL.Begin(PrimitiveType.Lines);
+            GL.Color3(light_color);
+            GL.Vertex3(light_position);
+            GL.Vertex3(origin);
+            GL.End();
         }
 
         public void DrawPoints(Vector3[,] Vertices, bool color_gradient)
@@ -269,7 +325,7 @@ namespace DiplomovaPracaLB
             }
             GL.End();
         }
-
+        
         public void DrawQuads(Vector3[,] Vertices, bool color_gradient)
         {
             //4. TODO vytvorim plochy medzi stvrocekami
@@ -278,7 +334,7 @@ namespace DiplomovaPracaLB
 
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill); // enable filling of shapes with color 
-
+            
             float[] amb_color = { 0.69f, 0.4f, 0.1f };
             float[] diff_color = { 0.9f, 0.9f, 0.9f, 1.0f };
             float[] spec_color = { 0.5f, 0.5f, 0.5f, 1.0f };
@@ -325,6 +381,8 @@ namespace DiplomovaPracaLB
         {
             return (vertex + DisplayedTerrain.posunutie) * DisplayedTerrain.skalovanie;
         }
+
+       
 
         private float[] VertexColorByLegend(Vector3 Vertex)    //priradi bodu (s naozajstvou, netransformovanou hodnotou !!!) farbu podla legendy 
         {
@@ -384,9 +442,40 @@ namespace DiplomovaPracaLB
         //                 USER INTERFACE CONTROLS             //
         //                                                     //
         /////////////////////////////////////////////////////////
+
+
+        private void Slider_ChangeLightIntensity(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            float slider_value = (float)(Slider_LightIntensity.Value / 100);  //intenzita v percentach
+            float[] la = new float[] { light_ambient[0] * slider_value, light_ambient[1] * slider_value, light_ambient[2] * slider_value, 1.0f };
+            float[] ld = new float[] { light_diffuse[0] * slider_value, light_diffuse[1] * slider_value, light_diffuse[2] * slider_value, 1.0f };
+            float[] ls = new float[] { light_specular[0] * slider_value, light_specular[1] * slider_value, light_specular[2] * slider_value , 0.8f};
+            GL.Light(LightName.Light0, LightParameter.Ambient, la);
+            GL.Light(LightName.Light0, LightParameter.Diffuse, ld);
+            GL.Light(LightName.Light0, LightParameter.Specular, ls);
+            glControl.Invalidate();
+        }
+
+        private void RadioButton_ChangeLightPosition_Click(object sender, RoutedEventArgs e)
+        {
+            string s = (sender as swc.RadioButton).Name;
+            int i = int.Parse(s.Substring(s.Length - 1)) - 1;   //posledny znak v nazve je indexpozicie
+
+            light_position = LightPositionsAboveModelHemiSphere[i];
+            GL.Light(LightName.Light0, LightParameter.Position, light_position);
+            glControl.Invalidate();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            float[] pos = new float[] { float.Parse(TextBox1.Text), float.Parse(TextBox2.Text), float.Parse(TextBox3.Text) };
+            light_position = pos;
+            GL.Light(LightName.Light0, LightParameter.Position, light_position);
+            glControl.Invalidate();
+        }
+
         private void GLControl_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-
             if (e.Button == MouseButtons.Right) // camera is adjusted using RMB
             {
                 IsRightDown = true;
@@ -412,6 +501,9 @@ namespace DiplomovaPracaLB
 
                 Phi = oPhi + (RightX - e.X) / 200.0f;
                 Theta = oTheta + (e.Y - RightY) / 200.0f;
+
+                //updatuje sa svetlo
+                GL.Light(LightName.Light0, LightParameter.Position, light_position);
             }
 
             glControl.Invalidate();
@@ -428,6 +520,11 @@ namespace DiplomovaPracaLB
         {
             //naskaluje viewport na velkost zaciatocneho okna
             GL.Viewport(0, 0, glControl.Width, glControl.Height);
+        }
+
+        private void ChangeLightIntensity()
+        {
+            
         }
     }
 }

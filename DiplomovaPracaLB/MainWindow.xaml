@@ -5,17 +5,112 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DiplomovaPracaLB"
         mc:Ignorable="d"
-        Title="Modelovanie terénu pomocou interpolačných splajnov" Height="768" Width="1024" >
-    <Grid SizeChanged="Grid_SizeChanged" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
+        Title="Modelovanie terénu pomocou interpolačných splajnov"
+        Height="900" Width="1500"
+        FontFamily="Calibri" FontSize="15"
+        Background="#FFC4CDC1">
+
+    <Grid SizeChanged="Grid_SizeChanged">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="71*"/>
-            <ColumnDefinition Width="659*"/>
-            <ColumnDefinition Width="287*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="180"/>
+        </Grid.RowDefinitions>
+        <TextBox x:Name="TextBox1" Grid.Column="1" HorizontalAlignment="Left" Margin="10,44,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="120"/>
 
-    <WindowsFormsHost HorizontalAlignment="Left" Height="739" VerticalAlignment="Top" Width="739
-                          " Initialized="WindowsFormsHost_Initialized" Grid.ColumnSpan="3" Margin="1,1,0,-1.333" Foreground="Gray" />
+        <WindowsFormsHost  Initialized="WindowsFormsHost_Initialized"
+                           Grid.Column="0" Grid.Row="0"
+                          Margin="20,20,20,20" Grid.RowSpan="1"/>
+        <Button Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="144,94,0,0" Click="Button_Click">Button</Button>
 
-        
+        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal">
+
+            <Border Width="300" ClipToBounds="True" CornerRadius="4" Background="#FF88A48A" Margin="10,10,10,10" >
+                <Canvas  Background="Transparent">
+                    <TextBlock Canvas.Left="10" Canvas.Top="10">Osvetlenie</TextBlock>
+                    <Grid Canvas.Top="30" Canvas.Left="10" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Polygon Points="0,30 140,30 140,0" Grid.Row="0">
+                            <Polygon.Fill>
+                                <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+                                    <LinearGradientBrush.RelativeTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform CenterY="0.5" CenterX="0.5" ScaleX="1"/>
+                                            <SkewTransform CenterX="0.5" CenterY="0.5"/>
+                                            <RotateTransform CenterX="0.5" CenterY="0.5"/>
+                                            <TranslateTransform/>
+                                        </TransformGroup>
+                                    </LinearGradientBrush.RelativeTransform>
+                                    <GradientStop Color="Black"/>
+                                    <GradientStop Color="White" Offset="0.971"/>
+                                    <GradientStop Color="#FFFAD600" Offset="0.473"/>
+                                    <GradientStop Color="#FF614E07" Offset="0.213"/>
+                                </LinearGradientBrush>
+                            </Polygon.Fill>
+                        </Polygon>
+                        <Slider x:Name="Slider_LightIntensity" Height="30" Width="140" VerticalAlignment="Top" ValueChanged="Slider_ChangeLightIntensity" Maximum="100" TickFrequency="10" TickPlacement="TopLeft" Value="80" Minimum="40" Margin="0,19,0,0" Grid.RowSpan="2"/>
+                    </Grid>
+
+                    <Grid Canvas.Top="5" Canvas.Right="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="40"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35"/>
+                            <RowDefinition Height="35"/>
+                            <RowDefinition Height="35"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Column="0" Grid.Row="0" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
+                            <RadioButton x:Name="RadioButton_LightPosition1" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                            <Border.Background>
+                                <ImageBrush ImageSource="Theme/Images/slnieckoPos1.png"></ImageBrush>
+                            </Border.Background>
+                        </Border>
+                        <Border Grid.Column="1" Grid.Row="0" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
+                            <RadioButton x:Name="RadioButton_LightPosition2" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        </Border>
+                        <Border Grid.Column="2" Grid.Row="0" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
+                            <RadioButton x:Name="RadioButton_LightPosition3" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        </Border>
+                        <Border Grid.Column="0" Grid.Row="1" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
+                            <RadioButton x:Name="RadioButton_LightPosition4" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        </Border>
+                        <Border Grid.Column="1" Grid.Row="1" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
+                            <RadioButton x:Name="RadioButton_LightPosition5" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        </Border>
+                        <Border Grid.Column="2" Grid.Row="1" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
+                            <RadioButton x:Name="RadioButton_LightPosition6" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        </Border>
+                        <Border Grid.Column="0" Grid.Row="2" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
+                            <RadioButton x:Name="RadioButton_LightPosition7" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        </Border>
+                        <Border Grid.Column="1" Grid.Row="2" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
+                            <RadioButton x:Name="RadioButton_LightPosition8" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        </Border>
+                        <Border Grid.Column="2" Grid.Row="2" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
+                            <RadioButton x:Name="RadioButton_LightPosition9" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        </Border>
+
+                    </Grid>
+
+                </Canvas>
+
+            </Border>
+
+
+        </StackPanel>
+
+        <TextBox x:Name="TextBox2" Grid.Column="1" HorizontalAlignment="Left" Margin="10,69,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="TextBox3" Grid.Column="1" HorizontalAlignment="Left" Margin="10,94,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="120"/>
+
+
     </Grid>
 </Window>
