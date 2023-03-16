@@ -113,9 +113,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Resource Include="Theme\Images\slnieckoPos1.png" />
+    <Resource Include="Images\ImageShowPoints.png" />
+    <Resource Include="Images\ImageShowQuads.png" />
+    <Resource Include="Images\ImageShowWireframe.png" />
+    <Resource Include="Images\slnieckoPos1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

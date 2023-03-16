@@ -22,7 +22,6 @@ using msg = System.Windows;   //vytvorím alias pre namespace, lebo 2 rozne name
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using System.Windows.Media.Media3D;
 
 
 namespace DiplomovaPracaLB
@@ -166,7 +165,7 @@ namespace DiplomovaPracaLB
              */
             light_ambient = new float[] { 0.9f, 0.9f, 0.9f, 1.0f };
             light_diffuse = new float[] { 0.5f, 0.5f, 0.5f, 1.0f };
-            light_specular =  new float[] { 0.2f, 0.2f, 0.2f, 0.8f };
+            light_specular = new float[] { 0.2f, 0.2f, 0.2f, 0.8f };
 
             GL.Light(LightName.Light0, LightParameter.Ambient, light_ambient);
             GL.Light(LightName.Light0, LightParameter.Diffuse, light_diffuse);
@@ -228,7 +227,7 @@ namespace DiplomovaPracaLB
             GL.LoadIdentity();
             Matrix4 matLook = Matrix4.LookAt((float)(Dist * Math.Cos(Theta) * Math.Cos(Phi)), (float)(Dist * Math.Sin(Phi) * Math.Cos(Theta)), (float)(Dist * Math.Sin(Theta)), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
             GL.LoadMatrix(ref matLook);
-            
+
             // perspective projection
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
@@ -270,6 +269,51 @@ namespace DiplomovaPracaLB
             GL.Vertex3(light_position);
             GL.Vertex3(origin);
             GL.End();
+        }
+
+        private void Button_ShowPoints_Click(object sender, RoutedEventArgs e)
+        {
+            if (show_Points)
+            {
+                show_Points = false;
+                Button_ShowPoints.Background = new SolidColorBrush(Colors.Transparent);
+            }
+            else
+            {
+                show_Points = true;
+                Button_ShowPoints.Background = new SolidColorBrush(Colors.DarkCyan);
+            }
+            glControl.Invalidate();
+        }
+
+        private void Button_ShowWireframe_Click(object sender, RoutedEventArgs e)
+        {
+            if (show_Wireframe)
+            {
+                show_Wireframe = false;
+                Button_ShowWireframe.Background = new SolidColorBrush(Colors.Transparent);
+            }
+            else
+            {
+                show_Wireframe = true;
+                Button_ShowWireframe.Background = new SolidColorBrush(Colors.DarkCyan);
+            }
+            glControl.Invalidate();
+        }
+
+        private void Button_ShowQuads_Click(object sender, RoutedEventArgs e)
+        {
+            if (show_Quads)
+            {
+                show_Quads = false;
+                Button_ShowQuads.Background = new SolidColorBrush(Colors.Transparent);
+            }
+            else
+            {
+                show_Quads = true;
+                Button_ShowQuads.Background = new SolidColorBrush(Colors.DarkCyan);
+            }
+            glControl.Invalidate();
         }
 
         public void DrawPoints(Vector3[,] Vertices, bool color_gradient)
@@ -325,7 +369,7 @@ namespace DiplomovaPracaLB
             }
             GL.End();
         }
-        
+
         public void DrawQuads(Vector3[,] Vertices, bool color_gradient)
         {
             //4. TODO vytvorim plochy medzi stvrocekami
@@ -334,7 +378,7 @@ namespace DiplomovaPracaLB
 
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill); // enable filling of shapes with color 
-            
+
             float[] amb_color = { 0.69f, 0.4f, 0.1f };
             float[] diff_color = { 0.9f, 0.9f, 0.9f, 1.0f };
             float[] spec_color = { 0.5f, 0.5f, 0.5f, 1.0f };
@@ -382,7 +426,7 @@ namespace DiplomovaPracaLB
             return (vertex + DisplayedTerrain.posunutie) * DisplayedTerrain.skalovanie;
         }
 
-       
+
 
         private float[] VertexColorByLegend(Vector3 Vertex)    //priradi bodu (s naozajstvou, netransformovanou hodnotou !!!) farbu podla legendy 
         {
@@ -449,7 +493,7 @@ namespace DiplomovaPracaLB
             float slider_value = (float)(Slider_LightIntensity.Value / 100);  //intenzita v percentach
             float[] la = new float[] { light_ambient[0] * slider_value, light_ambient[1] * slider_value, light_ambient[2] * slider_value, 1.0f };
             float[] ld = new float[] { light_diffuse[0] * slider_value, light_diffuse[1] * slider_value, light_diffuse[2] * slider_value, 1.0f };
-            float[] ls = new float[] { light_specular[0] * slider_value, light_specular[1] * slider_value, light_specular[2] * slider_value , 0.8f};
+            float[] ls = new float[] { light_specular[0] * slider_value, light_specular[1] * slider_value, light_specular[2] * slider_value, 0.8f };
             GL.Light(LightName.Light0, LightParameter.Ambient, la);
             GL.Light(LightName.Light0, LightParameter.Diffuse, ld);
             GL.Light(LightName.Light0, LightParameter.Specular, ls);
@@ -520,11 +564,6 @@ namespace DiplomovaPracaLB
         {
             //naskaluje viewport na velkost zaciatocneho okna
             GL.Viewport(0, 0, glControl.Width, glControl.Height);
-        }
-
-        private void ChangeLightIntensity()
-        {
-            
         }
     }
 }
