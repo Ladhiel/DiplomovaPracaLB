@@ -281,7 +281,7 @@ namespace DiplomovaPracaLB
             else
             {
                 show_Points = true;
-                Button_ShowPoints.Background = new SolidColorBrush(Colors.DarkCyan);
+                Button_ShowPoints.Background = new SolidColorBrush(Colors.White);
             }
             glControl.Invalidate();
         }
@@ -296,7 +296,7 @@ namespace DiplomovaPracaLB
             else
             {
                 show_Wireframe = true;
-                Button_ShowWireframe.Background = new SolidColorBrush(Colors.DarkCyan);
+                Button_ShowWireframe.Background = new SolidColorBrush(Colors.White);
             }
             glControl.Invalidate();
         }
@@ -311,7 +311,7 @@ namespace DiplomovaPracaLB
             else
             {
                 show_Quads = true;
-                Button_ShowQuads.Background = new SolidColorBrush(Colors.DarkCyan);
+                Button_ShowQuads.Background = new SolidColorBrush(Colors.White);
             }
             glControl.Invalidate();
         }

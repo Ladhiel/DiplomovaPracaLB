@@ -8,9 +8,8 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
                         <Grid VerticalAlignment="Stretch"
-                              HorizontalAlignment="Stretch"
-                              Background="{TemplateBinding Background}">
-
+                              HorizontalAlignment="Stretch">
+                            <Border CornerRadius="4" Background="Transparent" BorderBrush="#FF475448" BorderThickness="1" ClipToBounds="True" />
 
                         </Grid>
 
@@ -20,7 +19,7 @@
         </Style.Setters>
 
         <Style.Triggers>
-            <Trigger Property="IsChecked" Value="False">
+            <Trigger Property="IsChecked" Value="True">
                 <Setter Property="Opacity" Value="0.5"/>
             </Trigger>
         </Style.Triggers>

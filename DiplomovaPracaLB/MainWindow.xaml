@@ -8,7 +8,8 @@
         Title="Modelovanie terénu pomocou interpolačných splajnov"
         Height="900" Width="1500"
         FontFamily="Calibri" FontSize="15"
-        Background="#FFC4CDC1">
+        Background="#FF607560">
+    <!--Background="#FF88A48A"-->
 
     <Grid SizeChanged="Grid_SizeChanged">
         <Grid.ColumnDefinitions>
@@ -17,41 +18,38 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="180"/>
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBox x:Name="TextBox1" Grid.Column="1" HorizontalAlignment="Left" Margin="10,44,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="120"/>
-
-        <WindowsFormsHost  Initialized="WindowsFormsHost_Initialized"
-                           Grid.Column="0" Grid.Row="0"
-                          Margin="20,20,20,20" Grid.RowSpan="1"/>
+        <Border BorderBrush="#FFC4CDC1" BorderThickness="4" Margin="20,20,20,0" CornerRadius="4" ClipToBounds="True">
+            <WindowsFormsHost  Initialized="WindowsFormsHost_Initialized" Grid.Column="0" Grid.Row="0" Grid.RowSpan="1"/>
+        </Border>
         <Button Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="144,94,0,0" Click="Button_Click">Button</Button>
 
-        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="10,10,10,10">
-
-            <Border Width="300" ClipToBounds="True" CornerRadius="4" Background="#FF88A48A"  Margin="0,0,5,0" >
-                <Canvas  Background="Transparent">
-                    <TextBlock Canvas.Left="10" Canvas.Top="10">Osvetlenie</TextBlock>
-                    
-                        <Polygon Points="20,80 160,80 160,50">
-                            <Polygon.Fill>
-                                <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
-                                    <LinearGradientBrush.RelativeTransform>
-                                        <TransformGroup>
-                                            <ScaleTransform CenterY="0.5" CenterX="0.5" ScaleX="1"/>
-                                            <SkewTransform CenterX="0.5" CenterY="0.5"/>
-                                            <RotateTransform CenterX="0.5" CenterY="0.5"/>
-                                            <TranslateTransform/>
-                                        </TransformGroup>
-                                    </LinearGradientBrush.RelativeTransform>
-                                    <GradientStop Color="Black"/>
-                                    <GradientStop Color="White" Offset="0.971"/>
-                                    <GradientStop Color="#FFFAD600" Offset="0.473"/>
-                                    <GradientStop Color="#FF614E07" Offset="0.213"/>
-                                </LinearGradientBrush>
-                            </Polygon.Fill>
-                        </Polygon>
-                    <Slider x:Name="Slider_LightIntensity" Height="26" Width="140" Canvas.Left="20" Canvas.Top="70" VerticalAlignment="Top" ValueChanged="Slider_ChangeLightIntensity" Maximum="100" TickFrequency="10" TickPlacement="TopLeft" Value="80" Minimum="40"/>
-                    <Grid Canvas.Top="5" Canvas.Right="5">
+        <StackPanel Height="160" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="20,20,20,20">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="Margin" Value="0,0,10,0"/>
+                    <Setter Property="ClipToBounds" Value="True"/>
+                    <Setter Property="CornerRadius" Value="4"/>
+                    <Setter Property="Background" Value="#FFC4CDC1"/>
+                </Style>
+            </StackPanel.Resources>
+            <Border>
+                <Canvas Width="230" Background="Transparent">
+                    <TextBlock Grid.Row="1" Canvas.Left="10" Canvas.Top="10">Osvetlenie</TextBlock>
+                    <Polygon Canvas.Bottom="10" Points="0,0 30,0 0,120" Canvas.Top="20" Canvas.Right="20">
+                        <Polygon.Fill>
+                            <LinearGradientBrush EndPoint="0.5,0" StartPoint="0.5,1">
+                                <GradientStop Color="Black"/>
+                                <GradientStop Color="White" Offset="0.971"/>
+                                <GradientStop Color="#FFFAD600" Offset="0.473"/>
+                                <GradientStop Color="#FF614E07" Offset="0.213"/>
+                            </LinearGradientBrush>
+                        </Polygon.Fill>
+                    </Polygon>
+                    <Slider x:Name="Slider_LightIntensity" Height="120" Width="26" Canvas.Right="45" Canvas.Bottom="20" ValueChanged="Slider_ChangeLightIntensity" Maximum="100" TickFrequency="10" TickPlacement="BottomRight" Value="90" Minimum="40" Orientation="Vertical"/>
+                    <Grid Canvas.Bottom="20" Canvas.Left="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="40"/>
                             <ColumnDefinition Width="40"/>
@@ -62,35 +60,42 @@
                             <RowDefinition Height="35"/>
                             <RowDefinition Height="35"/>
                         </Grid.RowDefinitions>
-                        <Border Grid.Column="0" Grid.Row="0" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
-                            <RadioButton x:Name="RadioButton_LightPosition1" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="Margin" Value="1,1,1,1"/>
+                                <Setter Property="ClipToBounds" Value="True"/>
+                                <Setter Property="CornerRadius" Value="4"/>
+                            </Style>
+                        </Grid.Resources>
+                        <Border Grid.Column="0" Grid.Row="0" CornerRadius="4" ClipToBounds="True">
+                            <RadioButton x:Name="RadioButton_LightPosition1" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Click="RadioButton_ChangeLightPosition_Click"/>
                             <Border.Background>
                                 <ImageBrush ImageSource="Images/slnieckoPos1.png"></ImageBrush>
                             </Border.Background>
                         </Border>
-                        <Border Grid.Column="1" Grid.Row="0" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
-                            <RadioButton x:Name="RadioButton_LightPosition2" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        <Border Grid.Column="1" Grid.Row="0">
+                            <RadioButton x:Name="RadioButton_LightPosition2" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Click="RadioButton_ChangeLightPosition_Click"/>
                         </Border>
-                        <Border Grid.Column="2" Grid.Row="0" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
-                            <RadioButton x:Name="RadioButton_LightPosition3" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        <Border Grid.Column="2" Grid.Row="0">
+                            <RadioButton x:Name="RadioButton_LightPosition3" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Click="RadioButton_ChangeLightPosition_Click"/>
                         </Border>
-                        <Border Grid.Column="0" Grid.Row="1" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
-                            <RadioButton x:Name="RadioButton_LightPosition4" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        <Border Grid.Column="0" Grid.Row="1">
+                            <RadioButton x:Name="RadioButton_LightPosition4" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Click="RadioButton_ChangeLightPosition_Click"/>
+                            </Border>
+                        <Border Grid.Column="1" Grid.Row="1">
+                            <RadioButton x:Name="RadioButton_LightPosition5" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Click="RadioButton_ChangeLightPosition_Click"/>
                         </Border>
-                        <Border Grid.Column="1" Grid.Row="1" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
-                            <RadioButton x:Name="RadioButton_LightPosition5" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        <Border Grid.Column="2" Grid.Row="1">
+                            <RadioButton x:Name="RadioButton_LightPosition6" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Click="RadioButton_ChangeLightPosition_Click"/>
                         </Border>
-                        <Border Grid.Column="2" Grid.Row="1" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
-                            <RadioButton x:Name="RadioButton_LightPosition6" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        <Border Grid.Column="0" Grid.Row="2">
+                            <RadioButton x:Name="RadioButton_LightPosition7" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Click="RadioButton_ChangeLightPosition_Click"/>
                         </Border>
-                        <Border Grid.Column="0" Grid.Row="2" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
-                            <RadioButton x:Name="RadioButton_LightPosition7" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        <Border Grid.Column="1" Grid.Row="2">
+                            <RadioButton x:Name="RadioButton_LightPosition8" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Click="RadioButton_ChangeLightPosition_Click"/>
                         </Border>
-                        <Border Grid.Column="1" Grid.Row="2" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
-                            <RadioButton x:Name="RadioButton_LightPosition8" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
-                        </Border>
-                        <Border Grid.Column="2" Grid.Row="2" CornerRadius="4" ClipToBounds="True" Margin="2,2,2,2">
-                            <RadioButton x:Name="RadioButton_LightPosition9" GroupName="RBLP" Style="{StaticResource LightPositionButtonTheme}" Click="RadioButton_ChangeLightPosition_Click"/>
+                        <Border Grid.Column="2" Grid.Row="2">
+                            <RadioButton x:Name="RadioButton_LightPosition9" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Click="RadioButton_ChangeLightPosition_Click"/>
                         </Border>
 
                     </Grid>
@@ -98,28 +103,34 @@
                 </Canvas>
 
             </Border>
-            <Border Width="300" ClipToBounds="True" CornerRadius="4" Background="#FF88A48A" Margin="0,0,5,0" >
-                <Canvas  Background="Transparent">
+            <Border>
+                <Canvas Width="224" Background="Transparent">
                     <TextBlock Canvas.Left="10" Canvas.Top="10">Režim zobrazenia terénu</TextBlock>
-                    <Grid Canvas.Top="42" Canvas.Left="10">
+                    <Grid Canvas.Top="64" Canvas.Left="20">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40"/>
-                            <ColumnDefinition Width="40"/>
-                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="60"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="35"/>
+                            <RowDefinition Height="50"/>
                         </Grid.RowDefinitions>
-
-                        <Button x:Name="Button_ShowPoints" Click="Button_ShowPoints_Click" Background="#3FFFFFFF" BorderBrush="#FF47544B" Grid.Column="0" Margin="0.4,0.4,0.4,0.4">
-                            <Image Source="Images/ImageShowPoints.png" Stretch="Fill" />
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="BorderBrush" Value="#FF47544B"/>
+                                <Setter Property="Background" Value="#80FFFFFF"/>
+                                <Setter Property="Margin" Value="1,1,1,1"/>
+                            </Style>
+                        </Grid.Resources>
+                        <Button x:Name="Button_ShowPoints" Click="Button_ShowPoints_Click" Grid.Column="0">
+                            <Image Source="Images/ImageShowPoints.png" Stretch="Fill"/>
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="4"/>
                                 </Style>
                             </Button.Resources>
                         </Button>
-                        <Button x:Name="Button_ShowWireframe" Click="Button_ShowWireframe_Click" Background="#3FFFFFFF" BorderBrush="#FF47544B" Grid.Column="1" Margin="0.4,0.4,0.4,0.4" >
+                        <Button x:Name="Button_ShowWireframe" Click="Button_ShowWireframe_Click" Grid.Column="1"  >
                             <Image Source="Images/ImageShowWireframe.png" Stretch="Fill"/>
                             <Button.Resources>
                                 <Style TargetType="Border">
@@ -127,17 +138,24 @@
                                 </Style>
                             </Button.Resources>
                         </Button>
-                        <Button x:Name="Button_ShowQuads" Click="Button_ShowQuads_Click" Background="#3FFFFFFF" BorderBrush="#FF47544B" Grid.Column="2" Margin="0.4,0.4,0.4,0.4" >
+                        <Button x:Name="Button_ShowQuads" Click="Button_ShowQuads_Click" Grid.Column="2" >
                             <Image Source="Images/ImageShowQuads.png" Stretch="Fill"/>
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="4"/>
-                                </Style>
-                            </Button.Resources>
+
                         </Button>
                     </Grid>
                 </Canvas>
             </Border>
+            <Border>
+                <Canvas Width="300" Background="Transparent">
+                    <TextBlock Canvas.Left="10" Canvas.Top="10">Level detailov</TextBlock>
+                </Canvas>
+            </Border>
+            <Border>
+                <Canvas Width="300" Background="Transparent">
+                    <TextBlock Canvas.Left="10" Canvas.Top="10">Typ tieňovania</TextBlock>
+                </Canvas>
+            </Border>
+
 
 
         </StackPanel>
