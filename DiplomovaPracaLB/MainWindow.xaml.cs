@@ -253,6 +253,9 @@ namespace DiplomovaPracaLB
 
             // the buffers need to swapped, so the scene is drawn, kvoli float bufferu
             glControl.SwapBuffers();
+
+            //testovacie
+            
         }
 
 
@@ -320,9 +323,11 @@ namespace DiplomovaPracaLB
         {
             //zdroj https://gdbooks.gitbooks.io/legacyopengl/content/Chapter3/Points.html
 
-            GL.PointSize(5.0f); //zmenu vlastnosti davaj pred begin
+            //GL.PointSize(5.0f); //zmenu vlastnosti davaj pred begin
             float[] point_color = { 0.3f, 0.3f, 0.3f };
-
+            float pointsize = (float)(1 / Dist) * 5.0f;
+            GL.PointSize(pointsize);
+            
             GL.Begin(PrimitiveType.Points);
             for (int j = 0; j < Vertices.GetLength(1); j++)
             {
@@ -488,6 +493,11 @@ namespace DiplomovaPracaLB
         //                                                     //
         /////////////////////////////////////////////////////////
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+            glControl.Invalidate();
+        }
 
         private void Slider_ChangeLightIntensity(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -507,14 +517,6 @@ namespace DiplomovaPracaLB
             int i = int.Parse(s.Substring(s.Length - 1)) - 1;   //posledny znak v nazve je indexpozicie
 
             light_position = LightPositionsAboveModelHemiSphere[i];
-            GL.Light(LightName.Light0, LightParameter.Position, light_position);
-            glControl.Invalidate();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            float[] pos = new float[] { float.Parse(TextBox1.Text), float.Parse(TextBox2.Text), float.Parse(TextBox3.Text) };
-            light_position = pos;
             GL.Light(LightName.Light0, LightParameter.Position, light_position);
             glControl.Invalidate();
         }
