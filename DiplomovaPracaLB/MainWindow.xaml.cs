@@ -342,6 +342,7 @@ namespace DiplomovaPracaLB
             //pospajam body useckami v u-smere, useckami vo v-smere
 
             float[] wire_color = { 0.0f, 0.2f, 0.12f };
+            Vector3 z_eps = new Vector3(0.0f, 0.0f, 0.4f);
 
             GL.Begin(PrimitiveType.Lines);
             for (int j = 0; j < Vertices.GetLength(1); j++)
@@ -352,18 +353,18 @@ namespace DiplomovaPracaLB
                     {
                         //u smer
                         GL.Color3(wire_color);
-                        GL.Vertex3(SaT(Vertices[i, j]));
+                        GL.Vertex3(SaT(Vertices[i, j] + z_eps));
                         GL.Color3(wire_color);
-                        GL.Vertex3(SaT(Vertices[i + 1, j]));
+                        GL.Vertex3(SaT(Vertices[i + 1, j] + z_eps));
                     }
 
                     if (j < Vertices.GetLength(1) - 1)
                     {
                         //v smer
                         GL.Color3(wire_color);
-                        GL.Vertex3(SaT(Vertices[i, j]));
+                        GL.Vertex3(SaT(Vertices[i, j] + z_eps));
                         GL.Color3(wire_color);
-                        GL.Vertex3(SaT(Vertices[i, j + 1]));
+                        GL.Vertex3(SaT(Vertices[i, j + 1] + z_eps));
                     }
                 }
             }
