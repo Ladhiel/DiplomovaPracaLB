@@ -67,7 +67,10 @@
                                 <Setter Property="CornerRadius" Value="4"/>
                             </Style>
                         </Grid.Resources>
-                        <Border Grid.Column="0" Grid.Row="0" CornerRadius="4" ClipToBounds="True">
+                        <Border Grid.ColumnSpan="3" Grid.RowSpan="3" Background="#FF607560" Margin="0,0,0,0">
+                            
+                        </Border>
+                        <Border Grid.Column="0" Grid.Row="0" CornerRadius="6" ClipToBounds="True">
                             <RadioButton x:Name="RadioButton_LightPosition1" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Click="RadioButton_ChangeLightPosition_Click"/>
                             <Border.Background>
                                 <ImageBrush ImageSource="Images/slnieckoPos1.png"></ImageBrush>
