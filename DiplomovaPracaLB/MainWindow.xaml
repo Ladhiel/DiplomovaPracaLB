@@ -107,12 +107,14 @@
 
             </Border>
             <Border>
-                <Canvas Width="224" Background="Transparent">
+                <Canvas Width="300" Background="Transparent">
                     <TextBlock Canvas.Left="10" Canvas.Top="10">Režim zobrazenia terénu</TextBlock>
                     <Grid Canvas.Top="64" Canvas.Left="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="60"/>
                             <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="20"/>
                             <ColumnDefinition Width="60"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -133,6 +135,7 @@
                                 </Style>
                             </Button.Resources>
                         </Button>
+                       
                         <Button x:Name="Button_ShowWireframe" Click="Button_ShowWireframe_Click" Grid.Column="1"  >
                             <Image Source="Images/ImageShowWireframe.png" Stretch="Fill"/>
                             <Button.Resources>
@@ -143,7 +146,19 @@
                         </Button>
                         <Button x:Name="Button_ShowQuads" Click="Button_ShowQuads_Click" Grid.Column="2" >
                             <Image Source="Images/ImageShowQuads.png" Stretch="Fill"/>
-
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="4"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                        <Button x:Name="Button_ShowAxes" Click="Button_ShowAxes_Click" Grid.Column="4" >
+                            <Image Source="Images/ImageShowAxes.png" Stretch="Fill"/>
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="4"/>
+                                </Style>
+                            </Button.Resources>
                         </Button>
                     </Grid>
                 </Canvas>

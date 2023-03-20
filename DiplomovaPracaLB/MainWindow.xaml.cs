@@ -274,6 +274,21 @@ namespace DiplomovaPracaLB
             GL.End();
         }
 
+        private void Button_ShowAxes_Click(object sender, RoutedEventArgs e)
+        {
+            if (show_Axes)
+            {
+                show_Axes = false;
+                Button_ShowAxes.Background = new SolidColorBrush(Colors.Transparent);
+            }
+            else
+            {
+                show_Axes = true;
+                Button_ShowAxes.Background = new SolidColorBrush(Colors.White);
+            }
+            glControl.Invalidate();
+        }
+
         private void Button_ShowPoints_Click(object sender, RoutedEventArgs e)
         {
             if (show_Points)
