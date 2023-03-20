@@ -37,12 +37,13 @@ namespace DiplomovaPracaLB
         //light settings
         float[] light_ambient, light_diffuse, light_specular;
         float light_dist = 8, light_r = 10, light_eps = 1;
-        float[] light_position = { 1.0f, 1.0f, 1.0f };
+        float[] light_position = {1.0f, 1.0f, 8.0f };
         float[][] LightPositionsPyramid, LightPositionsAboveModelHemiSphere;
 
         //color settings
         float[] FarebnaLegendaHodnoty;
         float[][] FarebnaLegendaFarby;
+        float pointsize;
 
         //data
         TerrainData DisplayedTerrain;
@@ -75,8 +76,6 @@ namespace DiplomovaPracaLB
 
 
         }
-
-
 
 
         //-----------------------------------------------------------------------------------------------------------------------
@@ -219,6 +218,8 @@ namespace DiplomovaPracaLB
         // drawing 
         private void GLControl_Paint(object sender, swf.PaintEventArgs e)
         {
+
+
             // Modelview matrix
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
@@ -252,7 +253,11 @@ namespace DiplomovaPracaLB
             glControl.SwapBuffers();
 
             //testovacie
-            
+            float[] a = new float[3] {0,0,0};
+            GL.GetLight(LightName.Light0, LightParameter.Position, a);
+            TextBox1.Text = a[0].ToString();
+            TextBox2.Text = a[1].ToString() ;
+            TextBox3.Text = a[2].ToString() ;
         }
 
 
@@ -335,9 +340,9 @@ namespace DiplomovaPracaLB
         {
             //zdroj https://gdbooks.gitbooks.io/legacyopengl/content/Chapter3/Points.html
 
-            //GL.PointSize(5.0f); //zmenu vlastnosti davaj pred begin
+            //GL.PointSize(5.0f);
             float[] point_color = { 0.3f, 0.3f, 0.3f };
-            float pointsize = (float)(1 / Dist) * 5.0f;
+            pointsize = (float)(1 / Dist) * 5.0f;
             GL.PointSize(pointsize);
             
             GL.Begin(PrimitiveType.Points);
@@ -444,7 +449,10 @@ namespace DiplomovaPracaLB
             return (vertex + DisplayedTerrain.posunutie) * DisplayedTerrain.skalovanie;
         }
 
-     
+        private void RadioButton_LightPosition5_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
 
         private float[] VertexColorByLegend(Vector3 Vertex)    //priradi bodu (s naozajstvou, netransformovanou hodnotou !!!) farbu podla legendy 
         {
@@ -497,6 +505,7 @@ namespace DiplomovaPracaLB
             if ( new_LOD >=0 && new_LOD <=10)
             {
                 LevelOfDetail = new_LOD;
+                LevelOfDetail = new_LOD;
                 TextBox_LOD.Text = new_LOD.ToString();      //toto je len pre buttony; pre textbox sa nic nezmeni, ale lepsie prepisat na to iste, nez na zle a zase naspat.
                 //treba prepocitat navyorkovanie splajnu
                 DisplayedTerrain.ReInterpolate(new_LOD);
@@ -523,7 +532,6 @@ namespace DiplomovaPracaLB
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
-            glControl.Invalidate();
         }
 
         private void TextBox_LOD_KeyDown(object sender, KeyEventArgs e)
@@ -566,7 +574,7 @@ namespace DiplomovaPracaLB
             glControl.Invalidate();
         }
 
-        private void RadioButton_ChangeLightPosition_Click(object sender, RoutedEventArgs e)
+        private void RadioButton_ChangeLightPosition_Checked(object sender, RoutedEventArgs e)
         {
             string s = (sender as RadioButton).Name;
             int i = int.Parse(s.Substring(s.Length - 1)) - 1;   //posledny znak v nazve je indexpozicie
