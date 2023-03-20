@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Collections.Generic;
-using swc = System.Windows.Controls;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -12,17 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Forms;
+using swf = System.Windows.Forms;   //povenoala som kvoli konfliktnemu pomenovanius
 using System.Windows.Forms.Integration;
 using System.IO;
 using System.Drawing;
 
-using msg = System.Windows;   //vytvorím alias pre namespace, lebo 2 rozne namespacy maju clasu s rovnakym nazvom
-
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-
 
 namespace DiplomovaPracaLB
 {
@@ -128,7 +125,7 @@ namespace DiplomovaPracaLB
             glControl = new GLControl(new GraphicsMode(32, 24), 2, 0, flags);
             glControl.MakeCurrent();
             glControl.Paint += GLControl_Paint;
-            glControl.Dock = DockStyle.Fill;
+            glControl.Dock = swf.DockStyle.Fill;
             (sender as WindowsFormsHost).Child = glControl;
 
             // user controls
@@ -189,7 +186,7 @@ namespace DiplomovaPracaLB
             };
             if (FarebnaLegendaHodnoty.Length + 1 != FarebnaLegendaFarby.Length)
             {
-                msg.MessageBox.Show("Počet výškových hodnôt legendy musí byť o 1 menší ako počet farieb v legende. Program sa skončí.");
+                MessageBox.Show("Počet výškových hodnôt legendy musí byť o 1 menší ako počet farieb v legende. Program sa skončí.");
             }
 
             //pozicie svetla 
@@ -220,7 +217,7 @@ namespace DiplomovaPracaLB
         }
 
         // drawing 
-        private void GLControl_Paint(object sender, PaintEventArgs e)
+        private void GLControl_Paint(object sender, swf.PaintEventArgs e)
         {
             // Modelview matrix
             GL.MatrixMode(MatrixMode.Modelview);
@@ -447,7 +444,7 @@ namespace DiplomovaPracaLB
             return (vertex + DisplayedTerrain.posunutie) * DisplayedTerrain.skalovanie;
         }
 
-
+     
 
         private float[] VertexColorByLegend(Vector3 Vertex)    //priradi bodu (s naozajstvou, netransformovanou hodnotou !!!) farbu podla legendy 
         {
@@ -495,6 +492,21 @@ namespace DiplomovaPracaLB
             return c;
         }
 
+        private void ChangeLevelOfDetail(int new_LOD)
+        {
+            if ( new_LOD >=0 && new_LOD <=10)
+            {
+                LevelOfDetail = new_LOD;
+                TextBox_LOD.Text = new_LOD.ToString();      //toto je len pre buttony; pre textbox sa nic nezmeni, ale lepsie prepisat na to iste, nez na zle a zase naspat.
+                //treba prepocitat navyorkovanie splajnu
+                DisplayedTerrain.ReInterpolate(new_LOD);
+                glControl.Invalidate();
+            }
+            else
+            {
+                TextBox_LOD.Text = LevelOfDetail.ToString();  //do TextBoxu napisem ostavajucu hodnotu LOD
+            }
+        }
 
         //-----------------------------------------------------------------------------------------------------------------------
 
@@ -514,6 +526,34 @@ namespace DiplomovaPracaLB
             glControl.Invalidate();
         }
 
+        private void TextBox_LOD_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)    //Enter
+            {
+                int new_LOD;
+                try
+                {
+                    new_LOD = int.Parse(TextBox_LOD.Text);
+                    ChangeLevelOfDetail(new_LOD);
+                }
+                catch
+                {
+                    MessageBox.Show("Nesprávny vstup!");
+                    TextBox_LOD.Text = LevelOfDetail.ToString();
+                }
+            }
+        }
+
+        private void Button_LODminus_Click(object sender, RoutedEventArgs e)
+        {
+            ChangeLevelOfDetail(LevelOfDetail - 1);
+        }
+
+        private void Button_LODplus_Click(object sender, RoutedEventArgs e)
+        {
+            ChangeLevelOfDetail(LevelOfDetail + 1);
+        }
+
         private void Slider_ChangeLightIntensity(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             float slider_value = (float)(Slider_LightIntensity.Value / 100);  //intenzita v percentach
@@ -528,7 +568,7 @@ namespace DiplomovaPracaLB
 
         private void RadioButton_ChangeLightPosition_Click(object sender, RoutedEventArgs e)
         {
-            string s = (sender as swc.RadioButton).Name;
+            string s = (sender as RadioButton).Name;
             int i = int.Parse(s.Substring(s.Length - 1)) - 1;   //posledny znak v nazve je indexpozicie
 
             light_position = LightPositionsAboveModelHemiSphere[i];
@@ -538,7 +578,7 @@ namespace DiplomovaPracaLB
 
         private void GLControl_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right) // camera is adjusted using RMB
+            if (e.Button == swf.MouseButtons.Right) // camera is adjusted using RMB
             {
                 IsRightDown = true;
                 RightX = e.X;
@@ -573,7 +613,7 @@ namespace DiplomovaPracaLB
 
         private void GLControl_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right) IsRightDown = false;
+            if (e.Button == swf.MouseButtons.Right) IsRightDown = false;
         }
 
         //-----------------------------------------------------------------------------------------------------------------------

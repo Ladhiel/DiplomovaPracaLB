@@ -109,7 +109,7 @@
             <Border>
                 <Canvas Width="300" Background="Transparent">
                     <TextBlock Canvas.Left="10" Canvas.Top="10">Režim zobrazenia terénu</TextBlock>
-                    <Grid Canvas.Top="64" Canvas.Left="20">
+                    <Grid Canvas.Top="65" Canvas.Left="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="60"/>
                             <ColumnDefinition Width="60"/>
@@ -166,6 +166,32 @@
             <Border>
                 <Canvas Width="300" Background="Transparent">
                     <TextBlock Canvas.Left="10" Canvas.Top="10">Level detailov</TextBlock>
+                    <Grid Canvas.Top="72" Canvas.Left="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="40"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35"/>
+                        </Grid.RowDefinitions>
+                        <Button x:Name="Button_LODminus" Click="Button_LODminus_Click" Grid.Column="0" Content="-" FontSize="20" HorizontalContentAlignment="Center">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="4,0,0,4"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                        
+                        <Button x:Name="Button_LODplus" Click="Button_LODplus_Click" Grid.Column="2" Content="+" HorizontalContentAlignment="Center">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="0,4,4,0"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                        <TextBox x:Name="TextBox_LOD" Grid.Column="1" Text="2" TextAlignment="Center" VerticalContentAlignment="Center" KeyDown="TextBox_LOD_KeyDown"/>
+                    </Grid>
                 </Canvas>
             </Border>
             <Border>

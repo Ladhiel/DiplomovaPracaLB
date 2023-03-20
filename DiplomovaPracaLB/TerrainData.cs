@@ -47,11 +47,13 @@ namespace DiplomovaPracaLB
 
         public Vector3 posunutie;
         public Matrix3 skalovanie;
+        private typInterpolacie selectedInterpolationType;
 
         protected void Inicialize(typInterpolacie _typInterpolacie, int LOD) //1. inicialzuje sa materska klasa, 2. inicializuje sa dcerska klasa, 3. do inicializacie dcery vlozim tuto funkciu - su v nej veci an vykonanie na konci kazdeh Terrain Data
         {
             //datapoints su uz nacitane
             FindExtremalCoordinates();
+            selectedInterpolationType = _typInterpolacie;
             InterpolationPoints = Interpoluj(_typInterpolacie, InputDataPoints, LOD);
         }
 
@@ -95,7 +97,12 @@ namespace DiplomovaPracaLB
             skalovanie = Matrix3.CreateScale(2 / scale, 2 / scale, 2 / scale);
         }
 
-        Vector3[,] Interpoluj(typInterpolacie _typ, Vector3[,] Vstup, int LOD)
+        public void ReInterpolate(int new_LOD)
+        {
+            InterpolationPoints = Interpoluj(selectedInterpolationType, InputDataPoints, new_LOD);
+        }
+
+        private Vector3[,] Interpoluj(typInterpolacie _typ, Vector3[,] Vstup, int LOD)
         {
             m = Vstup.GetLength(0);
             n = Vstup.GetLength(1);
