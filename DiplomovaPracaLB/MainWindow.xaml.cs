@@ -31,8 +31,8 @@ namespace DiplomovaPracaLB
         double Dist = new double(), Phi = new double(), Theta = new double(), oPhi = new double(), oTheta = new double();
         // mouse settings
         double RightX, RightY;
-        bool IsRightDown;
-        bool show_Axes, show_Points, show_Wireframe, show_Quads, point_color_gradients, quad_color_gradient;
+        bool IsRightDown, IsLeftDown;
+        int ActivePoint_m_index, ActivePoint_n_index;
 
         //light settings
         float[] light_ambient, light_diffuse, light_specular;
@@ -40,10 +40,11 @@ namespace DiplomovaPracaLB
         float[] light_position = {1.0f, 1.0f, 1.0f };
         float[][] LightPositionsPyramid, LightPositionsAboveModelHemiSphere;
 
-        //color settings
+        //UI settings
         float[] FarebnaLegendaHodnoty;
         float[][] FarebnaLegendaFarby;
         float pointsize;
+        bool show_Axes, show_Points, show_Wireframe, show_Quads, point_color_gradients, quad_color_gradient;
 
         //data
         TerrainData DisplayedTerrain;
@@ -55,6 +56,7 @@ namespace DiplomovaPracaLB
 
             //UI:
             IsRightDown = false;
+            IsLeftDown = false;
 
             //TU NASTAVIT CO SA CHCEME ZOBRAZIT
             show_Axes = false;
@@ -235,7 +237,11 @@ namespace DiplomovaPracaLB
 
             //TU SA KRESLIA PRIMITIVY BEZ MATERIALU
             if (show_Axes) DrawAxes();
-            if (show_Points) DrawPoints(DisplayedTerrain.InputDataPoints, point_color_gradients);
+            if (show_Points)
+            {
+                DrawPickedPoint();
+                DrawPoints(DisplayedTerrain.InputDataPoints, point_color_gradients);
+            }
             if (show_Wireframe) DrawWireframe(DisplayedTerrain.InterpolationPoints);
             //DrawPositionLight();
 
@@ -251,6 +257,8 @@ namespace DiplomovaPracaLB
             glControl.SwapBuffers();
 
             //testovacie
+            TextBox1.Text = "m:" + ActivePoint_m_index.ToString();
+            TextBox2.Text = "n:" + ActivePoint_n_index.ToString();
 
         }
 
@@ -270,7 +278,15 @@ namespace DiplomovaPracaLB
             GL.End();
         }
 
-     
+        public void DrawPickedPoint()
+        {
+           Vector3 picked = DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index];
+            GL.PointSize(2.0f * pointsize);
+            GL.Color3(0.85f, 0.53f, 0.10f); //highlight
+            GL.Begin(PrimitiveType.Points);
+            GL.Vertex3(SaT(picked));
+            GL.End();
+        }
 
         public void DrawPoints(Vector3[,] Vertices, bool color_gradient)
         {
@@ -574,6 +590,31 @@ namespace DiplomovaPracaLB
             glControl.Invalidate();
         }
 
+        public Vector3 UnProject(Vector3 mouse, Matrix4 projection, Matrix4 view, Size viewport)
+        {
+            Vector4 vec;
+
+            vec.X = 2.0f * mouse.X / (float)viewport.Width - 1;
+            vec.Y = -(2.0f * mouse.Y / (float)viewport.Height - 1);
+            vec.Z = mouse.Z;
+            vec.W = 1.0f;
+
+            Matrix4 viewInv = Matrix4.Invert(view);
+            Matrix4 projInv = Matrix4.Invert(projection);
+
+            Vector4.Transform(ref vec, ref projInv, out vec);
+            Vector4.Transform(ref vec, ref viewInv, out vec);
+
+            if (vec.W > 0.000001f || vec.W < -0.000001f)
+            {
+                vec.X /= vec.W;
+                vec.Y /= vec.W;
+                vec.Z /= vec.W;
+            }
+
+            return vec.Xyz;
+        }
+
         private void GLControl_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Button == swf.MouseButtons.Right) // camera is adjusted using RMB
@@ -584,6 +625,42 @@ namespace DiplomovaPracaLB
                 oPhi = Phi;                 //zapamata sa aktulne otocenie, s oPhi sa bude pracovat pri posunavi kurzora
                 oTheta = Theta;
             }
+            else if (e.Button == swf.MouseButtons.Left) // using LMB we search for the control point beneath the mouse cursor 
+            {
+                //the idea of the searching -- when I am doing the inverse projection, what points lie in the ray which is casted from the point beneath the cursor. If there are any, I choose the closest one. 
+
+                Vector3 start, end;
+
+                int[] viewport = new int[4];
+                Matrix4 modelMatrix, projMatrix;
+
+                GL.GetFloat(GetPName.ModelviewMatrix, out modelMatrix);
+                GL.GetFloat(GetPName.ProjectionMatrix, out projMatrix);
+                GL.GetInteger(GetPName.Viewport, viewport);
+
+                start = UnProject(new Vector3(e.X, e.Y, 0.0f), projMatrix, modelMatrix, new Size(viewport[2], viewport[3]));
+                end = UnProject(new Vector3(e.X, e.Y, 1.0f), projMatrix, modelMatrix, new Size(viewport[2], viewport[3]));
+
+                double se = Math.Sqrt(Vector3.Dot(start - end, start - end));
+                for (int k = 0; k < DisplayedTerrain.InputDataPoints.GetLength(0); k++)
+                    for (int i = 0; i < DisplayedTerrain.InputDataPoints.GetLength(1); i++)
+                    {
+                        double sA = Math.Sqrt(Vector3.Dot(SaT(DisplayedTerrain.InputDataPoints[k,i]) - start, SaT(DisplayedTerrain.InputDataPoints[k,i]) - start));
+                        double eA = Math.Sqrt(Vector3.Dot(SaT(DisplayedTerrain.InputDataPoints[k,i]) - end, SaT(DisplayedTerrain.InputDataPoints[k,i]) - end));
+
+                        if (sA + eA > se - 0.001 && sA + eA < se + 0.001)
+                        {
+                            ActivePoint_m_index = k;
+                            ActivePoint_n_index = i;
+
+
+                            IsLeftDown = true;
+
+                            RightX = e.X;
+                            RightY = e.Y;
+                        }
+                    }
+            }
             glControl.Invalidate();
         }
 
@@ -593,7 +670,6 @@ namespace DiplomovaPracaLB
             if (new_Dist >= 0.001)
             {
                 Dist = new_Dist;
-                
             }
             glControl.Invalidate();
         }
@@ -610,6 +686,13 @@ namespace DiplomovaPracaLB
                 //updatuje sa svetlo
                 GL.Light(LightName.Light0, LightParameter.Position, light_position);
             }
+            else if (IsLeftDown) // LMB - move the control vertex
+            {
+                IsLeftDown = true;
+
+                RightY = e.Y;
+                RightX = e.X;
+            }
 
             glControl.Invalidate();
         }
@@ -617,6 +700,7 @@ namespace DiplomovaPracaLB
         private void GLControl_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Button == swf.MouseButtons.Right) IsRightDown = false;
+            if (e.Button == swf.MouseButtons.Left) IsLeftDown = false;
         }
 
         //-----------------------------------------------------------------------------------------------------------------------
