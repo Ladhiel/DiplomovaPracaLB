@@ -224,6 +224,7 @@ namespace DiplomovaPracaLB
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             Matrix4 matLook = Matrix4.LookAt((float)(Dist * Math.Cos(Theta) * Math.Cos(Phi)), (float)(Dist * Math.Sin(Phi) * Math.Cos(Theta)), (float)(Dist * Math.Sin(Theta)), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+                    
             GL.LoadMatrix(ref matLook);
 
             // perspective projection
@@ -478,6 +479,11 @@ namespace DiplomovaPracaLB
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+        private void Button_ResetView_Click(object sender, RoutedEventArgs e)
+        {
+            Phi = -0.6f; Theta = 0.3f; Dist = 3.8f;
+            glControl.Invalidate();
         }
 
         private void Button_ShowAxes_Click(object sender, RoutedEventArgs e)

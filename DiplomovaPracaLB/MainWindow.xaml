@@ -25,7 +25,7 @@
         </Border>
         <Button Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="144,92,0,0" Click="Button_Click">Button</Button>
 
-        <StackPanel Height="160" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="20,20,20,20">
+        <StackPanel Height="165" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="20,20,20,20">
             <StackPanel.Resources>
                 <Style TargetType="{x:Type Border}">
                     <Setter Property="Margin" Value="0,0,10,0"/>
@@ -35,7 +35,7 @@
                 </Style>
             </StackPanel.Resources>
             <Border>
-                <Canvas Width="230" Background="Transparent">
+                <Canvas Width="240" Background="Transparent">
                     <TextBlock Grid.Row="1" Canvas.Left="10" Canvas.Top="10">Osvetlenie</TextBlock>
                     <Polygon Canvas.Bottom="10" Points="0,0 30,0 0,120" Canvas.Top="20" Canvas.Right="20">
                         <Polygon.Fill>
@@ -48,7 +48,7 @@
                         </Polygon.Fill>
                     </Polygon>
                     <Slider x:Name="Slider_LightIntensity" Height="120" Width="26" Canvas.Right="45" Canvas.Bottom="20" ValueChanged="Slider_ChangeLightIntensity" Value="90" Maximum="100" TickFrequency="10" TickPlacement="BottomRight" Minimum="40" Orientation="Vertical"/>
-                    <Grid Canvas.Bottom="20" Canvas.Left="20">
+                    <Grid Canvas.Bottom="20" Canvas.Left="25">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="40"/>
                             <ColumnDefinition Width="40"/>
@@ -74,7 +74,7 @@
                                 <Setter Property="Margin" Value="2,2,2,2"/>
                             </Style>
                         </Grid.Resources>
-                        <Border Grid.ColumnSpan="3" Grid.RowSpan="3" Background="#FF475448" Margin="0,0,0,0"/>
+                        <Border Grid.ColumnSpan="3" Grid.RowSpan="3" Background="#FF475448" Margin="-2,0,-2,0"/>
 
                         <Border Grid.Column="0" Grid.Row="0">
                             <RadioButton x:Name="RadioButton_LightPosition1" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Checked="RadioButton_ChangeLightPosition_Checked"/>
@@ -117,9 +117,9 @@
             </Border>
                 
             <Border>
-                <Canvas Width="300" Background="Transparent">
+                <Canvas Width="310" Background="Transparent">
                     <TextBlock Canvas.Left="10" Canvas.Top="10">Režim zobrazenia terénu</TextBlock>
-                    <Grid Canvas.Top="65" Canvas.Left="20">
+                    <Grid Canvas.Top="40" Canvas.Left="25">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="60"/>
                             <ColumnDefinition Width="60"/>
@@ -137,6 +137,7 @@
                                 <Setter Property="Margin" Value="1,1,1,1"/>
                             </Style>
                         </Grid.Resources>
+                        <Border Grid.ColumnSpan="5" Grid.RowSpan="3" Background="#FF475448" Margin="-2,0,-2,0"/>
                         <Button x:Name="Button_ShowPoints" Click="Button_ShowPoints_Click" Grid.Column="0" Background="#BFC8BF">
                             <Image Source="Images/ImageShowPoints.png" Stretch="Fill"/>
                             <Button.Resources>
@@ -171,6 +172,14 @@
                             </Button.Resources>
                         </Button>
                     </Grid>
+                    <Button x:Name="Button_ResetView" Width="120" Height="35" Click="Button_ResetView_Click" Content="Resetuj pohľad" HorizontalContentAlignment="Center" Canvas.Left="25" Canvas.Bottom="25">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="4,4,4,4"/>
+                                <Setter Property="BorderBrush" Value="#FF475448"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
                 </Canvas>
             </Border>
             <Border>
