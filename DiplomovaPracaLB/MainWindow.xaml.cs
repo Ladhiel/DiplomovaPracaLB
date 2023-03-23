@@ -57,7 +57,7 @@ namespace DiplomovaPracaLB
             IsRightDown = false;
 
             //TU NASTAVIT CO SA CHCEME ZOBRAZIT
-            show_Axes = true;
+            show_Axes = false;
             show_Points = true;
             show_Wireframe = false;
             show_Quads = true;
@@ -286,7 +286,7 @@ namespace DiplomovaPracaLB
             else
             {
                 show_Axes = true;
-                Button_ShowAxes.Background = new SolidColorBrush(Colors.White);
+                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
             }
             glControl.Invalidate();
         }
@@ -301,7 +301,8 @@ namespace DiplomovaPracaLB
             else
             {
                 show_Points = true;
-                Button_ShowPoints.Background = new SolidColorBrush(Colors.White);
+                Button_ShowPoints.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
+
             }
             glControl.Invalidate();
         }
@@ -316,7 +317,7 @@ namespace DiplomovaPracaLB
             else
             {
                 show_Wireframe = true;
-                Button_ShowWireframe.Background = new SolidColorBrush(Colors.White);
+                Button_ShowWireframe.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191)); 
             }
             glControl.Invalidate();
         }
@@ -331,7 +332,7 @@ namespace DiplomovaPracaLB
             else
             {
                 show_Quads = true;
-                Button_ShowQuads.Background = new SolidColorBrush(Colors.White);
+                Button_ShowQuads.Background = new SolidColorBrush(Color.FromRgb(191,200,191));
             }
             glControl.Invalidate();
         }

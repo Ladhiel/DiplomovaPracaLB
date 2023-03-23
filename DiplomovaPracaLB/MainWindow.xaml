@@ -137,7 +137,7 @@
                                 <Setter Property="Margin" Value="1,1,1,1"/>
                             </Style>
                         </Grid.Resources>
-                        <Button x:Name="Button_ShowPoints" Click="Button_ShowPoints_Click" Grid.Column="0">
+                        <Button x:Name="Button_ShowPoints" Click="Button_ShowPoints_Click" Grid.Column="0" Background="#BFC8BF">
                             <Image Source="Images/ImageShowPoints.png" Stretch="Fill"/>
                             <Button.Resources>
                                 <Style TargetType="Border">
@@ -146,7 +146,7 @@
                             </Button.Resources>
                         </Button>
 
-                        <Button x:Name="Button_ShowWireframe" Click="Button_ShowWireframe_Click" Grid.Column="1"  >
+                        <Button x:Name="Button_ShowWireframe" Click="Button_ShowWireframe_Click" Grid.Column="1" Background="#FF607560" >
                             <Image Source="Images/ImageShowWireframe.png" Stretch="Fill"/>
                             <Button.Resources>
                                 <Style TargetType="Border">
@@ -154,7 +154,7 @@
                                 </Style>
                             </Button.Resources>
                         </Button>
-                        <Button x:Name="Button_ShowQuads" Click="Button_ShowQuads_Click" Grid.Column="2" >
+                        <Button x:Name="Button_ShowQuads" Click="Button_ShowQuads_Click" Grid.Column="2" Background="#BFC8BF">
                             <Image Source="Images/ImageShowQuads.png" Stretch="Fill"/>
                             <Button.Resources>
                                 <Style TargetType="Border">
@@ -162,7 +162,7 @@
                                 </Style>
                             </Button.Resources>
                         </Button>
-                        <Button x:Name="Button_ShowAxes" Click="Button_ShowAxes_Click" Grid.Column="4" >
+                        <Button x:Name="Button_ShowAxes" Click="Button_ShowAxes_Click" Grid.Column="4" Background="#FF607560">
                             <Image Source="Images/ImageShowAxes.png" Stretch="Fill"/>
                             <Button.Resources>
                                 <Style TargetType="Border">
