@@ -251,11 +251,7 @@ namespace DiplomovaPracaLB
             glControl.SwapBuffers();
 
             //testovacie
-            float[] a = new float[3] {0,0,0};
-            GL.GetLight(LightName.Light0, LightParameter.Position, a);
-            TextBox1.Text = a[0].ToString();
-            TextBox2.Text = a[1].ToString() ;
-            TextBox3.Text = a[2].ToString() ;
+
         }
 
 
@@ -593,7 +589,12 @@ namespace DiplomovaPracaLB
 
         private void GLControl_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            Dist -= (double)e.Delta * 0.001; // zooming
+            double new_Dist = Dist - (double)e.Delta * 0.001; // zooming
+            if (new_Dist >= 0.001)
+            {
+                Dist = new_Dist;
+                
+            }
             glControl.Invalidate();
         }
 
