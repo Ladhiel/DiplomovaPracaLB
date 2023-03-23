@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 using swf = System.Windows.Forms;   //povenoala som kvoli konfliktnemu pomenovanius
 using System.Windows.Forms.Integration;
 using System.IO;
-using System.Drawing;
+using sd = System.Drawing;
 
 using OpenTK;
 using OpenTK.Graphics;
@@ -37,7 +37,7 @@ namespace DiplomovaPracaLB
         //light settings
         float[] light_ambient, light_diffuse, light_specular;
         float light_dist = 8, light_r = 10, light_eps = 1;
-        float[] light_position = {1.0f, 1.0f, 8.0f };
+        float[] light_position = {1.0f, 1.0f, 1.0f };
         float[][] LightPositionsPyramid, LightPositionsAboveModelHemiSphere;
 
         //color settings
@@ -171,7 +171,7 @@ namespace DiplomovaPracaLB
             GL.Enable(EnableCap.Light0);
 
             // parameters for the camera
-            Phi = -0.6f; Theta = 0.6f; Dist = 3.8f;
+            Phi = -0.6f; Theta = 0.3f; Dist = 3.8f;
 
             //farby terénu
             FarebnaLegendaHodnoty = new float[] { -0.5f, 200, 500, 1000, 1500 };
@@ -211,7 +211,7 @@ namespace DiplomovaPracaLB
                 new float[3] {      light_r,         0.0f, light_dist},
                 new float[3] { -s * light_r, -s * light_r, light_dist},
                 new float[3] {         0.0f,     -light_r, light_dist},
-                new float[3] {  s * light_r, -s * light_r, 500+light_dist}
+                new float[3] {  s * light_r, -s * light_r, light_dist}
             };
         }
 
@@ -281,7 +281,7 @@ namespace DiplomovaPracaLB
             if (show_Axes)
             {
                 show_Axes = false;
-                Button_ShowAxes.Background = new SolidColorBrush(Colors.Transparent);
+                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
             }
             else
             {
@@ -296,7 +296,7 @@ namespace DiplomovaPracaLB
             if (show_Points)
             {
                 show_Points = false;
-                Button_ShowPoints.Background = new SolidColorBrush(Colors.Transparent);
+                Button_ShowPoints.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
             }
             else
             {
@@ -311,7 +311,7 @@ namespace DiplomovaPracaLB
             if (show_Wireframe)
             {
                 show_Wireframe = false;
-                Button_ShowWireframe.Background = new SolidColorBrush(Colors.Transparent);
+                Button_ShowWireframe.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
             }
             else
             {
@@ -326,7 +326,7 @@ namespace DiplomovaPracaLB
             if (show_Quads)
             {
                 show_Quads = false;
-                Button_ShowQuads.Background = new SolidColorBrush(Colors.Transparent);
+                Button_ShowQuads.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
             }
             else
             {
@@ -449,11 +449,6 @@ namespace DiplomovaPracaLB
             return (vertex + DisplayedTerrain.posunutie) * DisplayedTerrain.skalovanie;
         }
 
-        private void RadioButton_LightPosition5_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private float[] VertexColorByLegend(Vector3 Vertex)    //priradi bodu (s naozajstvou, netransformovanou hodnotou !!!) farbu podla legendy 
         {
             float h = (float)Vertex.Z;      //nadmorska vyska bodu
@@ -504,7 +499,6 @@ namespace DiplomovaPracaLB
         {
             if ( new_LOD >=0 && new_LOD <=10)
             {
-                LevelOfDetail = new_LOD;
                 LevelOfDetail = new_LOD;
                 TextBox_LOD.Text = new_LOD.ToString();      //toto je len pre buttony; pre textbox sa nic nezmeni, ale lepsie prepisat na to iste, nez na zle a zase naspat.
                 //treba prepocitat navyorkovanie splajnu

@@ -117,10 +117,29 @@
     <Resource Include="Images\ImageShowPoints.png" />
     <Resource Include="Images\ImageShowQuads.png" />
     <Resource Include="Images\ImageShowWireframe.png" />
-    <Resource Include="Images\slnieckoPos1.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\ImageShowAxes.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Theme\Sun.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Arrow1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Arrow2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Arrow3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Arrow4.png" />
+    <Resource Include="Images\Arrow5.png" />
+    <Resource Include="Images\Arrow6.png" />
+    <Resource Include="Images\Arrow7.png" />
+    <Resource Include="Images\Arrow8.png" />
+    <Resource Include="Images\Arrow9.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

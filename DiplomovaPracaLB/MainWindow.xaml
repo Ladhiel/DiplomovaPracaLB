@@ -10,7 +10,6 @@
         FontFamily="Calibri" FontSize="15"
         Background="#FF607560">
     <!--Background="#FF88A48A"-->
-
     <Grid SizeChanged="Grid_SizeChanged">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -20,11 +19,11 @@
             <RowDefinition/>
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBox x:Name="TextBox1" Grid.Column="1" HorizontalAlignment="Left" Margin="10,44,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="TextBox1" Grid.Column="1" HorizontalAlignment="Left" Margin="10,42,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="120"/>
         <Border BorderBrush="#FFC4CDC1" BorderThickness="4" Margin="20,20,20,0" CornerRadius="4" ClipToBounds="True">
-            <WindowsFormsHost x:Name="WindowsFormsHost1"  Initialized="WindowsFormsHost_Initialized" Grid.Column="0" Grid.Row="0" Grid.RowSpan="1"/>
+            <WindowsFormsHost Initialized="WindowsFormsHost_Initialized" Grid.Column="0" Grid.Row="0" Grid.RowSpan="1"/>
         </Border>
-        <Button Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="144,94,0,0" Click="Button_Click">Button</Button>
+        <Button Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="144,92,0,0" Click="Button_Click">Button</Button>
 
         <StackPanel Height="160" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="20,20,20,20">
             <StackPanel.Resources>
@@ -65,26 +64,30 @@
                                 <Setter Property="Margin" Value="1,1,1,1"/>
                                 <Setter Property="ClipToBounds" Value="True"/>
                                 <Setter Property="CornerRadius" Value="4"/>
+                                <Setter Property="Background" Value="#FF607560"/>
+                                <Setter Property="BorderBrush" Value="#FF475448"/>
+                                <Setter Property="BorderThickness" Value="0.8"/>
+                            </Style>
+                            <Style TargetType="{x:Type Image}">
+                                <Setter Property="Stretch" Value="Fill"/>
+                                <Setter Property="IsHitTestVisible" Value="False"/>
+                                <Setter Property="Margin" Value="2,2,2,2"/>
                             </Style>
                         </Grid.Resources>
-                        <Border Grid.ColumnSpan="3" Grid.RowSpan="3" Background="#FF607560" Margin="0,0,0,0">
-                            
-                        </Border>
-                        <Border Grid.Column="0" Grid.Row="0" CornerRadius="6" ClipToBounds="True">
+                        <Border Grid.ColumnSpan="3" Grid.RowSpan="3" Background="#FF475448" Margin="0,0,0,0"/>
+
+                        <Border Grid.Column="0" Grid.Row="0">
                             <RadioButton x:Name="RadioButton_LightPosition1" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Checked="RadioButton_ChangeLightPosition_Checked"/>
-                            <Border.Background>
-                                <ImageBrush ImageSource="Images/slnieckoPos1.png"></ImageBrush>
-                            </Border.Background>
                         </Border>
                         <Border Grid.Column="1" Grid.Row="0">
                             <RadioButton x:Name="RadioButton_LightPosition2" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Checked="RadioButton_ChangeLightPosition_Checked"/>
                         </Border>
                         <Border Grid.Column="2" Grid.Row="0">
-                            <RadioButton x:Name="RadioButton_LightPosition3" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Checked="RadioButton_ChangeLightPosition_Checked"/>
+                            <RadioButton x:Name="RadioButton_LightPosition3" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Checked="RadioButton_ChangeLightPosition_Checked" IsChecked="True"/>
                         </Border>
                         <Border Grid.Column="0" Grid.Row="1">
                             <RadioButton x:Name="RadioButton_LightPosition4" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Checked="RadioButton_ChangeLightPosition_Checked"/>
-                            </Border>
+                        </Border>
                         <Border Grid.Column="1" Grid.Row="1">
                             <RadioButton x:Name="RadioButton_LightPosition5" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Checked="RadioButton_ChangeLightPosition_Checked"/>
                         </Border>
@@ -100,12 +103,19 @@
                         <Border Grid.Column="2" Grid.Row="2">
                             <RadioButton x:Name="RadioButton_LightPosition9" Style="{StaticResource LightPositionButtonTheme}" GroupName="RB_group1" Checked="RadioButton_ChangeLightPosition_Checked"/>
                         </Border>
-
+                        <Image Grid.Column="0" Grid.Row="0" Source="Images/Arrow1.png"/>
+                        <Image Grid.Column="1" Grid.Row="0" Source="Images/Arrow2.png"/>
+                        <Image Grid.Column="2" Grid.Row="0" Source="Images/Arrow3.png"/>
+                        <Image Grid.Column="0" Grid.Row="1" Source="Images/Arrow4.png"/>
+                        <Image Grid.Column="1" Grid.Row="1" Source="Images/Arrow5.png"/>
+                        <Image Grid.Column="2" Grid.Row="1" Source="Images/Arrow6.png"/>
+                        <Image Grid.Column="0" Grid.Row="2" Source="Images/Arrow7.png"/>
+                        <Image Grid.Column="1" Grid.Row="2" Source="Images/Arrow8.png"/>
+                        <Image Grid.Column="2" Grid.Row="2" Source="Images/Arrow9.png"/>
                     </Grid>
-
                 </Canvas>
-
             </Border>
+                
             <Border>
                 <Canvas Width="300" Background="Transparent">
                     <TextBlock Canvas.Left="10" Canvas.Top="10">Režim zobrazenia terénu</TextBlock>
@@ -135,7 +145,7 @@
                                 </Style>
                             </Button.Resources>
                         </Button>
-                       
+
                         <Button x:Name="Button_ShowWireframe" Click="Button_ShowWireframe_Click" Grid.Column="1"  >
                             <Image Source="Images/ImageShowWireframe.png" Stretch="Fill"/>
                             <Button.Resources>
@@ -164,29 +174,31 @@
                 </Canvas>
             </Border>
             <Border>
-                <Canvas Width="300" Background="Transparent">
+                <Canvas Width="180" Background="Transparent">
                     <TextBlock Canvas.Left="10" Canvas.Top="10">Level detailov</TextBlock>
                     <Grid Canvas.Top="72" Canvas.Left="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="40"/>
-                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="60"/>
                             <ColumnDefinition Width="40"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="35"/>
                         </Grid.RowDefinitions>
-                        <Button x:Name="Button_LODminus" Click="Button_LODminus_Click" Grid.Column="0" Content="-" FontSize="20" HorizontalContentAlignment="Center">
+                        <Button x:Name="Button_LODminus" Click="Button_LODminus_Click" Grid.Column="0" Content="–" HorizontalContentAlignment="Center">
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="4,0,0,4"/>
+                                    <Setter Property="BorderBrush" Value="#FF475448"/>
                                 </Style>
                             </Button.Resources>
                         </Button>
-                        
+
                         <Button x:Name="Button_LODplus" Click="Button_LODplus_Click" Grid.Column="2" Content="+" HorizontalContentAlignment="Center">
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="0,4,4,0"/>
+                                    <Setter Property="BorderBrush" Value="#FF475448"/>
                                 </Style>
                             </Button.Resources>
                         </Button>
@@ -204,8 +216,8 @@
 
         </StackPanel>
 
-        <TextBox x:Name="TextBox2" Grid.Column="1" HorizontalAlignment="Left" Margin="10,69,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="120"/>
-        <TextBox x:Name="TextBox3" Grid.Column="1" HorizontalAlignment="Left" Margin="10,94,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="TextBox2" Grid.Column="1" HorizontalAlignment="Left" Margin="10,67,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="TextBox3" Grid.Column="1" HorizontalAlignment="Left" Margin="10,92,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="120"/>
 
 
     </Grid>

@@ -9,20 +9,24 @@
                     <ControlTemplate TargetType="RadioButton">
                         <Grid VerticalAlignment="Stretch"
                               HorizontalAlignment="Stretch">
-                            <Border CornerRadius="4" Background="Transparent" BorderBrush="#FF475448" BorderThickness="1" ClipToBounds="True" />
-
+                            <Border CornerRadius="4" Background="#99FFFFFF" ClipToBounds="True" > <!--BorderBrush="#FF475448" BorderThickness="1"-->
+                                <Image Source="Sun.png" Stretch="Fill"/>
+                            </Border>
                         </Grid>
-
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style.Setters>
 
         <Style.Triggers>
-            <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Opacity" Value="0.5"/>
+            <Trigger Property="IsChecked" Value="False">
+                <Setter Property="Opacity" Value="0.0"/>
             </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Opacity" Value="1"/>
+            </Trigger>
+          
+            
         </Style.Triggers>
-
     </Style>
 </ResourceDictionary>
