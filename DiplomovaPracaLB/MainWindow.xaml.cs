@@ -218,8 +218,6 @@ namespace DiplomovaPracaLB
         // drawing 
         private void GLControl_Paint(object sender, swf.PaintEventArgs e)
         {
-
-
             // Modelview matrix
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
@@ -239,7 +237,7 @@ namespace DiplomovaPracaLB
             if (show_Axes) DrawAxes();
             if (show_Points) DrawPoints(DisplayedTerrain.InputDataPoints, point_color_gradients);
             if (show_Wireframe) DrawWireframe(DisplayedTerrain.InterpolationPoints);
-            DrawPositionLight();
+            //DrawPositionLight();
 
             GL.Enable(EnableCap.Lighting);
             GL.Enable(EnableCap.DepthTest);
@@ -276,66 +274,7 @@ namespace DiplomovaPracaLB
             GL.End();
         }
 
-        private void Button_ShowAxes_Click(object sender, RoutedEventArgs e)
-        {
-            if (show_Axes)
-            {
-                show_Axes = false;
-                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
-            }
-            else
-            {
-                show_Axes = true;
-                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
-            }
-            glControl.Invalidate();
-        }
-
-        private void Button_ShowPoints_Click(object sender, RoutedEventArgs e)
-        {
-            if (show_Points)
-            {
-                show_Points = false;
-                Button_ShowPoints.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
-            }
-            else
-            {
-                show_Points = true;
-                Button_ShowPoints.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
-
-            }
-            glControl.Invalidate();
-        }
-
-        private void Button_ShowWireframe_Click(object sender, RoutedEventArgs e)
-        {
-            if (show_Wireframe)
-            {
-                show_Wireframe = false;
-                Button_ShowWireframe.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
-            }
-            else
-            {
-                show_Wireframe = true;
-                Button_ShowWireframe.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191)); 
-            }
-            glControl.Invalidate();
-        }
-
-        private void Button_ShowQuads_Click(object sender, RoutedEventArgs e)
-        {
-            if (show_Quads)
-            {
-                show_Quads = false;
-                Button_ShowQuads.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
-            }
-            else
-            {
-                show_Quads = true;
-                Button_ShowQuads.Background = new SolidColorBrush(Color.FromRgb(191,200,191));
-            }
-            glControl.Invalidate();
-        }
+     
 
         public void DrawPoints(Vector3[,] Vertices, bool color_gradient)
         {
@@ -529,6 +468,66 @@ namespace DiplomovaPracaLB
 
         }
 
+        private void Button_ShowAxes_Click(object sender, RoutedEventArgs e)
+        {
+            if (show_Axes)
+            {
+                show_Axes = false;
+                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
+            }
+            else
+            {
+                show_Axes = true;
+                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
+            }
+            glControl.Invalidate();
+        }
+
+        private void Button_ShowPoints_Click(object sender, RoutedEventArgs e)
+        {
+            if (show_Points)
+            {
+                show_Points = false;
+                Button_ShowPoints.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
+            }
+            else
+            {
+                show_Points = true;
+                Button_ShowPoints.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
+
+            }
+            glControl.Invalidate();
+        }
+
+        private void Button_ShowWireframe_Click(object sender, RoutedEventArgs e)
+        {
+            if (show_Wireframe)
+            {
+                show_Wireframe = false;
+                Button_ShowWireframe.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
+            }
+            else
+            {
+                show_Wireframe = true;
+                Button_ShowWireframe.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
+            }
+            glControl.Invalidate();
+        }
+
+        private void Button_ShowQuads_Click(object sender, RoutedEventArgs e)
+        {
+            if (show_Quads)
+            {
+                show_Quads = false;
+                Button_ShowQuads.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
+            }
+            else
+            {
+                show_Quads = true;
+                Button_ShowQuads.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
+            }
+            glControl.Invalidate();
+        }
         private void TextBox_LOD_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)    //Enter
