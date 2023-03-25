@@ -45,7 +45,7 @@ namespace DiplomovaPracaLB
         float[] FarebnaLegendaHodnoty;
         float[][] FarebnaLegendaFarby;
         float pointsize;
-        bool show_Axes, show_Points, show_Wireframe, show_Quads, point_color_gradients, quad_color_gradient;
+        bool show_Axes, show_Points, show_Wireframe, show_Quads;
 
         //data
         TerrainData DisplayedTerrain;
@@ -73,10 +73,8 @@ namespace DiplomovaPracaLB
             show_Points = true;
             show_Wireframe = false;
             show_Quads = true;
-            point_color_gradients = false;
-            quad_color_gradient = true;
 
-            selectedShadingType = TypeOfShading.FLAT;
+            selectedShadingType = TypeOfShading.PHONG;
             LevelOfDetail = 10;
             TextBox_LOD.Text = LevelOfDetail.ToString();
 
@@ -235,7 +233,7 @@ namespace DiplomovaPracaLB
             if (show_Points)
             {
                 DrawPickedPoint();
-                DrawPoints(DisplayedTerrain.InputDataPoints, point_color_gradients);
+                DrawPoints(DisplayedTerrain.InputDataPoints);
             }
             if (show_Wireframe) DrawWireframe(DisplayedTerrain.InterpolationPoints);
             //DrawPositionLight();
@@ -244,7 +242,7 @@ namespace DiplomovaPracaLB
             GL.Enable(EnableCap.DepthTest);
 
             //TU SA KRESLIA PRIMITIVY S MATERIALOM
-            if (show_Quads) DrawQuads(DisplayedTerrain.InterpolationPoints, DisplayedTerrain.Normals, quad_color_gradient);
+            if (show_Quads) DrawQuads(DisplayedTerrain.InterpolationPoints, DisplayedTerrain.Normals);
 
             GL.Disable(EnableCap.Lighting);
 
@@ -283,7 +281,7 @@ namespace DiplomovaPracaLB
             GL.End();
         }
 
-        public void DrawPoints(Vector3[,] Vertices, bool color_gradient)
+        public void DrawPoints(Vector3[,] Vertices)
         {
             //zdroj https://gdbooks.gitbooks.io/legacyopengl/content/Chapter3/Points.html
 
@@ -297,9 +295,7 @@ namespace DiplomovaPracaLB
             {
                 for (int i = 0; i < Vertices.GetLength(0); i++)
                 {
-                    if (color_gradient) GL.Color3(VertexColorByLegend(Vertices[i, j]));
-                    else GL.Color3(point_color);
-
+                    GL.Color3(VertexColorByLegend(Vertices[i, j]));
                     GL.Vertex3(SaT(Vertices[i, j]));
                 }
             }
@@ -340,7 +336,7 @@ namespace DiplomovaPracaLB
             GL.End();
         }
 
-        public void DrawQuads(Vector3[,] Vertices, Vector3[,] Normals, bool color_gradient)
+        public void DrawQuads(Vector3[,] Vertices, Vector3[,] Normals)
         {
             //4. TODO vytvorim plochy medzi stvrocekami
             //https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glPolygonMode.xml
@@ -357,17 +353,19 @@ namespace DiplomovaPracaLB
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, spec_color);
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, 0.1f);
 
+            int M = Vertices.GetLength(0) - 1;
+            int N = Vertices.GetLength(1) - 1;
+
             GL.Begin(PrimitiveType.Quads);
-            for (int j = 0; j < Vertices.GetLength(1) - 1; j++)
+            for (int j = 0; j < N; j++)
             {
-                for (int i = 0; i < Vertices.GetLength(0) - 1; i++)
+                for (int i = 0; i < M; i++)
                 {
                     GL.Normal3(Normals[i,j]);
-
-                    if (color_gradient)
+                    GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i, j]));
+                    GL.Vertex3(SaT(Vertices[i, j]));
+                    if (selectedShadingType == TypeOfShading.FLAT)
                     {
-                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i, j]));
-                        GL.Vertex3(SaT(Vertices[i, j]));
                         GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i + 1, j]));
                         GL.Vertex3(SaT(Vertices[i + 1, j]));
                         GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i + 1, j + 1]));
@@ -377,14 +375,22 @@ namespace DiplomovaPracaLB
                     }
                     else
                     {
-                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, amb_color);
-                        GL.Vertex3(Vertices[i, j]);
-                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, amb_color);
-                        GL.Vertex3(Vertices[i + 1, j]);
-                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, amb_color);
-                        GL.Vertex3(Vertices[i + 1, j + 1]);
-                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, amb_color);
-                        GL.Vertex3(Vertices[i, j + 1]);
+                        int a = 1;
+                        int b = 1;
+                        if (i == M - 1) a = 0;  //okrajove body nemaju vypocitanu vlastnu normalu, pozicaju si ju od predchadzajuceho bodu
+                        if (j == N - 1) b = 0;
+                        
+                        GL.Normal3(Normals[i + a, j]);
+                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i + 1, j]));
+                        GL.Vertex3(SaT(Vertices[i + 1, j]));
+
+                        GL.Normal3(Normals[i + a, j + b]);
+                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i + 1, j + 1]));
+                        GL.Vertex3(SaT(Vertices[i + 1, j + 1]));
+
+                        GL.Normal3(Normals[i, j + b]);
+                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i, j + 1]));
+                        GL.Vertex3(SaT(Vertices[i, j + 1]));
                     }
                 }
             }
