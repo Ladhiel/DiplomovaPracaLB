@@ -24,6 +24,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Dynamic;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace DiplomovaPracaLB
 {
@@ -42,7 +43,8 @@ namespace DiplomovaPracaLB
     public class TerrainData
     {
         public Vector3[,] InputDataPoints;      //body na vstupe
-        public Vector3[,] InterpolationPoints;  //body vyslednej plochy
+        public Vector3[,] InterpolationPoints;  //body vyslednej plochy = jemne vzorkovanie
+        public Vector3[,] Normals;              //normalove vektory v lavych dolnych rohov jemneho vzorkovania
         protected int m, n; //pocet vrcholov v zjemnenom vzorkovani      indexy od 0 po m-1
 
         public Vector3 posunutie;
@@ -51,10 +53,18 @@ namespace DiplomovaPracaLB
 
         protected void Inicialize(typInterpolacie _typInterpolacie, int LOD) //1. inicialzuje sa materska klasa, 2. inicializuje sa dcerska klasa, 3. do inicializacie dcery vlozim tuto funkciu - su v nej veci an vykonanie na konci kazdeh Terrain Data
         {
-            //datapoints su uz nacitane
+            //InputDataPoints su uz nacitane z dcerskej triedy
+
+            //data su od -1 po m+1, lebo krajne body
+            //pozerám sa na vnútorné susedné štvorice vstupného datasetu
+            m = (InputDataPoints.GetLength(0) - 2 - 1) * (LOD + 1) + 1; //-2 krajne body z myslienky coonsa odcitam od vstupnych 
+            n = (InputDataPoints.GetLength(1) - 2 - 1) * (LOD + 1) + 1;
+
             FindExtremalCoordinates();
+
             selectedInterpolationType = _typInterpolacie;
             InterpolationPoints = Interpoluj(_typInterpolacie, InputDataPoints, LOD);
+            Normals = ComputeNormals(InterpolationPoints);
         }
 
         protected void FindExtremalCoordinates()
@@ -99,14 +109,15 @@ namespace DiplomovaPracaLB
 
         public void ReInterpolate(int new_LOD)
         {
+            m = (InputDataPoints.GetLength(0) - 2 - 1) * (new_LOD + 1) + 1; //-2 krajne body z myslienky coonsa odcitam od vstupnych 
+            n = (InputDataPoints.GetLength(1) - 2 - 1) * (new_LOD + 1) + 1;
             InterpolationPoints = Interpoluj(selectedInterpolationType, InputDataPoints, new_LOD);
+            Normals = ComputeNormals(InterpolationPoints);
         }
 
         private Vector3[,] Interpoluj(typInterpolacie _typ, Vector3[,] Vstup, int LOD)
         {
-            m = Vstup.GetLength(0);
-            n = Vstup.GetLength(1);
-            Vector3[,] IP;
+            Vector3[,] IP = new Vector3[m, n];
 
             if (_typ == typInterpolacie.CATMULLROM)   //catmull+ bilinearny Coons pre kazdy stvorcek
             {
@@ -125,12 +136,7 @@ namespace DiplomovaPracaLB
                     H[i - 1, 2] = s * t + (3 - 2 * s) * t * t + (s - 2) * t * t * t;
                     H[i - 1, 3] = -s * t * t + s * t * t * t;
                 }
-
-                //data su od -1 po m+1, lebo krajne body
-                //pozerám sa na vnútorné susedné štvorice vstupného datasetu
-                m = (Vstup.GetLength(0) - 2 - 1) * (LOD + 1) + 1; //-2 krajne body z myslienky coonsa odcitam od vstupnych 
-                n = (Vstup.GetLength(1) - 2 - 1) * (LOD + 1) + 1;
-                IP = new Vector3[m, n];
+                
                 float x, y, z;
 
                 IP[0, 0] = Vstup[1, 1]; //prvy bod interpolacie
@@ -229,5 +235,30 @@ namespace DiplomovaPracaLB
             return Vstup;
         }
 
+        private Vector3[,] ComputeNormals(Vector3[,] Vertices)
+        {
+
+            Vector3[,] Norm = new Vector3[m - 1, n - 1];
+
+            for (int i = 0; i < m - 1; i++)
+            {
+                for (int j = 0; j < n - 1; j++)
+                {
+                    Norm[i, j] = ComputeNormalVectorInPoint(Vertices[i, j], Vertices[i, j + 1], Vertices[i + 1, j]);
+                }
+            }
+
+            return Norm;
+        }
+
+        private Vector3 ComputeNormalVectorInPoint(Vector3 V00, Vector3 V01, Vector3 V10)  //vypocita normalu pre plochu/bod danu vektormi V10-V00 a V01-V00
+        {
+            //normalove vektory su pocitane pre vsetky stvorceky, kt pocet je v danom smere o 1 menej ako bodov
+            Vector3 u = V10 - V00;
+            Vector3 v = V01 - V00;
+            Vector3 c = Vector3.Cross(u, v);
+            c.Normalize();
+            return c;
+        }
     }
 }

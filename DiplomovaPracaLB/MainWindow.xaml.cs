@@ -37,10 +37,11 @@ namespace DiplomovaPracaLB
         //light settings
         float[] light_ambient, light_diffuse, light_specular;
         float light_dist = 8, light_r = 10, light_eps = 1;
-        float[] light_position = {1.0f, 1.0f, 1.0f };
-        float[][] LightPositionsPyramid, LightPositionsAboveModelHemiSphere;
+        float[] light_position = { 1.0f, 1.0f, 1.0f };
+        float[][] LightPositionsAboveModelHemiSphere;
 
         //UI settings
+       
         float[] FarebnaLegendaHodnoty;
         float[][] FarebnaLegendaFarby;
         float pointsize;
@@ -48,7 +49,15 @@ namespace DiplomovaPracaLB
 
         //data
         TerrainData DisplayedTerrain;
-        int LevelOfDetail = 2;    //pocet bodov zjemnenia medzi 2 vstupnymi bodmi, LOD=0 su vstupne data, medzi 2 vstupmnymi bodmi bude LOD bodov
+        TypeOfShading selectedShadingType;
+        int LevelOfDetail;    //pocet bodov zjemnenia medzi 2 vstupnymi bodmi, LOD=0 su vstupne data, medzi 2 vstupmnymi bodmi bude LOD bodov
+
+        private enum TypeOfShading
+        {
+            FLAT,
+            PHONG,
+            GOURAUD
+        };
 
         public MainWindow()
         {
@@ -57,6 +66,7 @@ namespace DiplomovaPracaLB
             //UI:
             IsRightDown = false;
             IsLeftDown = false;
+            
 
             //TU NASTAVIT CO SA CHCEME ZOBRAZIT
             show_Axes = false;
@@ -65,6 +75,10 @@ namespace DiplomovaPracaLB
             show_Quads = true;
             point_color_gradients = false;
             quad_color_gradient = true;
+
+            selectedShadingType = TypeOfShading.FLAT;
+            LevelOfDetail = 10;
+            TextBox_LOD.Text = LevelOfDetail.ToString();
 
             //Spracovanie
             // TerrainData MatlabDataSet1 = new MatlabTerrainData(typInterpolacie.NEINTERPOLUJ,LevelOfDetail, "TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
@@ -136,10 +150,9 @@ namespace DiplomovaPracaLB
             glControl.MouseWheel += GLControl_MouseWheel;
 
             // shading
-            //GL.ShadeModel(ShadingModel.Smooth);
+            GL.ShadeModel(ShadingModel.Smooth);
 
             // color of the window
-            // GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             GL.ClearColor(0.5f, 0.5f, 0.5f, 1.0f);
             GL.ClearDepth(1.0f);
 
@@ -156,11 +169,6 @@ namespace DiplomovaPracaLB
             GL.Enable(EnableCap.PointSmooth);
 
             // illumination
-            /* povodne hodnoty
-            light_ambient = { 0.5f, 0.5f, 0.5f, 1.0f };
-            light_diffuse = { 0.5f, 0.5f, 0.5f, 1.0f };
-            light_specular = { 0.2f, 0.2f, 0.2f, 1.0f };
-             */
             light_ambient = new float[] { 0.9f, 0.9f, 0.9f, 1.0f };
             light_diffuse = new float[] { 0.5f, 0.5f, 0.5f, 1.0f };
             light_specular = new float[] { 0.2f, 0.2f, 0.2f, 0.8f };
@@ -173,7 +181,7 @@ namespace DiplomovaPracaLB
             GL.Enable(EnableCap.Light0);
 
             // parameters for the camera
-            Phi = -0.6f; Theta = 0.3f; Dist = 3.8f;
+            Phi = -0.6f; Theta = 0.3f; Dist = 4.8f;
 
             //farby terénu
             FarebnaLegendaHodnoty = new float[] { -0.5f, 200, 500, 1000, 1500 };
@@ -189,19 +197,6 @@ namespace DiplomovaPracaLB
             {
                 MessageBox.Show("Počet výškových hodnôt legendy musí byť o 1 menší ako počet farieb v legende. Program sa skončí.");
             }
-
-            //pozicie svetla 
-            LightPositionsPyramid = new float[][] {
-                new float[3] {-1.0f,  1.0f, light_dist},
-                new float[3] { 0.0f,  1.0f, light_dist},
-                new float[3] { 1.0f,  1.0f, light_dist},
-                new float[3] {-1.0f,  0.0f, light_dist},
-                new float[3] { 0.0f,  0.0f, light_dist+light_eps},
-                new float[3] { 1.0f,  0.0f, light_dist},
-                new float[3] {-1.0f, -1.0f, light_dist},
-                new float[3] { 0.0f, -1.0f, light_dist},
-                new float[3] { 1.0f, -1.0f, light_dist}
-            };
 
             float s = 0.7071067811865475244f;
             LightPositionsAboveModelHemiSphere = new float[][] {
@@ -224,7 +219,6 @@ namespace DiplomovaPracaLB
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             Matrix4 matLook = Matrix4.LookAt((float)(Dist * Math.Cos(Theta) * Math.Cos(Phi)), (float)(Dist * Math.Sin(Phi) * Math.Cos(Theta)), (float)(Dist * Math.Sin(Theta)), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-                    
             GL.LoadMatrix(ref matLook);
 
             // perspective projection
@@ -250,7 +244,7 @@ namespace DiplomovaPracaLB
             GL.Enable(EnableCap.DepthTest);
 
             //TU SA KRESLIA PRIMITIVY S MATERIALOM
-            if (show_Quads) DrawQuads(DisplayedTerrain.InterpolationPoints, quad_color_gradient);
+            if (show_Quads) DrawQuads(DisplayedTerrain.InterpolationPoints, DisplayedTerrain.Normals, quad_color_gradient);
 
             GL.Disable(EnableCap.Lighting);
 
@@ -281,7 +275,7 @@ namespace DiplomovaPracaLB
 
         public void DrawPickedPoint()
         {
-           Vector3 picked = DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index];
+            Vector3 picked = DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index];
             GL.PointSize(2.0f * pointsize);
             GL.Color3(0.85f, 0.53f, 0.10f); //highlight
             GL.Begin(PrimitiveType.Points);
@@ -297,7 +291,7 @@ namespace DiplomovaPracaLB
             float[] point_color = { 0.3f, 0.3f, 0.3f };
             pointsize = (float)(1 / Dist) * 5.0f;
             GL.PointSize(pointsize);
-            
+
             GL.Begin(PrimitiveType.Points);
             for (int j = 0; j < Vertices.GetLength(1); j++)
             {
@@ -346,7 +340,7 @@ namespace DiplomovaPracaLB
             GL.End();
         }
 
-        public void DrawQuads(Vector3[,] Vertices, bool color_gradient)
+        public void DrawQuads(Vector3[,] Vertices, Vector3[,] Normals, bool color_gradient)
         {
             //4. TODO vytvorim plochy medzi stvrocekami
             //https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glPolygonMode.xml
@@ -368,7 +362,7 @@ namespace DiplomovaPracaLB
             {
                 for (int i = 0; i < Vertices.GetLength(0) - 1; i++)
                 {
-                    GL.Normal3(ComputeQuadNormalVector(Vertices[i, j], Vertices[i + 1, j], Vertices[i, j + 1]));
+                    GL.Normal3(Normals[i,j]);
 
                     if (color_gradient)
                     {
@@ -399,7 +393,7 @@ namespace DiplomovaPracaLB
 
         private Vector3 SaT(Vector3 vertex)  //Scale and Translate terrain according to the dimension of terrain model
         {
-            return (vertex + DisplayedTerrain.posunutie) * DisplayedTerrain.skalovanie;
+            return (vertex + DisplayedTerrain.posunutie) * 2.5f * DisplayedTerrain.skalovanie;
         }
 
         private float[] VertexColorByLegend(Vector3 Vertex)    //priradi bodu (s naozajstvou, netransformovanou hodnotou !!!) farbu podla legendy 
@@ -438,36 +432,14 @@ namespace DiplomovaPracaLB
             return 1 - (float)Math.Pow(-2 * p + 2, 2) / 2;
         }
 
-        private Vector3 ComputeQuadNormalVector(Vector3 V00, Vector3 V01, Vector3 V10)  //vypocita normalu pre plochu danu vektormi V10-V00 a V01-V00
-        {
-            //normalove vektory su pocitane pre vsetky stvorceky, kt pocet je v danom smere o 1 menej ako bodov
-            Vector3 u = V10 - V00;
-            Vector3 v = V01 - V00;
-            Vector3 c = Vector3.Cross(u, v);
-            c.Normalize();
-            return c;
-        }
+       
 
-        private void ChangeLevelOfDetail(int new_LOD)
-        {
-            if ( new_LOD >=0 && new_LOD <=10)
-            {
-                LevelOfDetail = new_LOD;
-                TextBox_LOD.Text = new_LOD.ToString();      //toto je len pre buttony; pre textbox sa nic nezmeni, ale lepsie prepisat na to iste, nez na zle a zase naspat.
-                //treba prepocitat navyorkovanie splajnu
-                DisplayedTerrain.ReInterpolate(new_LOD);
-                glControl.Invalidate();
-            }
-            else
-            {
-                TextBox_LOD.Text = LevelOfDetail.ToString();  //do TextBoxu napisem ostavajucu hodnotu LOD
-            }
-        }
+
 
         //-----------------------------------------------------------------------------------------------------------------------
 
 
-
+       
         //-----------------------------------------------------------------------------------------------------------------------
 
         /////////////////////////////////////////////////////////
@@ -546,6 +518,7 @@ namespace DiplomovaPracaLB
             }
             glControl.Invalidate();
         }
+       
         private void TextBox_LOD_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)    //Enter
@@ -572,6 +545,22 @@ namespace DiplomovaPracaLB
         private void Button_LODplus_Click(object sender, RoutedEventArgs e)
         {
             ChangeLevelOfDetail(LevelOfDetail + 1);
+        }
+
+        private void ChangeLevelOfDetail(int new_LOD)
+        {
+            if (new_LOD >= 0 && new_LOD <= 10)
+            {
+                LevelOfDetail = new_LOD;
+                TextBox_LOD.Text = new_LOD.ToString();      //toto je len pre buttony; pre textbox sa nic nezmeni, ale lepsie prepisat na to iste, nez na zle a zase naspat.
+                //treba prepocitat navyorkovanie splajnu
+                DisplayedTerrain.ReInterpolate(new_LOD);
+                glControl.Invalidate();
+            }
+            else
+            {
+                TextBox_LOD.Text = LevelOfDetail.ToString();  //do TextBoxu napisem ostavajucu hodnotu LOD
+            }
         }
 
         private void Slider_ChangeLightIntensity(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -651,8 +640,8 @@ namespace DiplomovaPracaLB
                 for (int k = 0; k < DisplayedTerrain.InputDataPoints.GetLength(0); k++)
                     for (int i = 0; i < DisplayedTerrain.InputDataPoints.GetLength(1); i++)
                     {
-                        double sA = Math.Sqrt(Vector3.Dot(SaT(DisplayedTerrain.InputDataPoints[k,i]) - start, SaT(DisplayedTerrain.InputDataPoints[k,i]) - start));
-                        double eA = Math.Sqrt(Vector3.Dot(SaT(DisplayedTerrain.InputDataPoints[k,i]) - end, SaT(DisplayedTerrain.InputDataPoints[k,i]) - end));
+                        double sA = Math.Sqrt(Vector3.Dot(SaT(DisplayedTerrain.InputDataPoints[k, i]) - start, SaT(DisplayedTerrain.InputDataPoints[k, i]) - start));
+                        double eA = Math.Sqrt(Vector3.Dot(SaT(DisplayedTerrain.InputDataPoints[k, i]) - end, SaT(DisplayedTerrain.InputDataPoints[k, i]) - end));
 
                         if (sA + eA > se - 0.001 && sA + eA < se + 0.001)
                         {

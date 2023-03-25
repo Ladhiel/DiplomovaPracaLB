@@ -8,7 +8,8 @@
         Title="Modelovanie terénu pomocou interpolačných splajnov"
         Height="900" Width="1500"
         FontFamily="Calibri" FontSize="15"
-        Background="#FF607560">
+        Background="#FF607560"
+        WindowStartupLocation="CenterScreen">
     <!--Background="#FF88A48A"-->
     <Grid SizeChanged="Grid_SizeChanged">
         <Grid.ColumnDefinitions>
