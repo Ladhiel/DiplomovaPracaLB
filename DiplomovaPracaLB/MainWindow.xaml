@@ -65,7 +65,7 @@
                                 <Setter Property="Margin" Value="1,1,1,1"/>
                                 <Setter Property="ClipToBounds" Value="True"/>
                                 <Setter Property="CornerRadius" Value="4"/>
-                                <Setter Property="Background" Value="#FF607560"/>
+                                <Setter Property="Background" Value="#99FFFFFF"/>
                                 <Setter Property="BorderBrush" Value="#FF475448"/>
                                 <Setter Property="BorderThickness" Value="0.8"/>
                             </Style>
@@ -116,11 +116,12 @@
                     </Grid>
                 </Canvas>
             </Border>
-                
+
             <Border>
                 <Canvas Width="310" Background="Transparent">
+                    
                     <TextBlock Canvas.Left="10" Canvas.Top="10">Režim zobrazenia terénu</TextBlock>
-                    <Grid Canvas.Top="40" Canvas.Left="25">
+                    <Grid Canvas.Top="45" Canvas.Left="25">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="60"/>
                             <ColumnDefinition Width="60"/>
@@ -139,7 +140,7 @@
                             </Style>
                         </Grid.Resources>
                         <Border Grid.ColumnSpan="5" Grid.RowSpan="3" Background="#FF475448" Margin="-2,0,-2,0"/>
-                        <Button x:Name="Button_ShowPoints" Click="Button_ShowPoints_Click" Grid.Column="0" Background="#BFC8BF">
+                        <Button x:Name="Button_ShowPoints" Click="Button_ShowPoints_Click" Grid.Column="0" Background="#FF607560">
                             <Image Source="Images/ImageShowPoints.png" Stretch="Fill"/>
                             <Button.Resources>
                                 <Style TargetType="Border">
@@ -148,7 +149,7 @@
                             </Button.Resources>
                         </Button>
 
-                        <Button x:Name="Button_ShowWireframe" Click="Button_ShowWireframe_Click" Grid.Column="1" Background="#FF607560" >
+                        <Button x:Name="Button_ShowWireframe" Click="Button_ShowWireframe_Click" Grid.Column="1" Background="#BFC8BF">
                             <Image Source="Images/ImageShowWireframe.png" Stretch="Fill"/>
                             <Button.Resources>
                                 <Style TargetType="Border">
@@ -156,7 +157,7 @@
                                 </Style>
                             </Button.Resources>
                         </Button>
-                        <Button x:Name="Button_ShowQuads" Click="Button_ShowQuads_Click" Grid.Column="2" Background="#BFC8BF">
+                        <Button x:Name="Button_ShowQuads" Click="Button_ShowQuads_Click" Grid.Column="2" Background="#FF607560">
                             <Image Source="Images/ImageShowQuads.png" Stretch="Fill"/>
                             <Button.Resources>
                                 <Style TargetType="Border">
@@ -164,7 +165,7 @@
                                 </Style>
                             </Button.Resources>
                         </Button>
-                        <Button x:Name="Button_ShowAxes" Click="Button_ShowAxes_Click" Grid.Column="4" Background="#FF607560">
+                        <Button x:Name="Button_ShowAxes" Click="Button_ShowAxes_Click" Grid.Column="4" Background="#BFC8BF">
                             <Image Source="Images/ImageShowAxes.png" Stretch="Fill"/>
                             <Button.Resources>
                                 <Style TargetType="Border">
@@ -173,7 +174,8 @@
                             </Button.Resources>
                         </Button>
                     </Grid>
-                    <Button x:Name="Button_ResetView" Width="120" Height="35" Click="Button_ResetView_Click" Content="Resetuj pohľad" HorizontalContentAlignment="Center" Canvas.Left="25" Canvas.Bottom="25">
+                    
+                    <Button x:Name="Button_ResetView" Width="120" Height="35" Click="Button_ResetView_Click" Content="Resetuj pohľad" HorizontalContentAlignment="Center" Canvas.Left="90" Canvas.Bottom="20">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="4,4,4,4"/>
@@ -186,7 +188,7 @@
             <Border>
                 <Canvas Width="180" Background="Transparent">
                     <TextBlock Canvas.Left="10" Canvas.Top="10">Level detailov</TextBlock>
-                    <Grid Canvas.Top="72" Canvas.Left="20">
+                    <Grid Canvas.Top="70" Canvas.Left="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="40"/>
                             <ColumnDefinition Width="60"/>
@@ -216,9 +218,48 @@
                     </Grid>
                 </Canvas>
             </Border>
+
             <Border>
                 <Canvas Width="300" Background="Transparent">
                     <TextBlock Canvas.Left="10" Canvas.Top="10">Typ tieňovania</TextBlock>
+                    <Grid Canvas.Top="45" Canvas.Left="25">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>  
+                            <Grid.Resources>
+                                <Style TargetType="{x:Type Border}">
+                                    <Setter Property="Margin" Value="1,1,1,1"/>
+                                    <Setter Property="ClipToBounds" Value="True"/>
+                                    <Setter Property="CornerRadius" Value="4"/>
+                                    <Setter Property="Background" Value="#FF607560"/>
+                                    <Setter Property="BorderBrush" Value="#FF475448"/>
+                                    <Setter Property="BorderThickness" Value="0.8"/>
+                                </Style>
+                                <Style TargetType="{x:Type Button}">
+                                <Setter Property="BorderBrush" Value="#FF47544B"/>
+                                <Setter Property="Background" Value="#80FFFFFF"/>
+                                <Setter Property="Margin" Value="1,1,1,1"/>
+                            </Style>
+                        </Grid.Resources>
+                        <Border Grid.ColumnSpan="5" Grid.RowSpan="3" Background="#FF475448" Margin="-2,0,-2,0"/>
+                        <Border Grid.Column="0">
+                            <RadioButton x:Name="RadioButton_Shading_Flat" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group2" Checked="RadioButton_ShadingFlat_Checked" IsChecked="True"/>
+                        </Border>
+                        <Border Grid.Column="1">
+                            <RadioButton x:Name="RadioButton_Shading_Gouraud" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group2" Checked="RadioButton_ShadingGouraud_Checked"/>
+                        </Border>
+                        <Border Grid.Column="2">
+                            <RadioButton x:Name="RadioButton_Shading_Phong" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group2" Checked="RadioButton_ShadingPhong_Checked"/>
+                        </Border>
+                        <TextBlock Text="Flat" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                        <TextBlock Text="Gouraud" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                        <TextBlock Text="Phong" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                    </Grid>
                 </Canvas>
             </Border>
 

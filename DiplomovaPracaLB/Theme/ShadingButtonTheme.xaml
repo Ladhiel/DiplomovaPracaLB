@@ -2,15 +2,14 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style BasedOn="{StaticResource {x:Type ToggleButton}}"
            TargetType="{x:Type RadioButton}"
-           x:Key="LightPositionButtonTheme">
+           x:Key="ShadingButtonTheme">
         <Style.Setters>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
                         <Grid VerticalAlignment="Stretch"
                               HorizontalAlignment="Stretch">
-                            <Border CornerRadius="4" Background="#FF607560" ClipToBounds="True" > <!--BorderBrush="#FF475448" BorderThickness="1"-->
-                                <Image Source="Sun.png" Stretch="Fill"/>
+                            <Border CornerRadius="4" Background="#99FFFFFF" ClipToBounds="True" >
                             </Border>
                         </Grid>
                     </ControlTemplate>
@@ -20,13 +19,11 @@
 
         <Style.Triggers>
             <Trigger Property="IsChecked" Value="False">
-                <Setter Property="Opacity" Value="0.0"/>
-            </Trigger>
-            <Trigger Property="IsChecked" Value="True">
                 <Setter Property="Opacity" Value="1.0"/>
             </Trigger>
-          
-            
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Opacity" Value="0.0"/>
+            </Trigger>
         </Style.Triggers>
     </Style>
 </ResourceDictionary>

@@ -36,7 +36,7 @@ namespace DiplomovaPracaLB
 
         //light settings
         float[] light_ambient, light_diffuse, light_specular;
-        float light_dist = 8, light_r = 10, light_eps = 1;
+        float light_dist = 8, light_r = 10, light_eps = 1, default_dist = 4.8f;
         float[] light_position = { 1.0f, 1.0f, 1.0f };
         float[][] LightPositionsAboveModelHemiSphere;
 
@@ -74,7 +74,7 @@ namespace DiplomovaPracaLB
             show_Wireframe = false;
             show_Quads = true;
 
-            selectedShadingType = TypeOfShading.PHONG;
+            selectedShadingType = TypeOfShading.FLAT;
             LevelOfDetail = 10;
             TextBox_LOD.Text = LevelOfDetail.ToString();
 
@@ -179,7 +179,7 @@ namespace DiplomovaPracaLB
             GL.Enable(EnableCap.Light0);
 
             // parameters for the camera
-            Phi = -0.6f; Theta = 0.3f; Dist = 4.8f;
+            Phi = -0.6f; Theta = 0.3f; Dist = default_dist;
 
             //farby terénu
             FarebnaLegendaHodnoty = new float[] { -0.5f, 200, 500, 1000, 1500 };
@@ -285,17 +285,15 @@ namespace DiplomovaPracaLB
         {
             //zdroj https://gdbooks.gitbooks.io/legacyopengl/content/Chapter3/Points.html
 
-            //GL.PointSize(5.0f);
             float[] point_color = { 0.3f, 0.3f, 0.3f };
-            pointsize = (float)(1 / Dist) * 5.0f;
-            GL.PointSize(pointsize);
 
+            GL.PointSize(pointsize);
+            GL.Color3(point_color);
             GL.Begin(PrimitiveType.Points);
             for (int j = 0; j < Vertices.GetLength(1); j++)
             {
                 for (int i = 0; i < Vertices.GetLength(0); i++)
                 {
-                    GL.Color3(VertexColorByLegend(Vertices[i, j]));
                     GL.Vertex3(SaT(Vertices[i, j]));
                 }
             }
@@ -397,6 +395,11 @@ namespace DiplomovaPracaLB
             GL.End();
         }
 
+        private float ChangePointSize()
+        {
+            return (float)(1 / Dist) * 2.0f * default_dist;
+        }
+
         private Vector3 SaT(Vector3 vertex)  //Scale and Translate terrain according to the dimension of terrain model
         {
             return (vertex + DisplayedTerrain.posunutie) * 2.5f * DisplayedTerrain.skalovanie;
@@ -461,6 +464,7 @@ namespace DiplomovaPracaLB
         private void Button_ResetView_Click(object sender, RoutedEventArgs e)
         {
             Phi = -0.6f; Theta = 0.3f; Dist = 3.8f;
+            pointsize = ChangePointSize();
             glControl.Invalidate();
         }
 
@@ -469,12 +473,12 @@ namespace DiplomovaPracaLB
             if (show_Axes)
             {
                 show_Axes = false;
-                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
+                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
             }
             else
             {
                 show_Axes = true;
-                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
+                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
             }
             glControl.Invalidate();
         }
@@ -484,13 +488,12 @@ namespace DiplomovaPracaLB
             if (show_Points)
             {
                 show_Points = false;
-                Button_ShowPoints.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
+                Button_ShowPoints.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
             }
             else
             {
                 show_Points = true;
-                Button_ShowPoints.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
-
+                Button_ShowPoints.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
             }
             glControl.Invalidate();
         }
@@ -500,12 +503,12 @@ namespace DiplomovaPracaLB
             if (show_Wireframe)
             {
                 show_Wireframe = false;
-                Button_ShowWireframe.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
+                Button_ShowWireframe.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
             }
             else
             {
                 show_Wireframe = true;
-                Button_ShowWireframe.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
+                Button_ShowWireframe.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
             }
             glControl.Invalidate();
         }
@@ -515,12 +518,12 @@ namespace DiplomovaPracaLB
             if (show_Quads)
             {
                 show_Quads = false;
-                Button_ShowQuads.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
+                Button_ShowQuads.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
             }
             else
             {
                 show_Quads = true;
-                Button_ShowQuads.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
+                Button_ShowQuads.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
             }
             glControl.Invalidate();
         }
@@ -590,6 +593,26 @@ namespace DiplomovaPracaLB
             GL.Light(LightName.Light0, LightParameter.Position, light_position);
             glControl.Invalidate();
         }
+
+        private void RadioButton_ShadingFlat_Checked(object sender, RoutedEventArgs e)
+        {
+            selectedShadingType = TypeOfShading.FLAT;
+            glControl.Invalidate();
+        }
+
+        private void RadioButton_ShadingGouraud_Checked(object sender, RoutedEventArgs e)
+        {
+            selectedShadingType = TypeOfShading.GOURAUD;
+            glControl.Invalidate();
+        }
+
+        private void RadioButton_ShadingPhong_Checked(object sender, RoutedEventArgs e)
+        {
+            selectedShadingType = TypeOfShading.PHONG;
+            glControl.Invalidate();
+        }
+
+        //---------------------------------------------------------------------------------------------------------------------------------
 
         public Vector3 UnProject(Vector3 mouse, Matrix4 projection, Matrix4 view, Size viewport)
         {
@@ -671,6 +694,7 @@ namespace DiplomovaPracaLB
             if (new_Dist >= 0.001)
             {
                 Dist = new_Dist;
+                pointsize = ChangePointSize();
             }
             glControl.Invalidate();
         }
