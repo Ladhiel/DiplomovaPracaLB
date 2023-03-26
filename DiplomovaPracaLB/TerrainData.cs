@@ -216,12 +216,12 @@ namespace DiplomovaPracaLB
                             {
                                 float p = k / (float)(LOD + 1);
 
-                                Vector3 LinInterpJZap = (1 - q) * IP[a, b + l] + q * IP[a + LOD + 1, b + l];
-                                Vector3 LinInterpIZap = (1 - p) * IP[a + k, b] + p * IP[a + k, b + LOD + 1];
+                                Vector3 LinInterpJZap = (1 - p) * IP[a, b + l] + p * IP[a + LOD + 1, b + l];
+                                Vector3 LinInterpIZap = (1 - q) * IP[a + k, b] + q * IP[a + k, b + LOD + 1];
 
                                 Vector3 KorekcnaZap = (1 - p) * (1 - q) * C00 + p * (1 - q) * C10 + (1 - p) * q * C01 + p * q * C11;
 
-                                IP[a + l, b + k] = LinInterpIZap + LinInterpJZap - KorekcnaZap;
+                                IP[a + k, b + l] = LinInterpIZap + LinInterpJZap - KorekcnaZap;
                                 //Console.WriteLine(IP[a+k, b+l]);
                             }
                         }
@@ -245,6 +245,7 @@ namespace DiplomovaPracaLB
                 for (int j = 0; j < n - 1; j++)
                 {
                     Norm[i, j] = ComputeNormalVectorInPoint(Vertices[i, j], Vertices[i, j + 1], Vertices[i + 1, j]);
+                    Norm[i, j].Normalize();
                 }
             }
 
