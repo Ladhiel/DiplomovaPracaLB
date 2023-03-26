@@ -36,7 +36,7 @@ namespace DiplomovaPracaLB
 
         //light settings
         float[] light_ambient, light_diffuse, light_specular;
-        float light_dist = 8, light_r = 10, light_eps = 1, default_dist = 4.8f;
+        float light_dist = 8.0f, light_r = 10.0f /*100*/, light_eps = 1.0f, default_dist = 4.8f;
         float[] light_position = { 1.0f, 1.0f, 1.0f };
         float[][] LightPositionsAboveModelHemiSphere;
 
@@ -55,7 +55,6 @@ namespace DiplomovaPracaLB
         private enum TypeOfShading
         {
             FLAT,
-            PHONG,
             GOURAUD
         };
 
@@ -75,7 +74,7 @@ namespace DiplomovaPracaLB
             show_Quads = true;
 
             selectedShadingType = TypeOfShading.FLAT;
-            LevelOfDetail = 10;
+            LevelOfDetail = 3;
             TextBox_LOD.Text = LevelOfDetail.ToString();
 
             //Spracovanie
@@ -148,7 +147,14 @@ namespace DiplomovaPracaLB
             glControl.MouseWheel += GLControl_MouseWheel;
 
             // shading
-            GL.ShadeModel(ShadingModel.Smooth);
+            if(selectedShadingType == TypeOfShading.FLAT)
+            {
+                GL.ShadeModel(ShadingModel.Flat);
+            }
+            else 
+            {
+                GL.ShadeModel(ShadingModel.Smooth);
+            }   
 
             // color of the window
             GL.ClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -178,8 +184,22 @@ namespace DiplomovaPracaLB
             GL.Light(LightName.Light0, LightParameter.Position, light_position);
             GL.Enable(EnableCap.Light0);
 
+            float s = 0.7071067811865475244f;
+            LightPositionsAboveModelHemiSphere = new float[][] {
+                new float[3] { -s * light_r,  s * light_r, light_dist},
+                new float[3] {         0.0f,      light_r, light_dist},
+                new float[3] {  s * light_r,  s * light_r, light_dist},
+                new float[3] {    - light_r,         0.0f, light_dist},
+                new float[3] {         0.0f,         0.0f, light_dist + light_r*light_eps},
+                new float[3] {      light_r,         0.0f, light_dist},
+                new float[3] { -s * light_r, -s * light_r, light_dist},
+                new float[3] {         0.0f,     -light_r, light_dist},
+                new float[3] {  s * light_r, -s * light_r, light_dist}
+            };
+
             // parameters for the camera
             Phi = -0.6f; Theta = 0.3f; Dist = default_dist;
+            pointsize = ChangePointSize();
 
             //farby terénu
             FarebnaLegendaHodnoty = new float[] { -0.5f, 200, 500, 1000, 1500 };
@@ -195,19 +215,6 @@ namespace DiplomovaPracaLB
             {
                 MessageBox.Show("Počet výškových hodnôt legendy musí byť o 1 menší ako počet farieb v legende. Program sa skončí.");
             }
-
-            float s = 0.7071067811865475244f;
-            LightPositionsAboveModelHemiSphere = new float[][] {
-                new float[3] { -s * light_r,  s * light_r, light_dist},
-                new float[3] {         0.0f,      light_r, light_dist},
-                new float[3] {  s * light_r,  s * light_r, light_dist},
-                new float[3] {    - light_r,         0.0f, light_dist},
-                new float[3] {         0.0f,         0.0f, light_dist + light_r*light_eps},
-                new float[3] {      light_r,         0.0f, light_dist},
-                new float[3] { -s * light_r, -s * light_r, light_dist},
-                new float[3] {         0.0f,     -light_r, light_dist},
-                new float[3] {  s * light_r, -s * light_r, light_dist}
-            };
         }
 
         // drawing 
@@ -230,11 +237,7 @@ namespace DiplomovaPracaLB
 
             //TU SA KRESLIA PRIMITIVY BEZ MATERIALU
             if (show_Axes) DrawAxes();
-            if (show_Points)
-            {
-                DrawPickedPoint();
-                DrawPoints(DisplayedTerrain.InputDataPoints);
-            }
+            if (show_Points) DrawPoints(DisplayedTerrain.InputDataPoints);
             if (show_Wireframe) DrawWireframe(DisplayedTerrain.InterpolationPoints);
             //DrawPositionLight();
 
@@ -261,8 +264,6 @@ namespace DiplomovaPracaLB
             // float[] light_position = { 10.0f, 10.0f, 200.0f };
             float[] origin = { 0.0f, 0.0f, 0.0f };
 
-            float[] p1 = { -1.0f, -1.0f, 0.0f };
-
             float[] light_color = { 1.0f, 0.95f, 0.0f };
             GL.Begin(PrimitiveType.Lines);
             GL.Color3(light_color);
@@ -271,32 +272,34 @@ namespace DiplomovaPracaLB
             GL.End();
         }
 
-        public void DrawPickedPoint()
-        {
-            Vector3 picked = DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index];
-            GL.PointSize(2.0f * pointsize);
-            GL.Color3(0.85f, 0.53f, 0.10f); //highlight
-            GL.Begin(PrimitiveType.Points);
-            GL.Vertex3(SaT(picked));
-            GL.End();
-        }
-
         public void DrawPoints(Vector3[,] Vertices)
         {
             //zdroj https://gdbooks.gitbooks.io/legacyopengl/content/Chapter3/Points.html
 
-            float[] point_color = { 0.3f, 0.3f, 0.3f };
+            Vector3 z_eps = new Vector3(0.0f, 0.0f, 1.85f);
 
-            GL.PointSize(pointsize);
+            float[] point_color = { 0.3f, 0.3f, 0.3f };
             GL.Color3(point_color);
+            GL.PointSize(pointsize);
+
             GL.Begin(PrimitiveType.Points);
+
             for (int j = 0; j < Vertices.GetLength(1); j++)
             {
                 for (int i = 0; i < Vertices.GetLength(0); i++)
                 {
-                    GL.Vertex3(SaT(Vertices[i, j]));
+                    GL.Vertex3(SaT(Vertices[i, j] + z_eps));
                 }
             }
+            GL.End();
+
+            //kresli vybraty bod
+            GL.PointSize(2.0f * pointsize);
+            GL.Color3(0.85f, 0.53f, 0.10f); //highlight
+            GL.Begin(PrimitiveType.Points);
+            Vector3 picked = DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index];
+            GL.Vertex3(SaT(picked + z_eps));
+
             GL.End();
         }
 
@@ -305,8 +308,9 @@ namespace DiplomovaPracaLB
             //pospajam body useckami v u-smere, useckami vo v-smere
 
             float[] wire_color = { 0.0f, 0.2f, 0.12f };
-            Vector3 z_eps = new Vector3(0.0f, 0.0f, 0.4f);
+            Vector3 z_eps = new Vector3(0.0f, 0.0f, 0.5f);
 
+            GL.LineWidth(1.2f);
             GL.Begin(PrimitiveType.Lines);
             for (int j = 0; j < Vertices.GetLength(1); j++)
             {
@@ -342,12 +346,11 @@ namespace DiplomovaPracaLB
 
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill); // enable filling of shapes with color 
-
-            float[] amb_color = { 0.69f, 0.4f, 0.1f };
+            
             float[] diff_color = { 0.9f, 0.9f, 0.9f, 1.0f };
             float[] spec_color = { 0.5f, 0.5f, 0.5f, 1.0f };
 
-            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, diff_color);
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, diff_color);
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, spec_color);
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, 0.1f);
 
@@ -359,25 +362,28 @@ namespace DiplomovaPracaLB
             {
                 for (int i = 0; i < M; i++)
                 {
-                    GL.Normal3(Normals[i,j]);
-                    GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i, j]));
-                    GL.Vertex3(SaT(Vertices[i, j]));
                     if (selectedShadingType == TypeOfShading.FLAT)
                     {
-                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i + 1, j]));
+                        //rovanaka farba aj normala pre vsetky 4 rohy
+                        //defaultne berie farbu z posledneho vrchola
+                        GL.Normal3(Normals[i, j]);
+                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend((Vertices[i, j]+ Vertices[i + 1, j]+ Vertices[i + 1, j + 1]+ Vertices[i, j + 1])/4));
+                        GL.Vertex3(SaT(Vertices[i, j]));
                         GL.Vertex3(SaT(Vertices[i + 1, j]));
-                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i + 1, j + 1]));
                         GL.Vertex3(SaT(Vertices[i + 1, j + 1]));
-                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i, j + 1]));
                         GL.Vertex3(SaT(Vertices[i, j + 1]));
                     }
                     else
                     {
+                        //ina farba aj normala pre kazdy z rohov
                         int a = 1;
                         int b = 1;
                         if (i == M - 1) a = 0;  //okrajove body nemaju vypocitanu vlastnu normalu, pozicaju si ju od predchadzajuceho bodu
                         if (j == N - 1) b = 0;
-                        
+                        GL.Normal3(Normals[i, j]);
+                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i, j]));
+                        GL.Vertex3(SaT(Vertices[i, j]));
+
                         GL.Normal3(Normals[i + a, j]);
                         GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i + 1, j]));
                         GL.Vertex3(SaT(Vertices[i + 1, j]));
@@ -397,7 +403,7 @@ namespace DiplomovaPracaLB
 
         private float ChangePointSize()
         {
-            return (float)(1 / Dist) * 2.0f * default_dist;
+            return (float)(1 / Math.Sqrt(Dist)) * 3.0f * default_dist;
         }
 
         private Vector3 SaT(Vector3 vertex)  //Scale and Translate terrain according to the dimension of terrain model
@@ -602,13 +608,9 @@ namespace DiplomovaPracaLB
 
         private void RadioButton_ShadingGouraud_Checked(object sender, RoutedEventArgs e)
         {
-            selectedShadingType = TypeOfShading.GOURAUD;
-            glControl.Invalidate();
-        }
 
-        private void RadioButton_ShadingPhong_Checked(object sender, RoutedEventArgs e)
-        {
-            selectedShadingType = TypeOfShading.PHONG;
+            selectedShadingType = TypeOfShading.GOURAUD;
+            GL.ShadeModel(ShadingModel.Smooth);
             glControl.Invalidate();
         }
 
@@ -671,12 +673,10 @@ namespace DiplomovaPracaLB
                     {
                         double sA = Math.Sqrt(Vector3.Dot(SaT(DisplayedTerrain.InputDataPoints[k, i]) - start, SaT(DisplayedTerrain.InputDataPoints[k, i]) - start));
                         double eA = Math.Sqrt(Vector3.Dot(SaT(DisplayedTerrain.InputDataPoints[k, i]) - end, SaT(DisplayedTerrain.InputDataPoints[k, i]) - end));
-
                         if (sA + eA > se - 0.001 && sA + eA < se + 0.001)
                         {
                             ActivePoint_m_index = k;
                             ActivePoint_n_index = i;
-
 
                             IsLeftDown = true;
 
