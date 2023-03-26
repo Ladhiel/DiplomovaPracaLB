@@ -220,11 +220,10 @@
             </Border>
 
             <Border>
-                <Canvas Width="300" Background="Transparent">
+                <Canvas Width="220" Background="Transparent">
                     <TextBlock Canvas.Left="10" Canvas.Top="10">Typ tieňovania</TextBlock>
-                    <Grid Canvas.Top="45" Canvas.Left="25">
+                    <Grid Canvas.Top="70" Canvas.Left="25">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
@@ -253,12 +252,8 @@
                         <Border Grid.Column="1">
                             <RadioButton x:Name="RadioButton_Shading_Gouraud" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group2" Checked="RadioButton_ShadingGouraud_Checked"/>
                         </Border>
-                        <Border Grid.Column="2">
-                            <RadioButton x:Name="RadioButton_Shading_Phong" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group2" Checked="RadioButton_ShadingPhong_Checked"/>
-                        </Border>
                         <TextBlock Text="Flat" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
                         <TextBlock Text="Gouraud" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
-                        <TextBlock Text="Phong" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
                     </Grid>
                 </Canvas>
             </Border>
