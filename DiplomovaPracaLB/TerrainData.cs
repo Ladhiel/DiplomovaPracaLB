@@ -247,7 +247,6 @@ namespace DiplomovaPracaLB
                     Norm[i, j] = ComputeNormalVectorInPoint(Vertices[i, j], Vertices[i, j + 1], Vertices[i + 1, j]);
                 }
             }
-
             return Norm;
         }
 
@@ -256,7 +255,13 @@ namespace DiplomovaPracaLB
             //normalove vektory su pocitane pre vsetky stvorceky, kt pocet je v danom smere o 1 menej ako bodov
             Vector3 u = V10 - V00;
             Vector3 v = V01 - V00;
-            Vector3 c = Vector3.Cross(v, u);
+            Vector3 c = Vector3.Cross(u, v);
+            //niekedy su vrcholy usporiadane zostupne a niekedy opacne v datasete, ale chcem aby normaly smerovali "hore. nemam taky pripad datasetu, ze by tam boli previsy
+            //test, ci zvieraju ostry uhol, tj ked skal.sucin je >0 (ked =0, tak je jedno)
+            if(Vector3.Dot(c, Vector3.UnitZ)<0)
+            {
+                c = Vector3.Cross(v, u);
+            }
             c.Normalize();
             return c;
         }
