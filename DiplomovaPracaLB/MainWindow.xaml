@@ -20,11 +20,11 @@
             <RowDefinition/>
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBox x:Name="TextBox1" Grid.Column="1" HorizontalAlignment="Left" Margin="10,42,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="TextBox1" HorizontalAlignment="Left" Margin="1180,44,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="310" Height="83" Grid.ColumnSpan="2"/>
         <Border BorderBrush="#FFC4CDC1" BorderThickness="4" Margin="20,20,20,0" CornerRadius="4" ClipToBounds="True">
             <WindowsFormsHost Initialized="WindowsFormsHost_Initialized" Grid.Column="0" Grid.Row="0" Grid.RowSpan="1"/>
         </Border>
-        <Button Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="144,92,0,0" Click="Button_Click">Button</Button>
+        <Button Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,373,0,0" Click="Button_Click">Button</Button>
 
         <StackPanel Height="165" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="20,20,20,20">
             <StackPanel.Resources>
@@ -119,7 +119,7 @@
 
             <Border>
                 <Canvas Width="310" Background="Transparent">
-                    
+
                     <TextBlock Canvas.Left="10" Canvas.Top="10">Režim zobrazenia terénu</TextBlock>
                     <Grid Canvas.Top="45" Canvas.Left="25">
                         <Grid.ColumnDefinitions>
@@ -174,7 +174,7 @@
                             </Button.Resources>
                         </Button>
                     </Grid>
-                    
+
                     <Button x:Name="Button_ResetView" Width="120" Height="35" Click="Button_ResetView_Click" Content="Resetuj pohľad" HorizontalContentAlignment="Center" Canvas.Left="90" Canvas.Bottom="20">
                         <Button.Resources>
                             <Style TargetType="Border">
@@ -229,17 +229,17 @@
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30"/>
-                        </Grid.RowDefinitions>  
-                            <Grid.Resources>
-                                <Style TargetType="{x:Type Border}">
-                                    <Setter Property="Margin" Value="1,1,1,1"/>
-                                    <Setter Property="ClipToBounds" Value="True"/>
-                                    <Setter Property="CornerRadius" Value="4"/>
-                                    <Setter Property="Background" Value="#FF607560"/>
-                                    <Setter Property="BorderBrush" Value="#FF475448"/>
-                                    <Setter Property="BorderThickness" Value="0.8"/>
-                                </Style>
-                                <Style TargetType="{x:Type Button}">
+                        </Grid.RowDefinitions>
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="Margin" Value="1,1,1,1"/>
+                                <Setter Property="ClipToBounds" Value="True"/>
+                                <Setter Property="CornerRadius" Value="4"/>
+                                <Setter Property="Background" Value="#FF607560"/>
+                                <Setter Property="BorderBrush" Value="#FF475448"/>
+                                <Setter Property="BorderThickness" Value="0.8"/>
+                            </Style>
+                            <Style TargetType="{x:Type Button}">
                                 <Setter Property="BorderBrush" Value="#FF47544B"/>
                                 <Setter Property="Background" Value="#80FFFFFF"/>
                                 <Setter Property="Margin" Value="1,1,1,1"/>
@@ -262,8 +262,10 @@
 
         </StackPanel>
 
-        <TextBox x:Name="TextBox2" Grid.Column="1" HorizontalAlignment="Left" Margin="10,67,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="120"/>
-        <TextBox x:Name="TextBox3" Grid.Column="1" HorizontalAlignment="Left" Margin="10,92,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="TextBox2" HorizontalAlignment="Left" Margin="1180,132,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="320" Grid.ColumnSpan="2" Height="125"/>
+        <TextBox x:Name="TextBox3" HorizontalAlignment="Left" Margin="1180,276,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="310" Grid.ColumnSpan="2" Height="74"/>
+        <Slider x:Name="Slider1" Grid.Column="1" HorizontalAlignment="Center" Margin="0,478,0,0" VerticalAlignment="Top" Width="280" Maximum="50" TickFrequency="-2" ValueChanged="Slider_ValueChanged" Minimum="-50"/>
+        <Slider x:Name="Slider2" Grid.Column="1" HorizontalAlignment="Center" Margin="0,518,0,0" VerticalAlignment="Top" Width="280" Maximum="50" ValueChanged="Slider2_ValueChanged" Minimum="-50"/>
 
 
     </Grid>

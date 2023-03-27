@@ -36,8 +36,8 @@ namespace DiplomovaPracaLB
 
         //light settings
         float[] light_ambient, light_diffuse, light_specular;
-        float light_dist = 8.0f, light_r = 10.0f /*100*/, light_eps = 1.0f, default_dist = 4.8f;
-        float[] light_position = { 1.0f, 1.0f, 1.0f };
+        float light_dist = -10.0f, light_r = 50.0f, light_eps = -1.0f, default_dist = 4.8f;
+        float[] light_position;
         float[][] LightPositionsAboveModelHemiSphere;
 
         //UI settings
@@ -173,6 +173,22 @@ namespace DiplomovaPracaLB
             GL.Enable(EnableCap.PointSmooth);
 
             // illumination
+
+            //pozicie
+            float s = 0.7071067811865475244f;
+            LightPositionsAboveModelHemiSphere = new float[][] {
+               new float[3] {  s * light_r, -s * light_r, light_dist},
+               new float[3] {         0.0f,     -light_r, light_dist},
+               new float[3] { -s * light_r, -s * light_r, light_dist},
+               new float[3] {      light_r,         0.0f, light_dist},
+               new float[3] {         0.0f,         0.0f, light_dist + light_r*light_eps},
+               new float[3] {      -light_r,         0.0f, light_dist},
+               new float[3] {  s * light_r,  s * light_r, light_dist},
+               new float[3] {         0.0f,      light_r, light_dist},
+               new float[3] { -s * light_r,  s * light_r, light_dist}
+            };
+            light_position = LightPositionsAboveModelHemiSphere[6];
+
             light_ambient = new float[] { 0.9f, 0.9f, 0.9f, 1.0f };
             light_diffuse = new float[] { 0.5f, 0.5f, 0.5f, 1.0f };
             light_specular = new float[] { 0.2f, 0.2f, 0.2f, 0.8f };
@@ -184,18 +200,7 @@ namespace DiplomovaPracaLB
             GL.Light(LightName.Light0, LightParameter.Position, light_position);
             GL.Enable(EnableCap.Light0);
 
-            float s = 0.7071067811865475244f;
-            LightPositionsAboveModelHemiSphere = new float[][] {
-                new float[3] { -s * light_r,  s * light_r, light_dist},
-                new float[3] {         0.0f,      light_r, light_dist},
-                new float[3] {  s * light_r,  s * light_r, light_dist},
-                new float[3] {    - light_r,         0.0f, light_dist},
-                new float[3] {         0.0f,         0.0f, light_dist + light_r*light_eps},
-                new float[3] {      light_r,         0.0f, light_dist},
-                new float[3] { -s * light_r, -s * light_r, light_dist},
-                new float[3] {         0.0f,     -light_r, light_dist},
-                new float[3] {  s * light_r, -s * light_r, light_dist}
-            };
+           
 
             // parameters for the camera
             Phi = -0.6f; Theta = 0.3f; Dist = default_dist;
@@ -239,6 +244,7 @@ namespace DiplomovaPracaLB
             if (show_Axes) DrawAxes();
             if (show_Points) DrawPoints(DisplayedTerrain.InputDataPoints);
             if (show_Wireframe) DrawWireframe(DisplayedTerrain.InterpolationPoints);
+            DrawNormals(DisplayedTerrain.InterpolationPoints, DisplayedTerrain.Normals);
             //DrawPositionLight();
 
             GL.Enable(EnableCap.Lighting);
@@ -253,11 +259,34 @@ namespace DiplomovaPracaLB
             glControl.SwapBuffers();
 
             //testovacie
-            TextBox1.Text = "m:" + ActivePoint_m_index.ToString();
-            TextBox2.Text = "n:" + ActivePoint_n_index.ToString();
+            float[] tst = new float[3];
+            GL.GetLight(LightName.Light0, LightParameter.Position, tst);
+            TextBox1.Text = tst[0] + " " + tst[1] + " " + tst[2];
+            TextBox2.Text = light_position[0] + " " + light_position[1] + " " + light_position[2];
+            TextBox3.Text = DisplayedTerrain.InputDataPoints[0,0].X.ToString() + " " + DisplayedTerrain.InputDataPoints[0, 0].Y.ToString() + " " + DisplayedTerrain.InputDataPoints[0, 0].Z.ToString();
 
         }
 
+        public void DrawNormals(Vector3[,] Vertices, Vector3[,] Normals)
+        {
+            float[] line_color = { 1.0f, 0.0f, 0.4f };
+
+            int M = Vertices.GetLength(0) - 1;
+            int N = Vertices.GetLength(1) - 1;
+
+            GL.Begin(PrimitiveType.Lines);
+            GL.Color3(line_color);
+            for (int j = 0; j < N; j++)
+            {
+                for (int i = 0; i < M; i++)
+                {
+                    Vector3 stred = (Vertices[i,j]+ Vertices[i+1, j]+ Vertices[i, j+1]+Vertices[i+1, j+1])/4;
+                    GL.Vertex3(SaT(stred));
+                    GL.Vertex3(SaT(stred + 10*Normals[i, j]));
+                }
+            }
+            GL.End();
+        }
 
         public void DrawPositionLight()
         {
@@ -516,6 +545,48 @@ namespace DiplomovaPracaLB
                 show_Wireframe = true;
                 Button_ShowWireframe.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
             }
+            glControl.Invalidate();
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            float slidervalue = (float)Slider1.Value;
+            light_r = slidervalue;
+            float s = 0.7071067811865475244f;
+            LightPositionsAboveModelHemiSphere = new float[][] {
+               new float[3] {  s * light_r, -s * light_r, light_dist},
+               new float[3] {         0.0f,     -light_r, light_dist},
+               new float[3] { -s * light_r, -s * light_r, light_dist},
+               new float[3] {      light_r,         0.0f, light_dist},
+               new float[3] {         0.0f,         0.0f, light_dist + light_r*light_eps},
+               new float[3] {      -light_r,         0.0f, light_dist},
+               new float[3] {  s * light_r,  s * light_r, light_dist},
+               new float[3] {         0.0f,      light_r, light_dist},
+               new float[3] { -s * light_r,  s * light_r, light_dist}
+            };
+            light_position = LightPositionsAboveModelHemiSphere[6];
+            GL.Light(LightName.Light0, LightParameter.Position, light_position);
+            glControl.Invalidate();
+        }
+
+        private void Slider2_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            float slidervalue = (float)Slider2.Value;
+            light_dist = slidervalue;
+            float s = 0.7071067811865475244f;
+            LightPositionsAboveModelHemiSphere = new float[][] {
+               new float[3] {  s * light_r, -s * light_r, light_dist},
+               new float[3] {         0.0f,     -light_r, light_dist},
+               new float[3] { -s * light_r, -s * light_r, light_dist},
+               new float[3] {      light_r,         0.0f, light_dist},
+               new float[3] {         0.0f,         0.0f, light_dist + light_r*light_eps},
+               new float[3] {      -light_r,         0.0f, light_dist},
+               new float[3] {  s * light_r,  s * light_r, light_dist},
+               new float[3] {         0.0f,      light_r, light_dist},
+               new float[3] { -s * light_r,  s * light_r, light_dist}
+            };
+            light_position = LightPositionsAboveModelHemiSphere[6];
+            GL.Light(LightName.Light0, LightParameter.Position, light_position);
             glControl.Invalidate();
         }
 
