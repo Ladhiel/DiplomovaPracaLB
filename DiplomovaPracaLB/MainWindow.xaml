@@ -265,7 +265,6 @@
         <TextBox x:Name="TextBox2" HorizontalAlignment="Left" Margin="1180,132,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="320" Grid.ColumnSpan="2" Height="125"/>
         <TextBox x:Name="TextBox3" HorizontalAlignment="Left" Margin="1180,276,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="310" Grid.ColumnSpan="2" Height="74"/>
         <Slider x:Name="Slider1" Grid.Column="1" HorizontalAlignment="Center" Margin="0,478,0,0" VerticalAlignment="Top" Width="280" Maximum="50" TickFrequency="-2" ValueChanged="Slider_ValueChanged" Minimum="-50"/>
-        <Slider x:Name="Slider2" Grid.Column="1" HorizontalAlignment="Center" Margin="0,518,0,0" VerticalAlignment="Top" Width="280" Maximum="50" ValueChanged="Slider2_ValueChanged" Minimum="-50"/>
 
 
     </Grid>

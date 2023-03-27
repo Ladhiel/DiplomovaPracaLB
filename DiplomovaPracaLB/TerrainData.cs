@@ -245,7 +245,6 @@ namespace DiplomovaPracaLB
                 for (int j = 0; j < n - 1; j++)
                 {
                     Norm[i, j] = ComputeNormalVectorInPoint(Vertices[i, j], Vertices[i, j + 1], Vertices[i + 1, j]);
-                    Norm[i, j].Normalize();
                 }
             }
 
@@ -257,7 +256,7 @@ namespace DiplomovaPracaLB
             //normalove vektory su pocitane pre vsetky stvorceky, kt pocet je v danom smere o 1 menej ako bodov
             Vector3 u = V10 - V00;
             Vector3 v = V01 - V00;
-            Vector3 c = Vector3.Cross(u, v);
+            Vector3 c = Vector3.Cross(v, u);
             c.Normalize();
             return c;
         }

@@ -36,7 +36,7 @@ namespace DiplomovaPracaLB
 
         //light settings
         float[] light_ambient, light_diffuse, light_specular;
-        float light_dist = -10.0f, light_r = 50.0f, light_eps = -1.0f, default_dist = 4.8f;
+        float light_dist = 15.0f, light_r = 35.0f, light_eps = 1.0f, default_dist = 4.8f;
         float[] light_position;
         float[][] LightPositionsAboveModelHemiSphere;
 
@@ -177,30 +177,26 @@ namespace DiplomovaPracaLB
             //pozicie
             float s = 0.7071067811865475244f;
             LightPositionsAboveModelHemiSphere = new float[][] {
-               new float[3] {  s * light_r, -s * light_r, light_dist},
-               new float[3] {         0.0f,     -light_r, light_dist},
-               new float[3] { -s * light_r, -s * light_r, light_dist},
-               new float[3] {      light_r,         0.0f, light_dist},
-               new float[3] {         0.0f,         0.0f, light_dist + light_r*light_eps},
-               new float[3] {      -light_r,         0.0f, light_dist},
-               new float[3] {  s * light_r,  s * light_r, light_dist},
+               new float[3] { -s * light_r, s * light_r, light_dist},
                new float[3] {         0.0f,      light_r, light_dist},
-               new float[3] { -s * light_r,  s * light_r, light_dist}
+               new float[3] {  s * light_r,  s * light_r, light_dist},
+               new float[3] {     -light_r,         0.0f, light_dist},
+               new float[3] {         0.0f,         0.0f, light_dist + light_r*light_eps},
+               new float[3] {      light_r,         0.0f, light_dist},
+               new float[3] { -s * light_r, -s * light_r, light_dist},
+               new float[3] {         0.0f,     -light_r, light_dist},
+               new float[3] {  s * light_r, -s * light_r, light_dist}
             };
-            light_position = LightPositionsAboveModelHemiSphere[6];
 
-            light_ambient = new float[] { 0.9f, 0.9f, 0.9f, 1.0f };
-            light_diffuse = new float[] { 0.5f, 0.5f, 0.5f, 1.0f };
-            light_specular = new float[] { 0.2f, 0.2f, 0.2f, 0.8f };
+            light_ambient = new float[] { 0.8f, 0.8f, 0.8f, 1.0f };
+            light_diffuse = new float[] { 0.4f, 0.4f, 0.3f, 1.0f };
+            light_specular = new float[] { 0.2f, 0.2f, 0.2f, 1.0f };
 
             GL.Light(LightName.Light0, LightParameter.Ambient, light_ambient);
             GL.Light(LightName.Light0, LightParameter.Diffuse, light_diffuse);
             GL.Light(LightName.Light0, LightParameter.Specular, light_specular);
             GL.Light(LightName.Light0, LightParameter.ConstantAttenuation, 1.0f);
-            GL.Light(LightName.Light0, LightParameter.Position, light_position);
             GL.Enable(EnableCap.Light0);
-
-           
 
             // parameters for the camera
             Phi = -0.6f; Theta = 0.3f; Dist = default_dist;
@@ -220,6 +216,8 @@ namespace DiplomovaPracaLB
             {
                 MessageBox.Show("Počet výškových hodnôt legendy musí byť o 1 menší ako počet farieb v legende. Program sa skončí.");
             }
+            
+
         }
 
         // drawing 
@@ -244,7 +242,7 @@ namespace DiplomovaPracaLB
             if (show_Axes) DrawAxes();
             if (show_Points) DrawPoints(DisplayedTerrain.InputDataPoints);
             if (show_Wireframe) DrawWireframe(DisplayedTerrain.InterpolationPoints);
-            DrawNormals(DisplayedTerrain.InterpolationPoints, DisplayedTerrain.Normals);
+            //DrawNormals(DisplayedTerrain.InterpolationPoints, DisplayedTerrain.Normals);
             //DrawPositionLight();
 
             GL.Enable(EnableCap.Lighting);
@@ -551,44 +549,25 @@ namespace DiplomovaPracaLB
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             float slidervalue = (float)Slider1.Value;
-            light_r = slidervalue;
+            light_eps = slidervalue;
             float s = 0.7071067811865475244f;
             LightPositionsAboveModelHemiSphere = new float[][] {
-               new float[3] {  s * light_r, -s * light_r, light_dist},
-               new float[3] {         0.0f,     -light_r, light_dist},
-               new float[3] { -s * light_r, -s * light_r, light_dist},
-               new float[3] {      light_r,         0.0f, light_dist},
-               new float[3] {         0.0f,         0.0f, light_dist + light_r*light_eps},
-               new float[3] {      -light_r,         0.0f, light_dist},
-               new float[3] {  s * light_r,  s * light_r, light_dist},
+               new float[3] { -s * light_r, s * light_r, light_dist},
                new float[3] {         0.0f,      light_r, light_dist},
-               new float[3] { -s * light_r,  s * light_r, light_dist}
+               new float[3] {  s * light_r,  s * light_r, light_dist},
+               new float[3] {     -light_r,         0.0f, light_dist},
+               new float[3] {         0.0f,         0.0f, light_dist},
+               new float[3] {      light_r,         0.0f, light_dist},
+               new float[3] { -s * light_r, -s * light_r, light_dist},
+               new float[3] {         0.0f,     -light_r, light_dist},
+               new float[3] {  s * light_r, -s * light_r, light_dist}
             };
-            light_position = LightPositionsAboveModelHemiSphere[6];
+            light_position = LightPositionsAboveModelHemiSphere[4];
             GL.Light(LightName.Light0, LightParameter.Position, light_position);
             glControl.Invalidate();
         }
 
-        private void Slider2_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            float slidervalue = (float)Slider2.Value;
-            light_dist = slidervalue;
-            float s = 0.7071067811865475244f;
-            LightPositionsAboveModelHemiSphere = new float[][] {
-               new float[3] {  s * light_r, -s * light_r, light_dist},
-               new float[3] {         0.0f,     -light_r, light_dist},
-               new float[3] { -s * light_r, -s * light_r, light_dist},
-               new float[3] {      light_r,         0.0f, light_dist},
-               new float[3] {         0.0f,         0.0f, light_dist + light_r*light_eps},
-               new float[3] {      -light_r,         0.0f, light_dist},
-               new float[3] {  s * light_r,  s * light_r, light_dist},
-               new float[3] {         0.0f,      light_r, light_dist},
-               new float[3] { -s * light_r,  s * light_r, light_dist}
-            };
-            light_position = LightPositionsAboveModelHemiSphere[6];
-            GL.Light(LightName.Light0, LightParameter.Position, light_position);
-            glControl.Invalidate();
-        }
+       
 
         private void Button_ShowQuads_Click(object sender, RoutedEventArgs e)
         {
@@ -652,9 +631,11 @@ namespace DiplomovaPracaLB
         private void Slider_ChangeLightIntensity(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             float slider_value = (float)(Slider_LightIntensity.Value / 100);  //intenzita v percentach
+            float[] ls = new float[] { light_specular[0] * slider_value, light_specular[1] * slider_value, light_specular[2] * slider_value, 1.0f };
+            slider_value = (float)Math.Sqrt(slider_value);
             float[] la = new float[] { light_ambient[0] * slider_value, light_ambient[1] * slider_value, light_ambient[2] * slider_value, 1.0f };
             float[] ld = new float[] { light_diffuse[0] * slider_value, light_diffuse[1] * slider_value, light_diffuse[2] * slider_value, 1.0f };
-            float[] ls = new float[] { light_specular[0] * slider_value, light_specular[1] * slider_value, light_specular[2] * slider_value, 0.8f };
+
             GL.Light(LightName.Light0, LightParameter.Ambient, la);
             GL.Light(LightName.Light0, LightParameter.Diffuse, ld);
             GL.Light(LightName.Light0, LightParameter.Specular, ls);
@@ -666,9 +647,11 @@ namespace DiplomovaPracaLB
             string s = (sender as RadioButton).Name;
             int i = int.Parse(s.Substring(s.Length - 1)) - 1;   //posledny znak v nazve je indexpozicie
 
+
             light_position = LightPositionsAboveModelHemiSphere[i];
             GL.Light(LightName.Light0, LightParameter.Position, light_position);
             glControl.Invalidate();
+            Console.WriteLine(LightPositionsAboveModelHemiSphere[0][0] + " " + LightPositionsAboveModelHemiSphere[0][1] + " " + LightPositionsAboveModelHemiSphere[0][2]);
         }
 
         private void RadioButton_ShadingFlat_Checked(object sender, RoutedEventArgs e)
