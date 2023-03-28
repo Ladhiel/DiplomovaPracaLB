@@ -26,13 +26,14 @@ using System.Dynamic;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Runtime.InteropServices.WindowsRuntime;
 
+
 namespace DiplomovaPracaLB
 {
     /// <summary>
     /// V Intrepolated Points budu data v pravidelnej mrieyke, zoradene (TODO: pridat triedu pre nepravidelne data)
     /// </summary>
 
-    public enum typInterpolacie
+    public enum TypInterpolacie
     {
         NEINTERPOLUJ,
         CATMULLROM,
@@ -40,7 +41,7 @@ namespace DiplomovaPracaLB
         TypB
     };
 
-    public class TerrainData
+    public abstract class TerrainData
     {
         public Vector3[,] InputDataPoints;      //body na vstupe
         public Vector3[,] InterpolationPoints;  //body vyslednej plochy = jemne vzorkovanie
@@ -49,9 +50,9 @@ namespace DiplomovaPracaLB
 
         public Vector3 posunutie;
         public Matrix3 skalovanie;
-        private typInterpolacie selectedInterpolationType;
+        private TypInterpolacie selectedInterpolationType;
 
-        protected void Inicialize(typInterpolacie _typInterpolacie, int LOD) //1. inicialzuje sa materska klasa, 2. inicializuje sa dcerska klasa, 3. do inicializacie dcery vlozim tuto funkciu - su v nej veci an vykonanie na konci kazdeh Terrain Data
+        protected void Inicialize(TypInterpolacie _TypInterpolacie, int LOD) //1. inicialzuje sa materska klasa, 2. inicializuje sa dcerska klasa, 3. do inicializacie dcery vlozim tuto funkciu - su v nej veci an vykonanie na konci kazdeh Terrain Data
         {
             //InputDataPoints su uz nacitane z dcerskej triedy
 
@@ -62,8 +63,8 @@ namespace DiplomovaPracaLB
 
             FindExtremalCoordinates();
 
-            selectedInterpolationType = _typInterpolacie;
-            InterpolationPoints = Interpoluj(_typInterpolacie, InputDataPoints, LOD);
+            selectedInterpolationType = _TypInterpolacie;
+            InterpolationPoints = Interpoluj(_TypInterpolacie, InputDataPoints, LOD);
             Normals = ComputeNormals(InterpolationPoints);
         }
 
@@ -115,11 +116,11 @@ namespace DiplomovaPracaLB
             Normals = ComputeNormals(InterpolationPoints);
         }
 
-        private Vector3[,] Interpoluj(typInterpolacie _typ, Vector3[,] Vstup, int LOD)
+        private Vector3[,] Interpoluj(TypInterpolacie _typ, Vector3[,] Vstup, int LOD)
         {
             Vector3[,] IP = new Vector3[m, n];
 
-            if (_typ == typInterpolacie.CATMULLROM)   //catmull+ bilinearny Coons pre kazdy stvorcek
+            if (_typ == TypInterpolacie.CATMULLROM)   //catmull+ bilinearny Coons pre kazdy stvorcek
             {
                 //TODO hermitov splajn sa da spravit pyramidovo, teda rychlejsie a lepsie
 

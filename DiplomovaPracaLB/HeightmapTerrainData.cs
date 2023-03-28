@@ -31,7 +31,7 @@ namespace DiplomovaPracaLB
         byte[,] Heightmap;
 
 
-        public HeightmapTerrainData(typInterpolacie _typInterpolacie, int LOD, string file_name)
+        public HeightmapTerrainData(TypInterpolacie _typInterpolacie, int LOD, string file_name)
         {
 
             Heightmap = LoadHeightmap(file_name);

@@ -36,7 +36,7 @@ namespace DiplomovaPracaLB
 
         //light settings
         float[] light_ambient, light_diffuse, light_specular;
-        float light_dist = 15.0f, light_r = 35.0f, light_eps = 1.0f, default_dist = 4.8f;
+        float light_dist = 15.0f, light_r = 35.0f, default_dist = 4.8f;
         float[] light_position;
         float[][] LightPositionsAboveModelHemiSphere;
 
@@ -80,7 +80,7 @@ namespace DiplomovaPracaLB
             //Spracovanie
             // TerrainData MatlabDataSet1 = new MatlabTerrainData(typInterpolacie.NEINTERPOLUJ,LevelOfDetail, "TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
             //TerrainData  HeightmapData1 = new HeightmapTerrainData( typInterpolacie.CATMULLROM, LevelOfDetail, "HeightmapSmaller.png");
-            TerrainData GeoTiff1 = new GeoTiffTerrainData(typInterpolacie.CATMULLROM, LevelOfDetail, "2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
+            TerrainData GeoTiff1 = new GeoTiffTerrainData(TypInterpolacie.CATMULLROM, LevelOfDetail, "2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
 
             //Ktory sa ma zobrazit
             //DisplayedTerrain = MatlabDataSet1;
@@ -181,7 +181,7 @@ namespace DiplomovaPracaLB
                new float[3] {         0.0f,      light_r, light_dist},
                new float[3] {  s * light_r,  s * light_r, light_dist},
                new float[3] {     -light_r,         0.0f, light_dist},
-               new float[3] {         0.0f,         0.0f, light_dist + light_r*light_eps},
+               new float[3] {         0.0f,         0.0f, light_dist + light_r},
                new float[3] {      light_r,         0.0f, light_dist},
                new float[3] { -s * light_r, -s * light_r, light_dist},
                new float[3] {         0.0f,     -light_r, light_dist},
@@ -548,23 +548,7 @@ namespace DiplomovaPracaLB
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            float slidervalue = (float)Slider1.Value;
-            light_eps = slidervalue;
-            float s = 0.7071067811865475244f;
-            LightPositionsAboveModelHemiSphere = new float[][] {
-               new float[3] { -s * light_r, s * light_r, light_dist},
-               new float[3] {         0.0f,      light_r, light_dist},
-               new float[3] {  s * light_r,  s * light_r, light_dist},
-               new float[3] {     -light_r,         0.0f, light_dist},
-               new float[3] {         0.0f,         0.0f, light_dist},
-               new float[3] {      light_r,         0.0f, light_dist},
-               new float[3] { -s * light_r, -s * light_r, light_dist},
-               new float[3] {         0.0f,     -light_r, light_dist},
-               new float[3] {  s * light_r, -s * light_r, light_dist}
-            };
-            light_position = LightPositionsAboveModelHemiSphere[4];
-            GL.Light(LightName.Light0, LightParameter.Position, light_position);
-            glControl.Invalidate();
+            
         }
 
        
@@ -788,6 +772,6 @@ namespace DiplomovaPracaLB
         {
             //naskaluje viewport na velkost zaciatocneho okna
             GL.Viewport(0, 0, glControl.Width, glControl.Height);
-        }
+        }        
     }
 }

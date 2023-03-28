@@ -28,7 +28,7 @@ namespace DiplomovaPracaLB
 
     public class MatlabTerrainData : TerrainData
     {
-        public MatlabTerrainData(typInterpolacie _typInterpolacie, int LOD, string file_name, int hmap_num_patterns)
+        public MatlabTerrainData(TypInterpolacie _typInterpolacie, int LOD, string file_name, int hmap_num_patterns)
         {
             m = hmap_num_patterns + 1;
             n = hmap_num_patterns + 1;

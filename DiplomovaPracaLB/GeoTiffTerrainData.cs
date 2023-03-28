@@ -29,7 +29,7 @@ namespace DiplomovaPracaLB
 
     public class GeoTiffTerrainData : TerrainData
     {
-        public GeoTiffTerrainData(typInterpolacie _typInterpolacie, int LOD, string file_name, int num_of_tiles_x, int num_of_tiles_y)
+        public GeoTiffTerrainData(TypInterpolacie _typInterpolacie, int LOD, string file_name, int num_of_tiles_x, int num_of_tiles_y)
         {
 
             InputDataPoints = GeoTiffDataFromCSV(file_name, num_of_tiles_x, num_of_tiles_y);
@@ -42,9 +42,9 @@ namespace DiplomovaPracaLB
             Vector3[,] LD = new Vector3[num_of_tiles_x + 1, num_of_tiles_y + 1];
             StreamReader streamReader = new StreamReader(file_name);  //ma sa nachadzat v bin/Debug
 
-            string line = streamReader.ReadLine();  //prvy riadok nechcem, ak upravim kod matlabu, tak to mozem vymazat. obasuje "xyz"
+            streamReader.ReadLine();  //prvy riadok nechcem, ak upravim kod matlabu, tak to mozem vymazat. obasuje "xyz"
 
-            line = streamReader.ReadLine(); //az druhy riadok obsahuje suradnice
+            string line = streamReader.ReadLine(); //az druhy riadok obsahuje suradnice
                                             //while (line != null)  //z
             for (int j = 0; j < num_of_tiles_y + 1; j++)
             {
