@@ -86,7 +86,7 @@ namespace DiplomovaPracaLB
             return H;
         }
 
-        private Vector3[,] CreatePoints()
+        private Vector4[,] CreatePoints()
         {
 
             //idem tu vela prenasobovat, aby som dostala realne cisla udajov (v metroch)
@@ -94,7 +94,7 @@ namespace DiplomovaPracaLB
             //ale! pomer x a z treba zachovat, pretoze to bude dolezite pri detekcii spicov, hrebenov; kvoli stupaniu
 
 
-            Vector3[,] Points = new Vector3[m, n]; //to-be IterpolatedPoints
+            Vector4[,] Points = new Vector4[m, n]; //to-be IterpolatedPoints
 
             for (int j = 0; j < n; j++)
             {
@@ -110,8 +110,9 @@ namespace DiplomovaPracaLB
                     //double z = Heightmap[i, j] * (max_height - min_height) / (255 - 0) + min_height;          
                     float z = h;// * (100 -0) / (255 - 0) ;   //zatial to preskaluvavam do stvorca 100^3
                                 //Points[i, j] = new Vector3(i*samplingSize, j*samplingSize,z );
+                    float w = 1.0f; //zaciatocna vaha 
 
-                    Points[i, j] = new Vector3(i, j, z);
+                    Points[i, j] = new Vector4(i, j, z, w);
                 }
             }
 

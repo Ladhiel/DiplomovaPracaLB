@@ -36,16 +36,16 @@ namespace DiplomovaPracaLB
             Inicialize(_typInterpolacie, LOD);
         }
 
-        private Vector3[,] GeoTiffDataFromCSV(string file_name, int num_of_tiles_x, int num_of_tiles_y)
+        private Vector4[,] GeoTiffDataFromCSV(string file_name, int num_of_tiles_x, int num_of_tiles_y)
         {
             //TODO: SPRAVNE NACITANIE DAT. ODKIAL CERPAT DATA TAL, ABY BOLI PROPORCIE ZHODNE S REALITOU (a nie svtorcovy podorys, nech su vysky nad morom spravne v metroch)
-            Vector3[,] LD = new Vector3[num_of_tiles_x + 1, num_of_tiles_y + 1];
+            Vector4[,] LD = new Vector4[num_of_tiles_x + 1, num_of_tiles_y + 1];
             StreamReader streamReader = new StreamReader(file_name);  //ma sa nachadzat v bin/Debug
 
             streamReader.ReadLine();  //prvy riadok nechcem, ak upravim kod matlabu, tak to mozem vymazat. obasuje "xyz"
 
             string line = streamReader.ReadLine(); //az druhy riadok obsahuje suradnice
-                                            //while (line != null)  //z
+                                                   //while (line != null)  //z
             for (int j = 0; j < num_of_tiles_y + 1; j++)
             {
                 for (int i = 0; i < num_of_tiles_x + 1; i++)
@@ -60,12 +60,13 @@ namespace DiplomovaPracaLB
                         float x = float.Parse(coordinates[0]) * 10000;
                         float y = float.Parse(coordinates[1]) * 10000;
                         float z = float.Parse(coordinates[2]);
+                        float w = 1.0f; //zaciatocna vaha je 0
 
                         //x a y nie su metre, ale uhly treba ich prenasobit. lol
 
                         //Console.WriteLine(x + " " + y + " " + z);
 
-                        Vector3 pointCoordinates = new Vector3(x, y, z);
+                        Vector4 pointCoordinates = new Vector4(x, y, z, w);
 
                         LD[i, j] = pointCoordinates;
                     }

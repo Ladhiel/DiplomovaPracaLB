@@ -26,26 +26,8 @@ using System.Xml.Linq;
 
 namespace DiplomovaPracaLB
 {
-    public partial class MainWindow : Window
+    public partial class TerrainData
     {
-
-        public double c(double a, double b)
-        {
-            Matrix4 m4 = new Matrix4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-
-
-            Matrix M = new Matrix(1, 2, 3, 4, 5, 6);
-            Vector3 V = new Vector3(0, 1, 3);
-            /*
-            Vector3 R = M.tra M.Transform(V);
-            Vector4 v4 = new Vector4(0, 1, 2, 3);
-            m4[]
-            return a+b;
-            Vector3.Multiply()
-                Matrix.Multiply()
-            */
-        }
-
         public Vector4 MyMultiply(Vector4 v, Matrix4 M)
         {
             //vektor je riadok
@@ -88,6 +70,7 @@ namespace DiplomovaPracaLB
             Console.WriteLine("= " + u[0] + " " + u[1] + " " + u[2] + " " + u[3]);
             return u;   //vysledny je akoby stlpcovy
         }
+
         public Vector3 MyMultiply(Matrix3 M, Vector3 v)
         {
             //vektor je riadok
@@ -103,6 +86,14 @@ namespace DiplomovaPracaLB
             return u;   //vysledny je akoby stlpcovy
         }
 
+        public float MyMultiply(Vector3 u, Matrix3 M, Vector3 v)
+        {
+            //vysledok je cislo
+            Vector3 uM = MyMultiply(u, M);
+            float uMv = Vector3.Dot(uM, v); //skalarny sucin
+            return uMv;
+        }
+
         public float MyMultiply(Vector4 u, Matrix4 M, Vector4 v)
         {
             //vysledok je cislo
@@ -111,12 +102,14 @@ namespace DiplomovaPracaLB
             return uMv;
         }
 
-        public float MyMultiply(Vector3 u, Matrix3 M, Vector3 v)
+        public Matrix3 MyMultiply(Matrix3 M, Vector3 v0, Vector3 v1, Vector3 v2 )
         {
-            //vysledok je cislo
-            Vector3 uM = MyMultiply(u, M);
-            float uMv = Vector3.Dot(uM, v); //skalarny sucin
-            return uMv;
+            return Matrix3.Mult(M, new Matrix3(v0, v1, v2));
+        }
+
+        public Matrix4 MyMultiply(Matrix4 M, Vector4 v0, Vector4 v1, Vector4 v2, Vector4 v3)
+        {
+            return Matrix4.Mult(M, new Matrix4(v0, v1, v2, v3));
         }
 
         public void MyConsoleWriteOut(Vector3 v)

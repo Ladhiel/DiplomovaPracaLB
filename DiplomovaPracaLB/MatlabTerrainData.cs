@@ -40,9 +40,9 @@ namespace DiplomovaPracaLB
         }
 
 
-        private List<Vector3> MatlabDataLoadText(string file_name)
+        private List<Vector4> MatlabDataLoadText(string file_name)
         {
-            List<Vector3> LD = new List<Vector3>();
+            List<Vector4> LD = new List<Vector4>();
             StreamReader streamReader = new StreamReader(file_name);  //ma sa nachadzat v bin/Debug
 
             string line = streamReader.ReadLine();
@@ -57,9 +57,9 @@ namespace DiplomovaPracaLB
                     float x = float.Parse(coordinates[0]);
                     float y = float.Parse(coordinates[1]);
                     float z = float.Parse(coordinates[2]);
+                    float w = 1.0f;
 
-                    Vector3 pointCoordinates = new Vector3(x, y, z);
-
+                    Vector4 pointCoordinates = new Vector4(x, y, z, w);
 
                     LD.Add(pointCoordinates);
                 }
@@ -77,11 +77,11 @@ namespace DiplomovaPracaLB
         }
 
 
-        private Vector3[,] MatlabDataIntoGrid(List<Vector3> LD)
+        private Vector4[,] MatlabDataIntoGrid(List<Vector4> LD)
         {
 
             //Viem, ze matlab text subor ma 257*257 raidkov, kazdych 257 riadkov je jeden riadok v suradnici x pri pevnom y.
-            Vector3[,] PlanarGrid = new Vector3[m, n];
+            Vector4[,] PlanarGrid = new Vector4[m, n];
             int k = 0;
             for (int j = 0; j < n; j++)
             {
