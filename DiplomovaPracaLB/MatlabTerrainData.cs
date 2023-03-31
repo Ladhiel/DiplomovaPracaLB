@@ -25,16 +25,17 @@ using OpenTK.Graphics.OpenGL;
 
 namespace DiplomovaPracaLB
 {
-
+    
     public class MatlabTerrainData : TerrainData
     {
-        public MatlabTerrainData(TypInterpolacie _typInterpolacie, int LOD, string file_name, int hmap_num_patterns)
+        private int a, b;
+        public MatlabTerrainData(string file_name, int hmap_num_patterns)
         {
-            m = hmap_num_patterns + 1;
-            n = hmap_num_patterns + 1;
+            a = hmap_num_patterns + 1;
+            b = hmap_num_patterns + 1;
             InputDataPoints = MatlabDataIntoGrid(MatlabDataLoadText(file_name));
 
-            Inicialize(_typInterpolacie, LOD);
+            Initialize();
 
             //test zmeny na Gite
         }
@@ -81,11 +82,11 @@ namespace DiplomovaPracaLB
         {
 
             //Viem, ze matlab text subor ma 257*257 raidkov, kazdych 257 riadkov je jeden riadok v suradnici x pri pevnom y.
-            Vector4[,] PlanarGrid = new Vector4[m, n];
+            Vector4[,] PlanarGrid = new Vector4[a, b];
             int k = 0;
-            for (int j = 0; j < n; j++)
+            for (int j = 0; j < b; j++)
             {
-                for (int i = 0; i < m; i++)
+                for (int i = 0; i < a; i++)
                 {
                     PlanarGrid[i, j] = LD[k];
                     k++;

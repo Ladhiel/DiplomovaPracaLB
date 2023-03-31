@@ -26,14 +26,12 @@ using OpenTK.Graphics.OpenGL;
 
 namespace DiplomovaPracaLB
 {
-
     public class GeoTiffTerrainData : TerrainData
     {
-        public GeoTiffTerrainData(TypInterpolacie _typInterpolacie, int LOD, string file_name, int num_of_tiles_x, int num_of_tiles_y)
+        public GeoTiffTerrainData(string file_name, int num_of_tiles_x, int num_of_tiles_y)
         {
-
             InputDataPoints = GeoTiffDataFromCSV(file_name, num_of_tiles_x, num_of_tiles_y);
-            Inicialize(_typInterpolacie, LOD);
+            Initialize();
         }
 
         private Vector4[,] GeoTiffDataFromCSV(string file_name, int num_of_tiles_x, int num_of_tiles_y)
@@ -81,7 +79,5 @@ namespace DiplomovaPracaLB
 
             return LD;
         }
-
     }
-
 }

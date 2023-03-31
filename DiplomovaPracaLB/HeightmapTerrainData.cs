@@ -28,16 +28,14 @@ namespace DiplomovaPracaLB
 {
     public class HeightmapTerrainData : TerrainData
     {
-        byte[,] Heightmap;
-
-
-        public HeightmapTerrainData(TypInterpolacie _typInterpolacie, int LOD, string file_name)
+        private byte[,] Heightmap;
+        private int a, b;
+        public HeightmapTerrainData(string file_name)
         {
-
             Heightmap = LoadHeightmap(file_name);
             InputDataPoints = CreatePoints();
 
-            Inicialize(_typInterpolacie, LOD);
+            Initialize();
         }
 
         public byte[,] LoadHeightmap(string file_name)
@@ -64,15 +62,15 @@ namespace DiplomovaPracaLB
             int start_height = 0;
             int end_height = map.Height / 3;
 
-            m = end_width - start_width;
-            n = end_height - start_height;
+            a = end_width - start_width;
+            b = end_height - start_height;
 
 
-            byte[,] H = new byte[m, n]; //heightmapa
+            byte[,] H = new byte[a, b]; //heightmapa
 
-            for (int j = 0; j < n; j++)
+            for (int j = 0; j < b; j++)
             {
-                for (int i = 0; i < m; i++)
+                for (int i = 0; i < a; i++)
                 {
 
                     System.Drawing.Color color = map.GetPixel(start_width + i, start_height + j);
@@ -94,11 +92,11 @@ namespace DiplomovaPracaLB
             //ale! pomer x a z treba zachovat, pretoze to bude dolezite pri detekcii spicov, hrebenov; kvoli stupaniu
 
 
-            Vector4[,] Points = new Vector4[m, n]; //to-be IterpolatedPoints
+            Vector4[,] Points = new Vector4[a, b]; //to-be IterpolatedPoints
 
-            for (int j = 0; j < n; j++)
+            for (int j = 0; j < b; j++)
             {
-                for (int i = 0; i < m; i++)
+                for (int i = 0; i < a; i++)
                 {
 
                     //ked x1 po x2 su vzdialene o 1, predtavuje to 30 m
