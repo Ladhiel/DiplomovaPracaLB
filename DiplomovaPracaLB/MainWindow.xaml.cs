@@ -32,7 +32,7 @@ namespace DiplomovaPracaLB
         // mouse settings
         double RightX, RightY;
         bool IsRightDown, IsLeftDown;
-        int ActivePoint_m_index, ActivePoint_n_index;
+        public int ActivePoint_m_index, ActivePoint_n_index;
 
         //light settings
         float[] light_ambient, light_diffuse, light_specular;
@@ -46,12 +46,12 @@ namespace DiplomovaPracaLB
         float[][] FarebnaLegendaFarby;
         float pointsize;
         bool show_Axes, show_Points, show_Wireframe, show_Quads;
+        TypeOfShading selectedShadingType;
 
         //data
-        TerrainData DisplayedTerrain;
-        TypeOfShading selectedShadingType;
-        int LevelOfDetail;    //pocet bodov zjemnenia medzi 2 vstupnymi bodmi, LOD=0 su vstupne data, medzi 2 vstupmnymi bodmi bude LOD bodov
-
+        public int LevelOfDetail;    //pocet bodov zjemnenia medzi 2 vstupnymi bodmi, LOD=0 su vstupne data, medzi 2 vstupmnymi bodmi bude LOD bodov
+        public TerrainData DisplayedTerrain;
+        
         private enum TypeOfShading
         {
             FLAT,
@@ -60,12 +60,9 @@ namespace DiplomovaPracaLB
 
         public MainWindow()
         {
-            InitializeComponent();
-
             //UI:
             IsRightDown = false;
             IsLeftDown = false;
-
 
             //TU NASTAVIT CO SA CHCEME ZOBRAZIT
             show_Axes = false;
@@ -74,18 +71,21 @@ namespace DiplomovaPracaLB
             show_Quads = true;
 
             selectedShadingType = TypeOfShading.FLAT;
-            LevelOfDetail = 3;
-            TextBox_LOD.Text = LevelOfDetail.ToString();
 
             //Spracovanie
             // TerrainData MatlabDataSet1 = new MatlabTerrainData(typInterpolacie.NEINTERPOLUJ,LevelOfDetail, "TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
             //TerrainData  HeightmapData1 = new HeightmapTerrainData( typInterpolacie.CATMULLROM, LevelOfDetail, "HeightmapSmaller.png");
-            TerrainData GeoTiff1 = new GeoTiffTerrainData(TypInterpolacie.CATMULLROM, LevelOfDetail, "2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
+            TerrainData GeoTiff1 = new GeoTiffTerrainData("2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
 
             //Ktory sa ma zobrazit
             //DisplayedTerrain = MatlabDataSet1;
             //DisplayedTerrain = HeightmapData1;
             DisplayedTerrain = GeoTiff1;
+            LevelOfDetail = 3;
+
+            InitializeComponent();  //az teraz sa nacita okno
+            TextBox_LOD.Text = LevelOfDetail.ToString();
+            //TODO TextBox_Weight.Text = InputDataPoints[MW.ActivePoint_m_index, MW.ActivePoint_n_index].W.ToString();
 
 
         }
@@ -241,7 +241,7 @@ namespace DiplomovaPracaLB
             //TU SA KRESLIA PRIMITIVY BEZ MATERIALU
             if (show_Axes) DrawAxes();
             if (show_Points) DrawPoints(DisplayedTerrain.InputDataPoints);
-            if (show_Wireframe) DrawWireframe(DisplayedTerrain.InterpolationPoints);
+            if (show_Wireframe) DrawWireframe(DisplayedTerrain.GetInterpolationPoints());
             //DrawNormals(DisplayedTerrain.InterpolationPoints, DisplayedTerrain.Normals);
             //DrawPositionLight();
 
@@ -249,7 +249,7 @@ namespace DiplomovaPracaLB
             GL.Enable(EnableCap.DepthTest);
 
             //TU SA KRESLIA PRIMITIVY S MATERIALOM
-            if (show_Quads) DrawQuads(DisplayedTerrain.InterpolationPoints, DisplayedTerrain.Normals);
+            if (show_Quads) DrawQuads(DisplayedTerrain.GetInterpolationPoints(), DisplayedTerrain.GetNormals());
 
             GL.Disable(EnableCap.Lighting);
 
@@ -257,10 +257,6 @@ namespace DiplomovaPracaLB
             glControl.SwapBuffers();
 
             //testovacie
-            float[] tst = new float[3];
-            GL.GetLight(LightName.Light0, LightParameter.Position, tst);
-            TextBox1.Text = tst[0] + " " + tst[1] + " " + tst[2];
-            TextBox2.Text = light_position[0] + " " + light_position[1] + " " + light_position[2];
             TextBox3.Text = DisplayedTerrain.InputDataPoints[0, 0].X.ToString() + " " + DisplayedTerrain.InputDataPoints[0, 0].Y.ToString() + " " + DisplayedTerrain.InputDataPoints[0, 0].Z.ToString();
 
         }
@@ -521,6 +517,46 @@ namespace DiplomovaPracaLB
         //                                                     //
         /////////////////////////////////////////////////////////
 
+
+
+        private void Button_ResetThisWeight_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_ResetAllWeights_Click(object sender, RoutedEventArgs e)
+        {
+            //problem
+        }
+
+        private void TextBox_Weight_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)    //Enter
+            {
+                float new_weight;
+                try
+                {
+                    new_weight = float.Parse(TextBox_Weight.Text);
+                    if (Slider_Weight.Maximum >= new_weight && Slider_Weight.Minimum <= new_weight)
+                    {
+                        Slider_Weight.Value = new_weight;     //zmena sa iniciuje sliderom
+                    }
+                    else MessageBox.Show("Vstup mimo rozahu!");
+
+                }
+                catch
+                {
+                    MessageBox.Show("Nesprávny vstup!");
+                }
+            }
+        }
+
+        private void Slider_Weight_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            TextBox_Weight.Text = "";
+            //TODO TD.InputDataPoints[MW.ActivePoint_m_index, MW.ActivePoint_n_index].W = 1.0f;
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
@@ -597,6 +633,17 @@ namespace DiplomovaPracaLB
             glControl.Invalidate();
         }
 
+        private void RadioButton_SplajnKard_Checked(object sender, RoutedEventArgs e)
+        {
+            SplineParamFrame.Content = new Page_Kard(DisplayedTerrain, this);
+            //Zmaz Intepolaciu, resetuj vahy
+            //Nacitaj do SplineFrame Page_Kard
+            //
+            //s= 0.5
+            //Interpoluj Kardinalnym splajnom
+            
+        }
+
         private void TextBox_LOD_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)    //Enter
@@ -631,7 +678,6 @@ namespace DiplomovaPracaLB
             {
                 LevelOfDetail = new_LOD;
                 TextBox_LOD.Text = new_LOD.ToString();      //toto je len pre buttony; pre textbox sa nic nezmeni, ale lepsie prepisat na to iste, nez na zle a zase naspat.
-                //treba prepocitat navyorkovanie splajnu
                 DisplayedTerrain.ReInterpolate(new_LOD);
                 glControl.Invalidate();
             }
@@ -643,6 +689,7 @@ namespace DiplomovaPracaLB
 
         private void Slider_ChangeLightIntensity(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            
             float slider_value = (float)(Slider_LightIntensity.Value / 100);  //intenzita v percentach
             float[] ls = new float[] { light_specular[0] * slider_value, light_specular[1] * slider_value, light_specular[2] * slider_value, 1.0f };
             slider_value = (float)Math.Sqrt(slider_value);

@@ -5,17 +5,18 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:DiplomovaPracaLB"
       mc:Ignorable="d" 
+      FontFamily="Calibri" FontSize="15"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Page_Kard">
 
     <Grid>
-        <Canvas Grid.Row="1">
+        <Canvas>
             <StackPanel  Orientation="Horizontal" Canvas.Left="10" Canvas.Top="10" Height="35">
                 <TextBlock Text="Tension = " TextAlignment="Center"  VerticalAlignment="Center" />
                 <TextBox Name="TextBox_TensionValue" Text="0.5" TextAlignment="Center" VerticalContentAlignment="Center" Width="35" KeyDown="TextBox_TensionValue_KeyDown"/>
             </StackPanel>
-            <Slider x:Name="Slider_KardTension" Height="26" Width="200" ValueChanged="Slider_KardTension_Changed" Value="0.5" Maximum="10" Minimum="-10" TickFrequency="1" TickPlacement="BottomRight" Canvas.Left="10" Canvas.Top="50" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-            <Button x:Name="Button_CamtullRom" Width="120" Height="35" Click="Button_CatmullRom_Click" Content="Catmull-Rom" HorizontalContentAlignment="Center" Canvas.Left="10" Canvas.Top="81" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <Slider x:Name="Slider_KardTension" Height="26" Width="200" ValueChanged="Slider_KardTension_Changed" Value="0.5" Maximum="1.5" Minimum="0" TickFrequency="0.1" TickPlacement="BottomRight" Canvas.Left="10" Canvas.Top="50" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Button x:Name="Button_CamtullRom" Width="120" Height="35" Click="Button_CatmullRom_Click" Content="Catmull-Rom" HorizontalContentAlignment="Center" Canvas.Left="10" Canvas.Top="80" HorizontalAlignment="Center" VerticalAlignment="Top">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="4,4,4,4"/>
@@ -23,6 +24,8 @@
                     </Style>
                 </Button.Resources>
             </Button>
+
+            <StackPanel  Orientation="Horizontal" Canvas.Left="10" Canvas.Top="140" Height="35"/>
         </Canvas>
     </Grid>
 </Page>

@@ -26,7 +26,7 @@ using System.Xml.Linq;
 
 namespace DiplomovaPracaLB
 {
-    public partial class TerrainData
+    public partial class Splajn
     {
         public Vector4 MyMultiply(Vector4 v, Matrix4 M)
         {

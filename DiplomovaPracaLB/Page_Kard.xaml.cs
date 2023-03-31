@@ -30,17 +30,17 @@ namespace DiplomovaPracaLB
             MW = Hlavne_okno;
             TD = Displayed; //iba referencia na teren
             InitializeComponent();      //nacitanim hodnoty slidera sa spousti aj vykreslenie
-            
-            
         }
+
         private void ChangeTensionparameter(float new_tension)
         {
             TextBox_TensionValue.Text = new_tension.ToString();
 
             TD.UseKard(new_tension, MW.LevelOfDetail);
 
-            //prekresli spline
+            
         }
+
         private void Slider_KardTension_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             ChangeTensionparameter((float)e.NewValue);

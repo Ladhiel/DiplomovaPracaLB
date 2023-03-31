@@ -32,11 +32,51 @@
             </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="200"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
+            <Border Grid.Row="1" x:Name="Váhy" CornerRadius="0,0,0,0">
+                <Canvas>
+                    <TextBlock Grid.Row="0" Canvas.Left="10" Canvas.Top="10" FontWeight="Bold">Nastaviteľné parametre splajnu</TextBlock>
+                    <StackPanel  Orientation="Horizontal" Canvas.Left="20" Canvas.Top="40" Height="35">
+                        <TextBlock Text="Váha = " TextAlignment="Center"  VerticalAlignment="Center" />
+                        <TextBox Name="TextBox_Weight" Text="1" TextAlignment="Center" VerticalContentAlignment="Center" Width="35" KeyDown="TextBox_Weight_KeyDown"/>
+                    </StackPanel>
+                    <Slider x:Name="Slider_Weight" Height="26" Width="200" ValueChanged="Slider_Weight_Changed" Value="1.0" Maximum="20" Minimum="-20" TickFrequency="1" TickPlacement="BottomRight" Canvas.Left="20" Canvas.Top="80" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <Button x:Name="Button_ResetThisWeight" Width="120" Height="35" Click="Button_ResetThisWeight_Click" Content="Resetuj váhu" HorizontalContentAlignment="Center" Canvas.Left="20" Canvas.Top="110" HorizontalAlignment="Center" VerticalAlignment="Top">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="4,4,4,4"/>
+                                <Setter Property="BorderBrush" Value="#FF475448"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    <Button x:Name="Button_ResetAllWeights" Width="150" Height="35" Click="Button_ResetAllWeights_Click" Content="Resetuj všetky váhy" HorizontalContentAlignment="Center" Canvas.Left="20" Canvas.Top="150" HorizontalAlignment="Center" VerticalAlignment="Top">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="4,4,4,4"/>
+                                <Setter Property="BorderBrush" Value="#FF475448"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                       
+                </Canvas>
+            </Border>
+            <Border Grid.Row="2" x:Name="Parametre_pre_slidy" CornerRadius="0,0,4,4">
+                <Grid Margin="10,10,10,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" FontWeight="Bold">Nastaviteľné parametre splajnu</TextBlock>
+                    <Frame x:Name="SplineParamFrame" Grid.Row="1"  NavigationUIVisibility="Hidden"/>
+                    
+                </Grid>
+            </Border>
             <Border Grid.Row="0" x:Name="Tlačidlá_na_splajny" CornerRadius="4,4,0,0">
                 <StackPanel Margin="10,10,10,10">
-                    <TextBlock >Typ interpolačného splajnu</TextBlock>
+                    <TextBlock FontWeight="Bold" >Typ interpolačného splajnu</TextBlock>
                     <Grid Margin="10,10,10,10">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30"/>
@@ -67,18 +107,12 @@
                     </Grid>
                 </StackPanel>
             </Border>
-            <Border Grid.Row="1" x:Name="Parametre_pre_slidy" CornerRadius="0,0,4,4">
-                <Grid Margin="10,10,10,10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0">Nastaviteľné parametre splajnu</TextBlock>
-                    <Frame x:Name="SplineParamFrame" Grid.Row="1"  NavigationUIVisibility="Hidden" Margin="10,10,10,10"/>
-                    
-                </Grid>
-            </Border>
+            
         </Grid>
+
+        <Border Grid.Column="0" Grid.Row="0" BorderBrush="#FFC4CDC1" BorderThickness="4" Margin="20,20,00,00" CornerRadius="4" ClipToBounds="True">
+            <WindowsFormsHost Initialized="WindowsFormsHost_Initialized"/>
+        </Border>
 
         <StackPanel Height="165" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="20,20,20,20">
             <StackPanel.Resources>
@@ -89,9 +123,9 @@
                     <Setter Property="Background" Value="#FFC4CDC1"/>
                 </Style>
             </StackPanel.Resources>
-            <Border>
+            <Border x:Name="Osvetlenie">
                 <Canvas Width="240" Background="Transparent">
-                    <TextBlock Grid.Row="1" Canvas.Left="10" Canvas.Top="10">Osvetlenie</TextBlock>
+                    <TextBlock Grid.Row="1" Canvas.Left="10" Canvas.Top="10" FontWeight="Bold">Osvetlenie</TextBlock>
                     <Polygon Canvas.Bottom="10" Points="0,0 30,0 0,120" Canvas.Top="20" Canvas.Right="20">
                         <Polygon.Fill>
                             <LinearGradientBrush EndPoint="0.5,0" StartPoint="0.5,1">
@@ -170,11 +204,11 @@
                     </Grid>
                 </Canvas>
             </Border>
-            
-            <Border>
+
+            <Border x:Name="Zobrazenie">
                 <Canvas Width="310" Background="Transparent">
 
-                    <TextBlock Canvas.Left="10" Canvas.Top="10">Režim zobrazenia terénu</TextBlock>
+                    <TextBlock Canvas.Left="10" Canvas.Top="10" FontWeight="Bold">Režim zobrazenia terénu</TextBlock>
                     <Grid Canvas.Top="45" Canvas.Left="25">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="60"/>
@@ -239,9 +273,10 @@
                     </Button>
                 </Canvas>
             </Border>
-            <Border>
+
+            <Border x:Name="LevelDetailu">
                 <Canvas Width="180" Background="Transparent">
-                    <TextBlock Canvas.Left="10" Canvas.Top="10">Level detailov</TextBlock>
+                    <TextBlock Canvas.Left="10" Canvas.Top="10" FontWeight="Bold">Level detailov</TextBlock>
                     <Grid Canvas.Top="70" Canvas.Left="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="40"/>
@@ -272,10 +307,10 @@
                     </Grid>
                 </Canvas>
             </Border>
-            
-            <Border>
+
+            <Border x:Name="tienovanie">
                 <Canvas Width="220" Background="Transparent">
-                    <TextBlock Canvas.Left="10" Canvas.Top="10">Typ tieňovania</TextBlock>
+                    <TextBlock Canvas.Left="10" Canvas.Top="10" FontWeight="Bold">Typ tieňovania</TextBlock>
                     <Grid Canvas.Top="70" Canvas.Left="25">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="80"/>
@@ -312,15 +347,8 @@
                 </Canvas>
             </Border>
         </StackPanel>
-        <Border Grid.Column="0" Grid.Row="0" BorderBrush="#FFC4CDC1" BorderThickness="4" Margin="20,20,00,00" CornerRadius="4" ClipToBounds="True">
-            <WindowsFormsHost Initialized="WindowsFormsHost_Initialized"/>
-        </Border>
-
-        <TextBox x:Name="TextBox1" HorizontalAlignment="Left" Margin="1180,404,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="310" Height="83" Grid.ColumnSpan="2"/>
 
         <Button Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,54,0,0" Click="Button_Click" Grid.Row="1">Button</Button>
-
-        <TextBox x:Name="TextBox2" HorizontalAlignment="Left" Margin="1180,491,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="320" Grid.ColumnSpan="2" Height="125"/>
         <TextBox x:Name="TextBox3" HorizontalAlignment="Left" Margin="1180,637,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="310" Grid.ColumnSpan="2" Height="74" Grid.RowSpan="2"/>
         <Slider x:Name="Slider1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Width="280" Maximum="50" TickFrequency="-2" ValueChanged="Slider_ValueChanged" Minimum="-50" Grid.Row="1" Margin="0,160,0,0"/>
 
