@@ -37,12 +37,12 @@
             </Grid.RowDefinitions>
             <Border Grid.Row="1" x:Name="Váhy" CornerRadius="0,0,0,0">
                 <Canvas>
-                    <TextBlock Grid.Row="0" Canvas.Left="10" Canvas.Top="10" FontWeight="Bold">Nastaviteľné parametre splajnu</TextBlock>
+                    <TextBlock Grid.Row="0" Text="» Nastaviteľné parametre splajnu" Canvas.Top="10" Canvas.Left="28" TextAlignment="Right"/>
                     <StackPanel  Orientation="Horizontal" Canvas.Left="20" Canvas.Top="40" Height="35">
                         <TextBlock Text="Váha = " TextAlignment="Center"  VerticalAlignment="Center" />
-                        <TextBox Name="TextBox_Weight" Text="1" TextAlignment="Center" VerticalContentAlignment="Center" Width="35" KeyDown="TextBox_Weight_KeyDown"/>
+                        <TextBox Name="TextBox_Weight" Text="1" TextAlignment="Center" VerticalContentAlignment="Center" Width="70" KeyDown="TextBox_Weight_KeyDown"/>
                     </StackPanel>
-                    <Slider x:Name="Slider_Weight" Height="26" Width="200" ValueChanged="Slider_Weight_Changed" Value="1.0" Maximum="20" Minimum="-20" TickFrequency="1" TickPlacement="BottomRight" Canvas.Left="20" Canvas.Top="80" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <Slider x:Name="Slider_Weight" Height="26" Width="200" ValueChanged="Slider_Weight_Changed" Value="1.0" Maximum="1.001" Minimum="0.999" TickFrequency="0.001" TickPlacement="BottomRight" Canvas.Left="20" Canvas.Top="80" HorizontalAlignment="Center" VerticalAlignment="Top" SmallChange="0.00001" LargeChange="0.00001"/>
                     <Button x:Name="Button_ResetThisWeight" Width="120" Height="35" Click="Button_ResetThisWeight_Click" Content="Resetuj váhu" HorizontalContentAlignment="Center" Canvas.Left="20" Canvas.Top="110" HorizontalAlignment="Center" VerticalAlignment="Top">
                         <Button.Resources>
                             <Style TargetType="Border">
@@ -69,14 +69,14 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" FontWeight="Bold">Nastaviteľné parametre splajnu</TextBlock>
+                    <TextBlock Grid.Row="0" TextAlignment="Center">» Nastaviteľné parametre splajnu</TextBlock>
                     <Frame x:Name="SplineParamFrame" Grid.Row="1"  NavigationUIVisibility="Hidden"/>
                     
                 </Grid>
             </Border>
             <Border Grid.Row="0" x:Name="Tlačidlá_na_splajny" CornerRadius="4,4,0,0">
                 <StackPanel Margin="10,10,10,10">
-                    <TextBlock FontWeight="Bold" >Typ interpolačného splajnu</TextBlock>
+                    <TextBlock FontFamily="Calibri" TextAlignment="Center" >» Typ interpolačného splajnu</TextBlock>
                     <Grid Margin="10,10,10,10">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30"/>

@@ -58,7 +58,7 @@ namespace DiplomovaPracaLB
                         float x = float.Parse(coordinates[0]) * 10000;
                         float y = float.Parse(coordinates[1]) * 10000;
                         float z = float.Parse(coordinates[2]);
-                        float w = 1.0f; //zaciatocna vaha je 0
+                        float w = 1.0f; //zaciatocna vaha je 1
 
                         //x a y nie su metre, ale uhly treba ich prenasobit. lol
 

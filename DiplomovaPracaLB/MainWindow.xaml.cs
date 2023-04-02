@@ -32,7 +32,7 @@ namespace DiplomovaPracaLB
         // mouse settings
         double RightX, RightY;
         bool IsRightDown, IsLeftDown;
-        public int ActivePoint_m_index, ActivePoint_n_index;
+        public int ActivePoint_m_index = -1, ActivePoint_n_index = -1;
 
         //light settings
         float[] light_ambient, light_diffuse, light_specular;
@@ -41,17 +41,17 @@ namespace DiplomovaPracaLB
         float[][] LightPositionsAboveModelHemiSphere;
 
         //UI settings
-
+        int digits = 3;
         float[] FarebnaLegendaHodnoty;
         float[][] FarebnaLegendaFarby;
         float pointsize;
-        bool show_Axes, show_Points, show_Wireframe, show_Quads;
+        bool show_Axes, show_Points, show_Wireframe, show_Quads, do_not_recompute;
         TypeOfShading selectedShadingType;
 
         //data
         public int LevelOfDetail;    //pocet bodov zjemnenia medzi 2 vstupnymi bodmi, LOD=0 su vstupne data, medzi 2 vstupmnymi bodmi bude LOD bodov
         public TerrainData DisplayedTerrain;
-        
+
         private enum TypeOfShading
         {
             FLAT,
@@ -216,8 +216,6 @@ namespace DiplomovaPracaLB
             {
                 MessageBox.Show("Počet výškových hodnôt legendy musí byť o 1 menší ako počet farieb v legende. Program sa skončí.");
             }
-
-
         }
 
         // drawing 
@@ -243,6 +241,7 @@ namespace DiplomovaPracaLB
             if (show_Points) DrawPoints(DisplayedTerrain.InputDataPoints);
             if (show_Wireframe) DrawWireframe(DisplayedTerrain.GetInterpolationPoints());
             //DrawNormals(DisplayedTerrain.InterpolationPoints, DisplayedTerrain.Normals);
+            DrawActivePoint();
             //DrawPositionLight();
 
             GL.Enable(EnableCap.Lighting);
@@ -317,17 +316,20 @@ namespace DiplomovaPracaLB
             GL.End();
         }
 
-        private void DrawPickedPoint(Vector Vertex)
+        private void DrawActivePoint()
         {
             //kresli vybraty bod
-            Vector3 z_eps = new Vector3(0.0f, 0.0f, 1.85f);
-            GL.PointSize(2.0f * pointsize);
-            GL.Color3(0.85f, 0.53f, 0.10f); //highlight
-            GL.Begin(PrimitiveType.Points);
-            Vector3 picked = Rational(DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index]);
-            GL.Vertex3(SaT(picked + z_eps));
+            if (ActivePoint_m_index > 0) //na zaciatku ma hodnotu -1
+            {
+                Vector3 z_eps = new Vector3(0.0f, 0.0f, 1.85f);
+                GL.PointSize(2.0f * pointsize);
+                GL.Color3(0.85f, 0.53f, 0.10f); //highlight
+                GL.Begin(PrimitiveType.Points);
+                Vector3 activeP = Rational(DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index]);
+                GL.Vertex3(SaT(activeP + z_eps));
 
-            GL.End();
+                GL.End();
+            }
         }
 
         public void DrawWireframe(Vector4[,] Vertices)
@@ -447,17 +449,17 @@ namespace DiplomovaPracaLB
         public Vector3 Rational(Vector4 vertex)
         {
             //pred zobrazenim predelim vahou
-            if (vertex[3] == 0)
+            if (vertex.W == 0)
             {
                 MessageBox.Show("pozor, bod ma nulovu vahu");
                 return Vector3.Zero;
             }
-            if (vertex[3] == 1)
+            if (vertex.W == 1)
             {
-                return new Vector3(vertex);     //len za zabudne w-suradnica
+                return new Vector3(vertex.X, vertex.Y, vertex.Z);     //len za zabudne w-suradnica
             }
 
-            return new Vector3(vertex[0] / vertex[3], vertex[1] / vertex[3], vertex[2] / vertex[3]);
+            return new Vector3(vertex.X / vertex.W, vertex.Y / vertex.W, vertex.Z / vertex.W);
         }
 
         private float[] VertexColorByLegend(Vector3 Vertex)    //priradi bodu (s naozajstvou, netransformovanou hodnotou !!!) farbu podla legendy 
@@ -519,16 +521,24 @@ namespace DiplomovaPracaLB
 
 
 
-        private void Button_ResetThisWeight_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void Button_ResetAllWeights_Click(object sender, RoutedEventArgs e)
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            //problem
+
         }
 
+
+        ///----------------------------PRAVÁ LIŠTA NÁSTROJOV--------------------------------------------------------------
+        private void RadioButton_SplajnKard_Checked(object sender, RoutedEventArgs e)
+        {
+            SplineParamFrame.Content = new Page_Kard(DisplayedTerrain, this);
+
+
+        }
         private void TextBox_Weight_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)    //Enter
@@ -553,33 +563,63 @@ namespace DiplomovaPracaLB
 
         private void Slider_Weight_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            TextBox_Weight.Text = "";
-            //TODO TD.InputDataPoints[MW.ActivePoint_m_index, MW.ActivePoint_n_index].W = 1.0f;
+            TextBox_Weight.Text = Math.Round(Slider_Weight.Value, digits).ToString();
+            if (!do_not_recompute && ActivePoint_m_index > 0)       //niekedy je prekreslenie ziadane, niekedy nie
+            {
+                DisplayedTerrain.ReInterpolate(ActivePoint_m_index, ActivePoint_n_index, (float)Slider_Weight.Value);
+                glControl.Invalidate();
+            }
+
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_ResetThisWeight_Click(object sender, RoutedEventArgs e)
         {
-
+            if (DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index].W != 1.0f) //ak je vaha 1, netreba nic prepisovat a teda ani prekreslovat
+            {
+                DisplayedTerrain.ResetThisWeight(ActivePoint_m_index, ActivePoint_n_index);
+                do_not_recompute = true;    //aby sa neprekreslovalo 2x
+                Slider_Weight.Value = 1;
+                do_not_recompute = false;
+                glControl.Invalidate();
+            }
         }
-        private void Button_ResetView_Click(object sender, RoutedEventArgs e)
+
+        private void Button_ResetAllWeights_Click(object sender, RoutedEventArgs e)
         {
-            Phi = -0.6f; Theta = 0.3f; Dist = 3.8f;
-            pointsize = ChangePointSize();
+            //je jednoduchsie netestovat, ci treba menit vahu
+            DisplayedTerrain.ResetAllWeights();
+
+            do_not_recompute = true; //aby sa neprekreslovalo 2x
+            Slider_Weight.Value = 1;
+            do_not_recompute = false;
+
             glControl.Invalidate();
         }
 
-        private void Button_ShowAxes_Click(object sender, RoutedEventArgs e)
+          //-------------------------------------------------DOLNÁ LIŠTA NÁSTROJOV --------------------------------------------
+
+        private void RadioButton_ChangeLightPosition_Checked(object sender, RoutedEventArgs e)
         {
-            if (show_Axes)
-            {
-                show_Axes = false;
-                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
-            }
-            else
-            {
-                show_Axes = true;
-                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
-            }
+            string s = (sender as RadioButton).Name;
+            int i = int.Parse(s.Substring(s.Length - 1)) - 1;   //posledny znak v nazve je indexpozicie
+
+            light_position = LightPositionsAboveModelHemiSphere[i];
+            GL.Light(LightName.Light0, LightParameter.Position, light_position);
+            glControl.Invalidate();
+            Console.WriteLine(LightPositionsAboveModelHemiSphere[0][0] + " " + LightPositionsAboveModelHemiSphere[0][1] + " " + LightPositionsAboveModelHemiSphere[0][2]);
+        }
+
+        private void Slider_ChangeLightIntensity(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            float slider_value = (float)(Slider_LightIntensity.Value / 100);  //intenzita v percentach
+            float[] ls = new float[] { light_specular[0] * slider_value, light_specular[1] * slider_value, light_specular[2] * slider_value, 1.0f };
+            slider_value = (float)Math.Sqrt(slider_value);
+            float[] la = new float[] { light_ambient[0] * slider_value, light_ambient[1] * slider_value, light_ambient[2] * slider_value, 1.0f };
+            float[] ld = new float[] { light_diffuse[0] * slider_value, light_diffuse[1] * slider_value, light_diffuse[2] * slider_value, 1.0f };
+
+            GL.Light(LightName.Light0, LightParameter.Ambient, la);
+            GL.Light(LightName.Light0, LightParameter.Diffuse, ld);
+            GL.Light(LightName.Light0, LightParameter.Specular, ls);
             glControl.Invalidate();
         }
 
@@ -612,12 +652,6 @@ namespace DiplomovaPracaLB
             }
             glControl.Invalidate();
         }
-
-        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-
-        }
-
         private void Button_ShowQuads_Click(object sender, RoutedEventArgs e)
         {
             if (show_Quads)
@@ -633,15 +667,30 @@ namespace DiplomovaPracaLB
             glControl.Invalidate();
         }
 
-        private void RadioButton_SplajnKard_Checked(object sender, RoutedEventArgs e)
+        private void Button_ShowAxes_Click(object sender, RoutedEventArgs e)
         {
-            SplineParamFrame.Content = new Page_Kard(DisplayedTerrain, this);
-            //Zmaz Intepolaciu, resetuj vahy
-            //Nacitaj do SplineFrame Page_Kard
-            //
-            //s= 0.5
-            //Interpoluj Kardinalnym splajnom
-            
+            if (show_Axes)
+            {
+                show_Axes = false;
+                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(191, 200, 191));
+            }
+            else
+            {
+                show_Axes = true;
+                Button_ShowAxes.Background = new SolidColorBrush(Color.FromRgb(96, 117, 96));
+            }
+            glControl.Invalidate();
+        }
+        private void Button_ResetView_Click(object sender, RoutedEventArgs e)
+        {
+            Phi = -0.6f; Theta = 0.3f; Dist = 3.8f;
+            pointsize = ChangePointSize();
+            glControl.Invalidate();
+        }
+
+        private void Button_LODminus_Click(object sender, RoutedEventArgs e)
+        {
+            ChangeLevelOfDetail(LevelOfDetail - 1);
         }
 
         private void TextBox_LOD_KeyDown(object sender, KeyEventArgs e)
@@ -660,11 +709,6 @@ namespace DiplomovaPracaLB
                     TextBox_LOD.Text = LevelOfDetail.ToString();
                 }
             }
-        }
-
-        private void Button_LODminus_Click(object sender, RoutedEventArgs e)
-        {
-            ChangeLevelOfDetail(LevelOfDetail - 1);
         }
 
         private void Button_LODplus_Click(object sender, RoutedEventArgs e)
@@ -686,34 +730,6 @@ namespace DiplomovaPracaLB
                 TextBox_LOD.Text = LevelOfDetail.ToString();  //do TextBoxu napisem ostavajucu hodnotu LOD
             }
         }
-
-        private void Slider_ChangeLightIntensity(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            
-            float slider_value = (float)(Slider_LightIntensity.Value / 100);  //intenzita v percentach
-            float[] ls = new float[] { light_specular[0] * slider_value, light_specular[1] * slider_value, light_specular[2] * slider_value, 1.0f };
-            slider_value = (float)Math.Sqrt(slider_value);
-            float[] la = new float[] { light_ambient[0] * slider_value, light_ambient[1] * slider_value, light_ambient[2] * slider_value, 1.0f };
-            float[] ld = new float[] { light_diffuse[0] * slider_value, light_diffuse[1] * slider_value, light_diffuse[2] * slider_value, 1.0f };
-
-            GL.Light(LightName.Light0, LightParameter.Ambient, la);
-            GL.Light(LightName.Light0, LightParameter.Diffuse, ld);
-            GL.Light(LightName.Light0, LightParameter.Specular, ls);
-            glControl.Invalidate();
-        }
-
-        private void RadioButton_ChangeLightPosition_Checked(object sender, RoutedEventArgs e)
-        {
-            string s = (sender as RadioButton).Name;
-            int i = int.Parse(s.Substring(s.Length - 1)) - 1;   //posledny znak v nazve je indexpozicie
-
-
-            light_position = LightPositionsAboveModelHemiSphere[i];
-            GL.Light(LightName.Light0, LightParameter.Position, light_position);
-            glControl.Invalidate();
-            Console.WriteLine(LightPositionsAboveModelHemiSphere[0][0] + " " + LightPositionsAboveModelHemiSphere[0][1] + " " + LightPositionsAboveModelHemiSphere[0][2]);
-        }
-
         private void RadioButton_ShadingFlat_Checked(object sender, RoutedEventArgs e)
         {
             selectedShadingType = TypeOfShading.FLAT;
@@ -722,13 +738,12 @@ namespace DiplomovaPracaLB
 
         private void RadioButton_ShadingGouraud_Checked(object sender, RoutedEventArgs e)
         {
-
             selectedShadingType = TypeOfShading.GOURAUD;
             GL.ShadeModel(ShadingModel.Smooth);
             glControl.Invalidate();
         }
 
-        //---------------------------------------------------------------------------------------------------------------------------------
+        //-------------------MYS--------------------------------------------------------------------------------------------------------------
 
         public Vector3 UnProject(Vector3 mouse, Matrix4 projection, Matrix4 view, Size viewport)
         {
@@ -789,8 +804,16 @@ namespace DiplomovaPracaLB
                         double eA = Math.Sqrt(Vector3.Dot(SaT(DisplayedTerrain.InputDataPoints[k, i]) - end, SaT(DisplayedTerrain.InputDataPoints[k, i]) - end));
                         if (sA + eA > se - 0.001 && sA + eA < se + 0.001)
                         {
-                            ActivePoint_m_index = k;
-                            ActivePoint_n_index = i;
+                            if (ActivePoint_m_index != k || ActivePoint_n_index != i)
+                            {
+                                ActivePoint_m_index = k;
+                                ActivePoint_n_index = i;
+
+                                do_not_recompute = true;
+                                UpdateWeightUI();
+                                do_not_recompute = false;
+                            }
+                            //else ak kliknes na rovnaky bod, nic sa nemeni
 
                             IsLeftDown = true;
 
@@ -800,6 +823,13 @@ namespace DiplomovaPracaLB
                     }
             }
             glControl.Invalidate();
+        }
+
+        private void UpdateWeightUI()
+        {
+            float w = DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index].W;
+
+            Slider_Weight.Value = w;
         }
 
         private void GLControl_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)

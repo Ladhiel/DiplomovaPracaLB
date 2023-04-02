@@ -43,7 +43,13 @@ namespace DiplomovaPracaLB
 
         public void ReInterpolate(int new_LOD)
         {
-            Interpolation.ChangeLOD(InputDataPoints, new_LOD);
+            Interpolation.NewLOD(InputDataPoints, new_LOD);
+        }
+
+        public void ReInterpolate(int active_m_index, int active_n_index, float new_weight)
+        {
+            InputDataPoints[active_m_index, active_n_index].W = new_weight;
+            Interpolation.NewWeight(InputDataPoints);
         }
 
         public void UseKard(float tenstion, int LOD)
@@ -64,11 +70,13 @@ namespace DiplomovaPracaLB
         public void ResetAllWeights()
         {
             SkopirujUdaje(InputDataPointsOriginal, ref InputDataPoints);    //nacitaju sa povodne
+            Interpolation.NewWeight(InputDataPoints);
         }
 
         public void ResetThisWeight(int i, int j)
         {
             InputDataPoints[i,j] = new Vector4(InputDataPointsOriginal[i,j]);
+            Interpolation.NewWeight(InputDataPoints);
         }
 
         private void SkopirujUdaje(Vector4[,] Odkial, ref Vector4[,] Kam)
@@ -81,7 +89,7 @@ namespace DiplomovaPracaLB
             {
                 for (int j = 0;j< b;j++)
                 {
-                    Kam[i,j] = Odkial[i,j];
+                    Kam[i,j] = new Vector4(Odkial[i,j]);
                 }
             }
         }
@@ -141,12 +149,16 @@ namespace DiplomovaPracaLB
             n = (Vstup.GetLength(1) - 2 - 1) * (LOD + 1) + 1;
         }
         
-        public void ChangeLOD(Vector4[,] Vstup, int new_LOD)
+        public void NewLOD(Vector4[,] Vstup, int new_LOD)
         {
             LoadInts(Vstup, new_LOD);
             Interpolate(Vstup);
         }
 
+        public void NewWeight(Vector4[,] Vstup)
+        {
+            Interpolate(Vstup);
+        }
         protected virtual void Interpolate(Vector4[,] Vstup)
         {
             //Kazdy typ splajnu inak
