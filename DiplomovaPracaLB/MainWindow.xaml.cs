@@ -25,7 +25,7 @@ namespace DiplomovaPracaLB
 {
     public partial class MainWindow : Window
     {
-        GLControl glControl;
+        public GLControl glControl;
 
         // camera settings
         double Dist = new double(), Phi = new double(), Theta = new double(), oPhi = new double(), oTheta = new double();

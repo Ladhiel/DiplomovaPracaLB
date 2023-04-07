@@ -9,7 +9,7 @@ namespace DiplomovaPracaLB
 
         public SplajnKardinalnyBilinearny(Vector4[,] Vstup, int _LOD, float _tension)
         {
-            tension = _tension;
+            tension = (1 - _tension) / 2;
             LOD = _LOD;
             LoadDimensions(Vstup);
             Interpolate(Vstup);
@@ -114,6 +114,6 @@ namespace DiplomovaPracaLB
             }
 
             return IP;
-        }     
+        }
     }
 }

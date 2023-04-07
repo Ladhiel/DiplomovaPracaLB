@@ -30,16 +30,18 @@ namespace DiplomovaPracaLB
             MW = Hlavne_okno;
             TD = Displayed; //iba referencia na teren
             InitializeComponent();      //nacitanim hodnoty slidera sa spousti aj vykreslenie
+            TD.UseKardBicubic(0, MW.LevelOfDetail);
         }
 
         private void ChangeTensionparameter(float new_tension)
         {
-            TextBox_TensionValue.Text = new_tension.ToString();
+            TextBox_TensionTValue.Text = new_tension.ToString();
+            TextBox_TensionSValue.Text = ((1-new_tension)/2).ToString();
 
             //TD.UseKardBilin(new_tension, MW.LevelOfDetail);
             TD.UseKardBicubic(new_tension, MW.LevelOfDetail);
+            MW.glControl.Invalidate();
 
-            
         }
 
         private void Slider_KardTension_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -49,9 +51,7 @@ namespace DiplomovaPracaLB
 
         private void Button_CatmullRom_Click(object sender, RoutedEventArgs e)
         {
-            
-            TextBox_TensionValue.Text = "0.5";
-            Slider_KardTension.Value = 0.5f;    //zmena sa iniciuje sliderom
+            Slider_KardTension.Value = 0.0f;    //zmena sa iniciuje sliderom
         }
 
         private void TextBox_TensionValue_KeyDown(object sender, KeyEventArgs e)
@@ -61,13 +61,12 @@ namespace DiplomovaPracaLB
                 float new_tension;
                 try
                 {
-                    new_tension = float.Parse(TextBox_TensionValue.Text);
+                    new_tension = float.Parse(TextBox_TensionTValue.Text);
                     if (Slider_KardTension.Maximum >= new_tension && Slider_KardTension.Minimum <= new_tension)
                     {
                         Slider_KardTension.Value = new_tension;     //zmena sa iniciuje sliderom
                     }
                     else MessageBox.Show("Vstup mimo rozahu!");
-
                 }
                 catch
                 {

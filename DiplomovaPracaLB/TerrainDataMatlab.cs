@@ -25,7 +25,6 @@ using OpenTK.Graphics.OpenGL;
 
 namespace DiplomovaPracaLB
 {
-    
     public class TerrainDataMatlab : TerrainData
     {
         private int a, b;

@@ -9,7 +9,7 @@ namespace DiplomovaPracaLB
 
         public KardinalnyBikubickySplajn(Vector4[,] Vstup, int _LOD, float _tension)
         {
-            tension = _tension;
+            tension = (1 - _tension) / 2;   //prirodzenejsi priebeh parametra z knihy D. Salomona
             LOD = _LOD;
             LoadDimensions(Vstup);
             Interpolate(Vstup);
@@ -24,8 +24,6 @@ namespace DiplomovaPracaLB
         protected override Vector4[,] CreateInterpolationPoints(Vector4[,] Vstup)
         {
             Vector4[,] IP = new Vector4[m, n];
-            float s = tension;
-
 
             //vzorkovanie  - Hermitove funkcie budu mat rovnake hodnoty na kazdej patch
             Matrix4 H = new Matrix4(1, 0, 0, 0, 0, 0, 1, 0, -3, 3, -2, -1, 2, -2, 1, 1);    //koeficienty zmiesavacich fcii
