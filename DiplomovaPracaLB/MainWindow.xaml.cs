@@ -41,7 +41,6 @@ namespace DiplomovaPracaLB
         float[][] LightPositionsAboveModelHemiSphere;
 
         //UI settings
-        int digits = 3;
         float[] FarebnaLegendaHodnoty;
         float[][] FarebnaLegendaFarby;
         float pointsize;
@@ -73,9 +72,9 @@ namespace DiplomovaPracaLB
             selectedShadingType = TypeOfShading.FLAT;
 
             //Spracovanie
-            // TerrainData MatlabDataSet1 = new MatlabTerrainData(typInterpolacie.NEINTERPOLUJ,LevelOfDetail, "TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
-            //TerrainData  HeightmapData1 = new HeightmapTerrainData( typInterpolacie.CATMULLROM, LevelOfDetail, "HeightmapSmaller.png");
-            TerrainData GeoTiff1 = new GeoTiffTerrainData("2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
+            //TerrainData MatlabDataSet1 = new MatlabTerrainData("TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
+            //TerrainData HeightmapData1 = new HeightmapTerrainData("HeightmapSmaller.png");
+            TerrainData GeoTiff1 = new TerrainDataGeoTiff("2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
 
             //Ktory sa ma zobrazit
             //DisplayedTerrain = MatlabDataSet1;
@@ -298,7 +297,7 @@ namespace DiplomovaPracaLB
         {
             //zdroj https://gdbooks.gitbooks.io/legacyopengl/content/Chapter3/Points.html
 
-            Vector3 z_eps = new Vector3(0.0f, 0.0f, 1.85f);
+            Vector3 z_eps = new Vector3(0.0f, 0.0f, 0.0055f);
 
             float[] point_color = { 0.3f, 0.3f, 0.3f };
             GL.Color3(point_color);
@@ -310,7 +309,15 @@ namespace DiplomovaPracaLB
             {
                 for (int i = 0; i < Vertices.GetLength(0); i++)
                 {
-                    GL.Vertex3(SaT(Rational(Vertices[i, j]) + z_eps));
+                    if(Vertices[i, j] == Vector4.Zero)
+                    {
+                        GL.Color3(1.0f, 0.3f, 0.3f);
+                    }
+                    else
+                    {
+                        GL.Color3(point_color);
+                    }
+                    GL.Vertex3(SaT(Rational(Vertices[i, j])) + z_eps);
                 }
             }
             GL.End();
@@ -319,14 +326,14 @@ namespace DiplomovaPracaLB
         private void DrawActivePoint()
         {
             //kresli vybraty bod
-            if (ActivePoint_m_index > 0) //na zaciatku ma hodnotu -1
+            if (ActivePoint_m_index > -1) //na zaciatku ma hodnotu -1
             {
-                Vector3 z_eps = new Vector3(0.0f, 0.0f, 1.85f);
+                Vector3 z_eps = new Vector3(0.0f, 0.0f, 0.0055f);
                 GL.PointSize(2.0f * pointsize);
                 GL.Color3(0.85f, 0.53f, 0.10f); //highlight
                 GL.Begin(PrimitiveType.Points);
                 Vector3 activeP = Rational(DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index]);
-                GL.Vertex3(SaT(activeP + z_eps));
+                GL.Vertex3(SaT(activeP) + z_eps);
 
                 GL.End();
             }
@@ -337,7 +344,7 @@ namespace DiplomovaPracaLB
             //pospajam body useckami v u-smere, useckami vo v-smere
 
             float[] wire_color = { 0.0f, 0.2f, 0.12f };
-            Vector3 z_eps = new Vector3(0.0f, 0.0f, 0.5f);
+            Vector3 z_eps = new Vector3(0.0f, 0.0f, 0.001f);
 
             GL.LineWidth(1.2f);
             GL.Begin(PrimitiveType.Lines);
@@ -349,18 +356,18 @@ namespace DiplomovaPracaLB
                     {
                         //u smer
                         GL.Color3(wire_color);
-                        GL.Vertex3(SaT(Rational(Vertices[i, j]) + z_eps));
+                        GL.Vertex3(SaT(Rational(Vertices[i, j])) + z_eps);
                         GL.Color3(wire_color);
-                        GL.Vertex3(SaT(Rational(Vertices[i + 1, j]) + z_eps));
+                        GL.Vertex3(SaT(Rational(Vertices[i + 1, j])) + z_eps);
                     }
 
                     if (j < Vertices.GetLength(1) - 1)
                     {
                         //v smer
                         GL.Color3(wire_color);
-                        GL.Vertex3(SaT(Rational(Vertices[i, j]) + z_eps));
+                        GL.Vertex3(SaT(Rational(Vertices[i, j])) + z_eps);
                         GL.Color3(wire_color);
-                        GL.Vertex3(SaT(Rational(Vertices[i, j + 1]) + z_eps));
+                        GL.Vertex3(SaT(Rational(Vertices[i, j + 1])) + z_eps);
                     }
                 }
             }
@@ -563,13 +570,12 @@ namespace DiplomovaPracaLB
 
         private void Slider_Weight_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            TextBox_Weight.Text = Math.Round(Slider_Weight.Value, digits).ToString();
+            TextBox_Weight.Text = Math.Round(Slider_Weight.Value, 3).ToString();
             if (!do_not_recompute && ActivePoint_m_index > 0)       //niekedy je prekreslenie ziadane, niekedy nie
             {
                 DisplayedTerrain.ReInterpolate(ActivePoint_m_index, ActivePoint_n_index, (float)Slider_Weight.Value);
                 glControl.Invalidate();
             }
-
         }
 
         private void Button_ResetThisWeight_Click(object sender, RoutedEventArgs e)
@@ -596,7 +602,7 @@ namespace DiplomovaPracaLB
             glControl.Invalidate();
         }
 
-          //-------------------------------------------------DOLNÁ LIŠTA NÁSTROJOV --------------------------------------------
+        //-------------------------------------------------DOLNÁ LIŠTA NÁSTROJOV --------------------------------------------
 
         private void RadioButton_ChangeLightPosition_Checked(object sender, RoutedEventArgs e)
         {

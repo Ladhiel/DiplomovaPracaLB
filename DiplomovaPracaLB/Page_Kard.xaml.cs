@@ -36,7 +36,8 @@ namespace DiplomovaPracaLB
         {
             TextBox_TensionValue.Text = new_tension.ToString();
 
-            TD.UseKard(new_tension, MW.LevelOfDetail);
+            //TD.UseKardBilin(new_tension, MW.LevelOfDetail);
+            TD.UseKardBicubic(new_tension, MW.LevelOfDetail);
 
             
         }

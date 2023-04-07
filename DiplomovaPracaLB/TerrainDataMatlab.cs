@@ -26,10 +26,10 @@ using OpenTK.Graphics.OpenGL;
 namespace DiplomovaPracaLB
 {
     
-    public class MatlabTerrainData : TerrainData
+    public class TerrainDataMatlab : TerrainData
     {
         private int a, b;
-        public MatlabTerrainData(string file_name, int hmap_num_patterns)
+        public TerrainDataMatlab(string file_name, int hmap_num_patterns)
         {
             a = hmap_num_patterns + 1;
             b = hmap_num_patterns + 1;

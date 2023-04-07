@@ -20,7 +20,7 @@
             <RowDefinition/>
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-       
+
         <Grid Grid.Column="1" Grid.Row="0" Margin="20,20,20,0">
             <Grid.Resources>
                 <Style TargetType="{x:Type Border}">
@@ -59,7 +59,7 @@
                             </Style>
                         </Button.Resources>
                     </Button>
-                       
+
                 </Canvas>
             </Border>
             <Border Grid.Row="2" x:Name="Parametre_pre_slidy" CornerRadius="0,0,4,4">
@@ -71,7 +71,7 @@
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" TextAlignment="Center">» Nastaviteľné parametre splajnu</TextBlock>
                     <Frame x:Name="SplineParamFrame" Grid.Row="1"  NavigationUIVisibility="Hidden"/>
-                    
+
                 </Grid>
             </Border>
             <Border Grid.Row="0" x:Name="Tlačidlá_na_splajny" CornerRadius="4,4,0,0">
@@ -101,13 +101,13 @@
                         <Border Grid.Row="0">
                             <RadioButton x:Name="RadioButton_Kard" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" Checked="RadioButton_SplajnKard_Checked" IsChecked="True"/>
                         </Border>
-                        
+
                         <TextBlock Text="Kardinálny splajn" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
-                        
+
                     </Grid>
                 </StackPanel>
             </Border>
-            
+
         </Grid>
 
         <Border Grid.Column="0" Grid.Row="0" BorderBrush="#FFC4CDC1" BorderThickness="4" Margin="20,20,00,00" CornerRadius="4" ClipToBounds="True">

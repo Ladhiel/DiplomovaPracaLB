@@ -26,9 +26,9 @@ using OpenTK.Graphics.OpenGL;
 
 namespace DiplomovaPracaLB
 {
-    public class GeoTiffTerrainData : TerrainData
+    public class TerrainDataGeoTiff : TerrainData
     {
-        public GeoTiffTerrainData(string file_name, int num_of_tiles_x, int num_of_tiles_y)
+        public TerrainDataGeoTiff(string file_name, int num_of_tiles_x, int num_of_tiles_y)
         {
             InputDataPoints = GeoTiffDataFromCSV(file_name, num_of_tiles_x, num_of_tiles_y);
             Initialize();

@@ -26,11 +26,11 @@ using System.Dynamic;
 
 namespace DiplomovaPracaLB
 {
-    public class HeightmapTerrainData : TerrainData
+    public class TerrainDataHeightmap : TerrainData
     {
         private byte[,] Heightmap;
         private int a, b;
-        public HeightmapTerrainData(string file_name)
+        public TerrainDataHeightmap(string file_name)
         {
             Heightmap = LoadHeightmap(file_name);
             InputDataPoints = CreatePoints();
