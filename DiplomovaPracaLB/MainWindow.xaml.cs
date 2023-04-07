@@ -20,6 +20,7 @@ using sd = System.Drawing;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using System.Windows.Controls.Primitives;
 
 namespace DiplomovaPracaLB
 {
@@ -44,7 +45,7 @@ namespace DiplomovaPracaLB
         float[] FarebnaLegendaHodnoty;
         float[][] FarebnaLegendaFarby;
         float pointsize;
-        bool show_Axes, show_Points, show_Wireframe, show_Quads, do_not_recompute;
+        bool show_Axes, show_Points, show_Wireframe, show_Quads, do_not_recompute, dragging;
         TypeOfShading selectedShadingType;
 
         //data
@@ -68,6 +69,7 @@ namespace DiplomovaPracaLB
             show_Points = true;
             show_Wireframe = false;
             show_Quads = true;
+            dragging = false;
 
             selectedShadingType = TypeOfShading.FLAT;
 
@@ -568,13 +570,23 @@ namespace DiplomovaPracaLB
             }
         }
 
+        private void Slider_Weight_ThumbDragStarted(object sender, DragStartedEventArgs e)
+        {
+            do_not_recompute = true;
+        }
+
+        private void Slider_Weight_ThumbDragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            do_not_recompute = false;
+            RecomputeWeight((float)Slider_Weight.Value);
+        }
+
         private void Slider_Weight_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            TextBox_Weight.Text = Math.Round(Slider_Weight.Value, 3).ToString();
+            TextBox_Weight.Text = Math.Round((Slider_Weight.Value-1)*1000000, 0).ToString();
             if (!do_not_recompute && ActivePoint_m_index > 0)       //niekedy je prekreslenie ziadane, niekedy nie
             {
-                DisplayedTerrain.ReInterpolate(ActivePoint_m_index, ActivePoint_n_index, (float)Slider_Weight.Value);
-                glControl.Invalidate();
+                RecomputeWeight((float)Slider_Weight.Value);
             }
         }
 
@@ -602,6 +614,11 @@ namespace DiplomovaPracaLB
             glControl.Invalidate();
         }
 
+        private void RecomputeWeight(float w)
+        {
+            DisplayedTerrain.ReInterpolate(ActivePoint_m_index, ActivePoint_n_index, w);
+            glControl.Invalidate();
+        }
         //-------------------------------------------------DOLNÁ LIŠTA NÁSTROJOV --------------------------------------------
 
         private void RadioButton_ChangeLightPosition_Checked(object sender, RoutedEventArgs e)

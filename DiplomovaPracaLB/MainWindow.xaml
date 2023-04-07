@@ -37,12 +37,17 @@
             </Grid.RowDefinitions>
             <Border Grid.Row="1" x:Name="Váhy" CornerRadius="0,0,0,0">
                 <Canvas>
-                    <TextBlock Grid.Row="0" Text="» Nastaviteľné parametre splajnu" Canvas.Top="10" Canvas.Left="28" TextAlignment="Right"/>
+                    <TextBlock Grid.Row="0" Text="» Nastaviteľné váhy bodov" Canvas.Top="10" Canvas.Left="28" TextAlignment="Right"/>
                     <StackPanel  Orientation="Horizontal" Canvas.Left="20" Canvas.Top="40" Height="35">
-                        <TextBlock Text="Váha = " TextAlignment="Center"  VerticalAlignment="Center" />
+                        <TextBlock Text="Váha bodu = 1 + (" TextAlignment="Center"  VerticalAlignment="Center" />
                         <TextBox Name="TextBox_Weight" Text="1" TextAlignment="Center" VerticalContentAlignment="Center" Width="70" KeyDown="TextBox_Weight_KeyDown"/>
+                        <TextBlock TextAlignment="Center"  VerticalAlignment="Center" >
+                           <Run Text=") &#x00B7; 10&#x02C9;&#x2076;"/>
+                        </TextBlock>
                     </StackPanel>
-                    <Slider x:Name="Slider_Weight" Height="26" Width="200" ValueChanged="Slider_Weight_Changed" Value="1.0" Maximum="1.001" Minimum="0.999" TickFrequency="0.001" TickPlacement="BottomRight" Canvas.Left="20" Canvas.Top="80" HorizontalAlignment="Center" VerticalAlignment="Top" SmallChange="0.00001" LargeChange="0.00001"/>
+                    <Slider x:Name="Slider_Weight" Height="26" Width="200"
+                            Thumb.DragStarted="Slider_Weight_ThumbDragStarted" Thumb.DragCompleted="Slider_Weight_ThumbDragCompleted" ValueChanged="Slider_Weight_Changed" 
+                            Value="1.0" Maximum="1.001" Minimum="0.999" TickFrequency="0.001" TickPlacement="BottomRight" Canvas.Left="20" Canvas.Top="80" HorizontalAlignment="Center" VerticalAlignment="Top" SmallChange="0.00001" LargeChange="0.00001"/>
                     <Button x:Name="Button_ResetThisWeight" Width="120" Height="35" Click="Button_ResetThisWeight_Click" Content="Resetuj váhu" HorizontalContentAlignment="Center" Canvas.Left="20" Canvas.Top="110" HorizontalAlignment="Center" VerticalAlignment="Top">
                         <Button.Resources>
                             <Style TargetType="Border">

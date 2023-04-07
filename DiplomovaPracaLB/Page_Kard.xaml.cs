@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -24,29 +25,47 @@ namespace DiplomovaPracaLB
         private MainWindow MW;
         //private float tension;
         TerrainData TD;
+        bool dragging;
 
         public Page_Kard(TerrainData Displayed, MainWindow Hlavne_okno)
         {
+            dragging = false;
             MW = Hlavne_okno;
             TD = Displayed; //iba referencia na teren
             InitializeComponent();      //nacitanim hodnoty slidera sa spousti aj vykreslenie
             TD.UseKardBicubic(0, MW.LevelOfDetail);
         }
 
-        private void ChangeTensionparameter(float new_tension)
+        //zdroj spustenia slideru pri pusteni bezca
+        //https://stackoverflow.com/questions/723502/wpf-slider-with-an-event-that-triggers-after-a-user-drags
+        private void SliderKard_ThumbDragStarted(object sender, DragStartedEventArgs e)
         {
-            TextBox_TensionTValue.Text = new_tension.ToString();
-            TextBox_TensionSValue.Text = ((1-new_tension)/2).ToString();
+            dragging = true;
+        }
 
-            //TD.UseKardBilin(new_tension, MW.LevelOfDetail);
-            TD.UseKardBicubic(new_tension, MW.LevelOfDetail);
-            MW.glControl.Invalidate();
-
+        private void SliderKard_ThumbDragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            dragging = false;
+            ChangeTensionparameter((float)Slider_KardTension.Value);
         }
 
         private void Slider_KardTension_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            ChangeTensionparameter((float)e.NewValue);
+            float new_tension = (float)e.NewValue;
+            TextBox_TensionTValue.Text = new_tension.ToString();
+            TextBox_TensionSValue.Text = ((1 - new_tension) / 2).ToString();
+
+            if (!dragging)
+            {
+                ChangeTensionparameter((float)e.NewValue);
+            }
+        }
+        private void ChangeTensionparameter(float new_tension)
+        {
+            //TD.UseKardBilin(new_tension, MW.LevelOfDetail);
+            TD.UseKardBicubic(new_tension, MW.LevelOfDetail);
+            MW.glControl.Invalidate();
+
         }
 
         private void Button_CatmullRom_Click(object sender, RoutedEventArgs e)

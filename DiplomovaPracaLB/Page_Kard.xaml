@@ -16,10 +16,16 @@
                 <TextBox Name="TextBox_TensionTValue" Text="0" TextAlignment="Center" VerticalContentAlignment="Center" Width="100" KeyDown="TextBox_TensionValue_KeyDown"/>
             </StackPanel>
             <StackPanel  Orientation="Horizontal" Canvas.Left="10" Canvas.Top="50" Height="35">
-                <TextBlock Text="s = (1-T)/2 = " TextAlignment="Center"  VerticalAlignment="Center" />
+                <TextBlock Text="s = " TextAlignment="Center"  VerticalAlignment="Center" />
+                <TextBlock FontFamily="Palatino Linotype" Typography.Fraction="Stacked"  TextAlignment="Center"  VerticalAlignment="Center" FontSize="25">
+                     1/2
+                </TextBlock>
+                <TextBlock Text="(1 - T) = " TextAlignment="Center"  VerticalAlignment="Center"/>
                 <TextBox Name="TextBox_TensionSValue" Text="0.5" TextAlignment="Center" VerticalContentAlignment="Center" Width="100" IsReadOnly="True"/>
             </StackPanel>
-            <Slider x:Name="Slider_KardTension" Height="26" Width="200" ValueChanged="Slider_KardTension_Changed" Value="0" Maximum="1" Minimum="-1.5" TickFrequency="0.1" TickPlacement="BottomRight" Canvas.Left="10" Canvas.Top="90" HorizontalAlignment="Center" VerticalAlignment="Top" LargeChange="0.1" SmallChange="0.01"/>
+            <Slider x:Name="Slider_KardTension"
+                    Thumb.DragCompleted="SliderKard_ThumbDragCompleted" Thumb.DragStarted="SliderKard_ThumbDragStarted" ValueChanged="Slider_KardTension_Changed"
+                    Height="26" Width="200" Value="0" Maximum="1" Minimum="-1.5" TickFrequency="0.1" TickPlacement="BottomRight" Canvas.Left="10" Canvas.Top="90" HorizontalAlignment="Center" VerticalAlignment="Top" LargeChange="0.1" SmallChange="0.01"/>
             <Button x:Name="Button_CamtullRom" Width="120" Height="35" Click="Button_CatmullRom_Click" Content="Catmull-Rom" HorizontalContentAlignment="Center" Canvas.Left="10" Canvas.Top="120" HorizontalAlignment="Center" VerticalAlignment="Top">
                 <Button.Resources>
                     <Style TargetType="Border">
