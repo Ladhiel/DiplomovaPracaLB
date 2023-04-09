@@ -1,0 +1,57 @@
+﻿<Page x:Class="DiplomovaPracaLB.Page_KochanekBartels"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DiplomovaPracaLB"
+      mc:Ignorable="d" 
+      Title="Page_KochanekBartels"
+      FontFamily="Calibri" FontSize="15"
+      d:DesignHeight="450" d:DesignWidth="800" >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="90"/>
+            <RowDefinition Height="90"/>
+            <RowDefinition Height="90"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Canvas Grid.Row="0">
+            <StackPanel  Orientation="Horizontal" Canvas.Left="10" Canvas.Top="10" Height="35">
+                <TextBlock Text="Tension = " TextAlignment="Center"  VerticalAlignment="Center" />
+                <TextBox Name="TextBox_Tension" Text="0" TextAlignment="Center" VerticalContentAlignment="Center" Width="100" KeyDown="TextBox_Tension_KeyDown"/>
+            </StackPanel>
+            <Slider x:Name="Slider_Tension"
+                    Thumb.DragCompleted="SliderTension_ThumbDragCompleted" Thumb.DragStarted="Slider_ThumbDragStarted" ValueChanged="Slider_Tension_Changed"
+                    Height="26" Width="220" Value="0" Maximum="1" Minimum="-1" TickFrequency="0.1" TickPlacement="BottomRight" Canvas.Left="10" Canvas.Top="50" HorizontalAlignment="Center" VerticalAlignment="Top" LargeChange="0.1" SmallChange="0.01">
+            </Slider>
+        </Canvas>
+        <Canvas Grid.Row="1">
+            <StackPanel  Orientation="Horizontal" Canvas.Left="10" Canvas.Top="10" Height="35">
+                <TextBlock Text="Continuity = " TextAlignment="Center"  VerticalAlignment="Center" />
+                <TextBox Name="TextBox_Continuity" Text="0" TextAlignment="Center" VerticalContentAlignment="Center" Width="100" KeyDown="TextBox_Continuity_KeyDown"/>
+            </StackPanel>
+            <Slider x:Name="Slider_Continuity"
+                    Thumb.DragCompleted="SliderContinuity_ThumbDragCompleted" Thumb.DragStarted="Slider_ThumbDragStarted" ValueChanged="Slider_Continuity_Changed"
+                    Height="26" Width="220" Value="0" Maximum="1" Minimum="-1" TickFrequency="0.1" TickPlacement="BottomRight" Canvas.Left="10" Canvas.Top="50" HorizontalAlignment="Center" VerticalAlignment="Top" LargeChange="0.1" SmallChange="0.01">
+            </Slider>
+        </Canvas>
+        <Canvas Grid.Row="2">
+            <StackPanel  Orientation="Horizontal" Canvas.Left="10" Canvas.Top="10" Height="35">
+                <TextBlock Text="Bias = " TextAlignment="Center"  VerticalAlignment="Center" />
+                <TextBox Name="TextBox_Bias" Text="0" TextAlignment="Center" VerticalContentAlignment="Center" Width="100" KeyDown="TextBox_Bias_KeyDown"/>
+            </StackPanel>
+            <Slider x:Name="Slider_Bias"
+                    Thumb.DragCompleted="SliderBias_ThumbDragCompleted" Thumb.DragStarted="Slider_ThumbDragStarted" ValueChanged="Slider_Bias_Changed"
+                    Height="26" Width="220" Value="0" Maximum="1" Minimum="-1" TickFrequency="0.1" TickPlacement="BottomRight" Canvas.Left="10" Canvas.Top="50" HorizontalAlignment="Center" VerticalAlignment="Top" LargeChange="0.1" SmallChange="0.01">
+            </Slider>
+        </Canvas>
+        <Button Grid.Row="3" x:Name="Button_CamtullRom" Width="120" Height="35" Click="Button_CatmullRom_Click" Content="Catmull-Rom" HorizontalContentAlignment="Center" Canvas.Left="10" Canvas.Top="120" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="4,4,4,4"/>
+                    <Setter Property="BorderBrush" Value="#FF475448"/>
+                </Style>
+            </Button.Resources>
+        </Button>
+    </Grid>
+</Page>

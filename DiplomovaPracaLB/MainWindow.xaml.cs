@@ -545,9 +545,13 @@ namespace DiplomovaPracaLB
         private void RadioButton_SplajnKard_Checked(object sender, RoutedEventArgs e)
         {
             SplineParamFrame.Content = new Page_Kard(DisplayedTerrain, this);
-
-
         }
+
+        private void RadioButton_SplajnKochanekBartels_Checked(object sender, RoutedEventArgs e)
+        {
+            SplineParamFrame.Content = new Page_KochanekBartels(DisplayedTerrain, this);
+        }
+
         private void TextBox_Weight_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)    //Enter
@@ -675,6 +679,8 @@ namespace DiplomovaPracaLB
             }
             glControl.Invalidate();
         }
+
+      
         private void Button_ShowQuads_Click(object sender, RoutedEventArgs e)
         {
             if (show_Quads)

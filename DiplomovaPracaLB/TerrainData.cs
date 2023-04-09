@@ -61,7 +61,12 @@ namespace DiplomovaPracaLB
 
         public void UseKardBicubic(float tenstion, int LOD)
         {
-            Interpolation = new KardinalnyBikubickySplajn(InputDataPoints, LOD, tenstion);
+            Interpolation = new SplajnKardinalnyBikubicky(InputDataPoints, LOD, tenstion);
+        }
+
+        public void UseKochanekBartels(float tenstion, float continuity, float bias, int LOD)
+        {
+            Interpolation = new KochanekBartelsSplajn(InputDataPoints, LOD, tenstion, continuity, bias);
         }
 
         public void ResetAllWeights()

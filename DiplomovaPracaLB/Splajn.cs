@@ -29,11 +29,12 @@ namespace DiplomovaPracaLB
 
         protected virtual void LoadDimensions(Vector4[,] Vstup)
         {
-            
+           //kazdy splajn svoje 
         }
 
         protected virtual Vector4[,] CreateInterpolationPoints(Vector4[,] Vector)
         {
+            //kazdy splajn svoje
             Vector4[,] IP = new Vector4[m, n];
             return IP;
         }

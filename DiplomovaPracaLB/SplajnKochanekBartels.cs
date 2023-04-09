@@ -3,13 +3,15 @@ using System.Runtime.CompilerServices;
 
 namespace DiplomovaPracaLB
 {
-    public class SplajnKardinalnyBikubicky : Splajn
+    public class KochanekBartelsSplajn : Splajn
     {
-        float tension;
+        float tension, continuity, bias;
 
-        public SplajnKardinalnyBikubicky(Vector4[,] Vstup, int _LOD, float _tension)
+        public KochanekBartelsSplajn(Vector4[,] Vstup, int _LOD, float _tension, float _con, float _bias)
         {
-            tension = (1 - _tension) / 2;   //prirodzenejsi priebeh parametra z knihy D. Salomona
+            tension = (1 - _tension) / 2;
+            continuity = _con;
+            bias = _bias;
             LOD = _LOD;
             LoadDimensions(Vstup);
             Interpolate(Vstup);
@@ -71,21 +73,21 @@ namespace DiplomovaPracaLB
 
             Vector4 P00 = Vstup[i, j];
             Vector4 P01 = Vstup[i, j + 1];
-            Vector4 P10 = Vstup[i+ 1, j];
-            Vector4 P11 = Vstup[i+1, j+ 1];
-            Vector4 Pu00 = TangentVectorU(Vstup, i, j);
-            Vector4 Pu01 = TangentVectorU(Vstup, i, j+1);
-            Vector4 Pu10 = TangentVectorU(Vstup, i+1, j);
-            Vector4 Pu11 = TangentVectorU(Vstup, i+1, j+1);
-            Vector4 Pv00 = TangentVectorV(Vstup, i, j);
-            Vector4 Pv01 = TangentVectorV(Vstup, i, j + 1);
-            Vector4 Pv10 = TangentVectorV(Vstup, i + 1, j);
-            Vector4 Pv11 = TangentVectorV(Vstup, i + 1, j + 1);
-            
+            Vector4 P10 = Vstup[i + 1, j];
+            Vector4 P11 = Vstup[i + 1, j + 1];
+            Vector4 Pu00 = DepartingTangentVectorU(Vstup, i, j);
+            Vector4 Pu01 = DepartingTangentVectorU(Vstup, i, j + 1);
+            Vector4 Pu10 = ArrivingTangentVectorU(Vstup, i + 1, j);
+            Vector4 Pu11 = ArrivingTangentVectorU(Vstup, i + 1, j + 1);
+            Vector4 Pv00 = DepartingTangentVectorV(Vstup, i, j);
+            Vector4 Pv01 = ArrivingTangentVectorV(Vstup, i, j + 1);
+            Vector4 Pv10 = DepartingTangentVectorV(Vstup, i + 1, j);
+            Vector4 Pv11 = ArrivingTangentVectorV(Vstup, i + 1, j + 1);
+
             Vector4 Puv00 = AdiniTwist(Vstup, i, j);
-            Vector4 Puv01 = AdiniTwist(Vstup, i, j+1);
-            Vector4 Puv10 = AdiniTwist(Vstup, i+1, j);
-            Vector4 Puv11 = AdiniTwist(Vstup, i+1, j+1);
+            Vector4 Puv01 = AdiniTwist(Vstup, i, j + 1);
+            Vector4 Puv10 = AdiniTwist(Vstup, i + 1, j);
+            Vector4 Puv11 = AdiniTwist(Vstup, i + 1, j + 1);
             /*
              * Nulove twisty
             Vector4 Puv00 = new Vector4(Vector3.Zero,1.0f);
@@ -108,18 +110,30 @@ namespace DiplomovaPracaLB
             Vector4 F = -TangentVectorU(Vstup, i - 1, j) + TangentVectorU(Vstup, i + 1, j); // /2
             Vector4 G = -Vstup[i - 1, j - 1] - Vstup[i + 1, j + 1] + Vstup[i - 1, j + 1] + Vstup[i + 1, j - 1]; // /(2*2)
 
-            return (E + F)/2 + G/4;
+            return (E + F) / 2 + G / 4;
         }
 
-        private Vector4 TangentVectorU(Vector4[,] Vstup, int i, int j)
+        private Vector4 ArrivingTangentVectorU(Vector4[,] Vstup, int i, int j)
         {
-            return tension * (Vstup[i + 1, j] - Vstup[i - 1, j]);
+            return tension * ((1 + bias) * (1 + continuity) * (Vstup[i, j] - Vstup[i - 1, j]) + (1 - bias) * (1 - continuity) * (Vstup[i + 1, j] - Vstup[i, j]));
             //TODO tu mozem pridat okrajovu podmienku ak je index i-1<0
         }
 
-        private Vector4 TangentVectorV(Vector4[,] Vstup, int i, int j)
+        private Vector4 DepartingTangentVectorU(Vector4[,] Vstup, int i, int j)
         {
-            return tension * (Vstup[i, j + 1] - Vstup[i, j - 1]);
+            return tension * ((1 + bias) * (1 - continuity) * (Vstup[i, j] - Vstup[i - 1, j]) + (1 - bias) * (1 + continuity) * (Vstup[i + 1, j] - Vstup[i, j]));
+            //TODO tu mozem pridat okrajovu podmienku ak je index i-1<0
+        }
+
+        private Vector4 ArrivingTangentVectorV(Vector4[,] Vstup, int i, int j)
+        {
+            return tension * ((1 + bias) * (1 + continuity) * (Vstup[i, j] - Vstup[i, j - 1]) + (1 - bias) * (1 - continuity) * (Vstup[i, j + 1] - Vstup[i, j]));
+            //TODO tu mozem pridat okrajovu podmienku ak je index i-1<0
+        }
+
+        private Vector4 DepartingTangentVectorV(Vector4[,] Vstup, int i, int j)
+        {
+            return tension * ((1 + bias) * (1 - continuity) * (Vstup[i, j] - Vstup[i, j - 1]) + (1 - bias) * (1 + continuity) * (Vstup[i, j + 1] - Vstup[i, j]));
             //TODO tu mozem pridat okrajovu podmienku ak je index i-1<0
         }
     }

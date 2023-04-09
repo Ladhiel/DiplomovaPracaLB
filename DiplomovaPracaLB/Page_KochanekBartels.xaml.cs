@@ -1,0 +1,196 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace DiplomovaPracaLB
+{
+    /// <summary>
+    /// Interaction logic for Page_KochanekBartels.xaml
+    /// </summary>
+    public partial class Page_KochanekBartels : Page
+    {
+        private MainWindow MW;
+        private float tension, continuity, bias;
+        TerrainData TD;
+        bool dragging;
+
+        public Page_KochanekBartels(TerrainData Displayed, MainWindow Hlavne_okno)
+        {
+            dragging = false;
+            MW = Hlavne_okno;
+            TD = Displayed; //iba referencia na teren
+            InitializeComponent();      //nacitanim hodnoty slidera sa spousti aj vykreslenie
+            
+            float default_tension = 0.0f;
+            float default_continuity;
+            float default_bias;
+            //TD.UseKochanekBartels(default_tension, default_continuity, default_bias, MW.LevelOfDetail);
+            
+        }
+
+        //-----fcie--------------
+        private void ChangeTensionParameter(float new_tension)
+        {
+            tension = new_tension;
+            ReCompute();
+        }
+
+        private void ChangeContinuityParameter(float new_con)
+        {
+            continuity = new_con;
+            ReCompute();
+        }
+
+        private void ChangeBiasParameter(float new_bias)
+        {
+            bias = new_bias;
+            ReCompute();
+        }
+
+        private void ReCompute()
+        {
+            //TD.UseKochanekBartels(tension, continuity, bias, MW.LevelOfDetail);
+            MW.glControl.Invalidate();
+        }
+
+
+        //----Slider-------------------
+        private void Slider_Tension_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            float new_tension = (float)e.NewValue;
+            TextBox_Tension.Text = new_tension.ToString();
+            if (!dragging)
+            {
+                ChangeTensionParameter((float)e.NewValue);
+            }
+        }
+
+        private void Slider_Continuity_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            float new_con = (float)e.NewValue;
+            TextBox_Continuity.Text = new_con.ToString();
+            if (!dragging)
+            {
+                ChangeContinuityParameter((float)e.NewValue);
+            }
+        }
+        private void Slider_Bias_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            float new_bias = (float)e.NewValue;
+            TextBox_Bias.Text = new_bias.ToString();
+            if (!dragging)
+            {
+                ChangeBiasParameter((float)e.NewValue);
+            }
+        }
+
+
+
+
+        //-----Thumb---------------------
+        private void Slider_ThumbDragStarted(object sender, DragStartedEventArgs e)
+        {
+            dragging = true;
+        }
+
+        private void SliderTension_ThumbDragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            MessageBox.Show((sender as TextBox).Text);
+            dragging = false;
+            ChangeTensionParameter((float)Slider_Tension.Value);
+        }
+
+        private void SliderContinuity_ThumbDragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            dragging = false;
+            ChangeContinuityParameter((float)Slider_Continuity.Value);
+        }
+
+        private void SliderBias_ThumbDragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            dragging = false;
+            ChangeBiasParameter((float)Slider_Bias.Value);
+        }
+
+        //------TextBox-------------------
+        private void TextBox_Tension_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)    //Enter
+            {
+                try
+                {
+                    float new_tension = float.Parse(TextBox_Tension.Text);
+                    if (Slider_Tension.Maximum >= new_tension && Slider_Tension.Minimum <= new_tension)
+                    {
+                        Slider_Tension.Value = new_tension;     //zmena sa iniciuje sliderom
+                    }
+                    else MessageBox.Show("Vstup mimo rozahu!");
+                }
+                catch
+                {
+                    MessageBox.Show("Nesprávny vstup!");
+                }
+            }
+        }
+
+        private void TextBox_Continuity_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)    //Enter
+            {
+                try
+                {
+                    float new_con = float.Parse(TextBox_Continuity.Text);
+                    if (Slider_Continuity.Maximum >= new_con && Slider_Continuity.Minimum <= new_con)
+                    {
+                        Slider_Continuity.Value = new_con;     //zmena sa iniciuje sliderom
+                    }
+                    else MessageBox.Show("Vstup mimo rozahu!");
+                }
+                catch
+                {
+                    MessageBox.Show("Nesprávny vstup!");
+                }
+            }
+        }
+
+        private void TextBox_Bias_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)    //Enter
+            {
+                try
+                {
+                    float new_bias = float.Parse(TextBox_Bias.Text);
+                    if (Slider_Bias.Maximum >= new_bias && Slider_Bias.Minimum <= new_bias)
+                    {
+                        Slider_Bias.Value = new_bias;     //zmena sa iniciuje sliderom
+                    }
+                    else MessageBox.Show("Vstup mimo rozahu!");
+                }
+                catch
+                {
+                    MessageBox.Show("Nesprávny vstup!");
+                }
+            }
+        }
+
+        //-----Button--------------
+        private void Button_CatmullRom_Click(object sender, RoutedEventArgs e)
+        {
+            Slider_Tension.Value = 0.0f;    //zmena sa iniciuje sliderom
+        }
+
+
+    }
+}

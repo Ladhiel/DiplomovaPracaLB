@@ -21,7 +21,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Column="1" Grid.Row="0" Margin="20,20,20,0">
+        <Grid Grid.Column="1" Grid.RowSpan="2" Margin="20,20,20,20">
             <Grid.Resources>
                 <Style TargetType="{x:Type Border}">
                     <Setter Property="Margin" Value="0,0,0,2"/>
@@ -45,7 +45,7 @@
                            <Run Text=") &#x00B7; 10&#x02C9;&#x2076;"/>
                         </TextBlock>
                     </StackPanel>
-                    <Slider x:Name="Slider_Weight" Height="26" Width="200"
+                    <Slider x:Name="Slider_Weight" Height="26" Width="220"
                             Thumb.DragStarted="Slider_Weight_ThumbDragStarted" Thumb.DragCompleted="Slider_Weight_ThumbDragCompleted" ValueChanged="Slider_Weight_Changed" 
                             Value="1.0" Maximum="1.001" Minimum="0.999" TickFrequency="0.001" TickPlacement="BottomRight" Canvas.Left="20" Canvas.Top="80" HorizontalAlignment="Center" VerticalAlignment="Top" SmallChange="0.00001" LargeChange="0.00001"/>
                     <Button x:Name="Button_ResetThisWeight" Width="120" Height="35" Click="Button_ResetThisWeight_Click" Content="Resetuj váhu" HorizontalContentAlignment="Center" Canvas.Left="20" Canvas.Top="110" HorizontalAlignment="Center" VerticalAlignment="Top">
@@ -86,6 +86,8 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
                         </Grid.RowDefinitions>
                         <Grid.Resources>
                             <Style TargetType="{x:Type Border}">
@@ -102,12 +104,19 @@
                                 <Setter Property="Margin" Value="1,1,1,1"/>
                             </Style>
                         </Grid.Resources>
+
                         <Border Grid.RowSpan="10" Background="#FF475448" Margin="-2,-2,-2,-2"/>
+
                         <Border Grid.Row="0">
                             <RadioButton x:Name="RadioButton_Kard" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" Checked="RadioButton_SplajnKard_Checked" IsChecked="True"/>
                         </Border>
-
                         <TextBlock Text="Kardinálny splajn" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+
+                        <Border Grid.Row="1">
+                            <RadioButton x:Name="RadioButton_KochanekBartels" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" Checked="RadioButton_SplajnKochanekBartels_Checked" IsChecked="True"/>
+                        </Border>
+                        <TextBlock Text="Kochanek-Bartels splajn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+
 
                     </Grid>
                 </StackPanel>
@@ -352,10 +361,7 @@
                 </Canvas>
             </Border>
         </StackPanel>
-
-        <Button Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,54,0,0" Click="Button_Click" Grid.Row="1">Button</Button>
-        <TextBox x:Name="TextBox3" HorizontalAlignment="Left" Margin="1180,637,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="310" Grid.ColumnSpan="2" Height="74" Grid.RowSpan="2"/>
-        <Slider x:Name="Slider1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Width="280" Maximum="50" TickFrequency="-2" ValueChanged="Slider_ValueChanged" Minimum="-50" Grid.Row="1" Margin="0,160,0,0"/>
+        <TextBox x:Name="TextBox3" HorizontalAlignment="Left" Margin="1013,20,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="153" Height="74" Grid.Row="1"/>
 
     </Grid>
 </Window>
