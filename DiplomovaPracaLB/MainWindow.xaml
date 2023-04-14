@@ -138,9 +138,9 @@
                 </Style>
             </StackPanel.Resources>
             <Border x:Name="Osvetlenie">
-                <Canvas Width="240" Background="Transparent">
+                <Canvas Width="250" Background="Transparent">
                     <TextBlock Grid.Row="1" Canvas.Left="10" Canvas.Top="10" FontWeight="Bold">Osvetlenie</TextBlock>
-                    <Polygon Canvas.Bottom="10" Points="0,0 30,0 0,120" Canvas.Top="20" Canvas.Right="20">
+                    <Polygon Canvas.Bottom="10" Points="0,0 30,0 0,120" Canvas.Top="20" Canvas.Right="25">
                         <Polygon.Fill>
                             <LinearGradientBrush EndPoint="0.5,0" StartPoint="0.5,1">
                                 <GradientStop Color="Black"/>
@@ -150,7 +150,7 @@
                             </LinearGradientBrush>
                         </Polygon.Fill>
                     </Polygon>
-                    <Slider x:Name="Slider_LightIntensity" Height="120" Width="26" Canvas.Right="45" Canvas.Bottom="20" ValueChanged="Slider_ChangeLightIntensity" Value="90" Maximum="100" TickFrequency="10" TickPlacement="BottomRight" Minimum="40" Orientation="Vertical"/>
+                    <Slider x:Name="Slider_LightIntensity" Height="120" Width="26" Canvas.Right="50" Canvas.Bottom="20" ValueChanged="Slider_ChangeLightIntensity" Value="90" Maximum="100" TickFrequency="10" TickPlacement="BottomRight" Minimum="40" Orientation="Vertical"/>
                     <Grid Canvas.Bottom="20" Canvas.Left="25">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="40"/>
@@ -218,7 +218,39 @@
                     </Grid>
                 </Canvas>
             </Border>
+            <Border x:Name="LevelDetailu">
+                <Canvas Width="180" Background="Transparent">
+                    <TextBlock Canvas.Left="10" Canvas.Top="10" FontWeight="Bold">Level detailov</TextBlock>
+                    <Grid Canvas.Top="70" Canvas.Left="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="40"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35"/>
+                        </Grid.RowDefinitions>
+                        <Button x:Name="Button_LODminus" Click="Button_LODminus_Click" Grid.Column="0" Content="–" HorizontalContentAlignment="Center">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="4,0,0,4"/>
+                                    <Setter Property="BorderBrush" Value="#FF475448"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
 
+                        <Button x:Name="Button_LODplus" Click="Button_LODplus_Click" Grid.Column="2" Content="+" HorizontalContentAlignment="Center">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="0,4,4,0"/>
+                                    <Setter Property="BorderBrush" Value="#FF475448"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                        <TextBox x:Name="TextBox_LOD" Grid.Column="1" Text="3" TextAlignment="Center" VerticalContentAlignment="Center" KeyDown="TextBox_LOD_KeyDown"/>
+                    </Grid>
+                </Canvas>
+            </Border>
             <Border x:Name="Zobrazenie">
                 <Canvas Width="310" Background="Transparent">
 
@@ -288,42 +320,10 @@
                 </Canvas>
             </Border>
 
-            <Border x:Name="LevelDetailu">
-                <Canvas Width="180" Background="Transparent">
-                    <TextBlock Canvas.Left="10" Canvas.Top="10" FontWeight="Bold">Level detailov</TextBlock>
-                    <Grid Canvas.Top="70" Canvas.Left="20">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40"/>
-                            <ColumnDefinition Width="60"/>
-                            <ColumnDefinition Width="40"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="35"/>
-                        </Grid.RowDefinitions>
-                        <Button x:Name="Button_LODminus" Click="Button_LODminus_Click" Grid.Column="0" Content="–" HorizontalContentAlignment="Center">
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="4,0,0,4"/>
-                                    <Setter Property="BorderBrush" Value="#FF475448"/>
-                                </Style>
-                            </Button.Resources>
-                        </Button>
-
-                        <Button x:Name="Button_LODplus" Click="Button_LODplus_Click" Grid.Column="2" Content="+" HorizontalContentAlignment="Center">
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="0,4,4,0"/>
-                                    <Setter Property="BorderBrush" Value="#FF475448"/>
-                                </Style>
-                            </Button.Resources>
-                        </Button>
-                        <TextBox x:Name="TextBox_LOD" Grid.Column="1" Text="3" TextAlignment="Center" VerticalContentAlignment="Center" KeyDown="TextBox_LOD_KeyDown"/>
-                    </Grid>
-                </Canvas>
-            </Border>
+            
 
             <Border x:Name="tienovanie">
-                <Canvas Width="220" Background="Transparent">
+                <Canvas Width="210" Background="Transparent">
                     <TextBlock Canvas.Left="10" Canvas.Top="10" FontWeight="Bold">Typ tieňovania</TextBlock>
                     <Grid Canvas.Top="70" Canvas.Left="25">
                         <Grid.ColumnDefinitions>
