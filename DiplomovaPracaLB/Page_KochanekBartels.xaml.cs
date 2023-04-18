@@ -34,9 +34,9 @@ namespace DiplomovaPracaLB
             InitializeComponent();      //nacitanim hodnoty slidera sa spousti aj vykreslenie
             
             float default_tension = 0.0f;
-            float default_continuity;
-            float default_bias;
-            //TD.UseKochanekBartels(default_tension, default_continuity, default_bias, MW.LevelOfDetail);
+            float default_continuity = 0.0f;
+            float default_bias = 0.0f;
+            TD.UseKochanekBartels(default_tension, default_continuity, default_bias, MW.LevelOfDetail);
             
         }
 
@@ -61,7 +61,7 @@ namespace DiplomovaPracaLB
 
         private void ReCompute()
         {
-            //TD.UseKochanekBartels(tension, continuity, bias, MW.LevelOfDetail);
+            TD.UseKochanekBartels(tension, continuity, bias, MW.LevelOfDetail);
             MW.glControl.Invalidate();
         }
 
@@ -70,7 +70,7 @@ namespace DiplomovaPracaLB
         private void Slider_Tension_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             float new_tension = (float)e.NewValue;
-            TextBox_Tension.Text = new_tension.ToString();
+            TextBox_Tension.Text = Math.Round(new_tension, 5).ToString();
             if (!dragging)
             {
                 ChangeTensionParameter((float)e.NewValue);
@@ -80,7 +80,7 @@ namespace DiplomovaPracaLB
         private void Slider_Continuity_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             float new_con = (float)e.NewValue;
-            TextBox_Continuity.Text = new_con.ToString();
+            TextBox_Continuity.Text = Math.Round(new_con, 5).ToString();
             if (!dragging)
             {
                 ChangeContinuityParameter((float)e.NewValue);
@@ -89,7 +89,7 @@ namespace DiplomovaPracaLB
         private void Slider_Bias_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             float new_bias = (float)e.NewValue;
-            TextBox_Bias.Text = new_bias.ToString();
+            TextBox_Bias.Text = Math.Round(new_bias, 5).ToString();
             if (!dragging)
             {
                 ChangeBiasParameter((float)e.NewValue);
@@ -107,7 +107,6 @@ namespace DiplomovaPracaLB
 
         private void SliderTension_ThumbDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            MessageBox.Show((sender as TextBox).Text);
             dragging = false;
             ChangeTensionParameter((float)Slider_Tension.Value);
         }

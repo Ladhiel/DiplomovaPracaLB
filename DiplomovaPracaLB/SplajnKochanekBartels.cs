@@ -106,8 +106,8 @@ namespace DiplomovaPracaLB
         private Vector4 AdiniTwist(Vector4[,] Vstup, int i, int j)
         {
             //float delta = 2 = 1+1 = dlzka 2 intervalov
-            Vector4 E = -TangentVectorV(Vstup, i, j - 1) + TangentVectorV(Vstup, i, j + 1); // /2
-            Vector4 F = -TangentVectorU(Vstup, i - 1, j) + TangentVectorU(Vstup, i + 1, j); // /2
+            Vector4 E = -ArrivingTangentVectorV(Vstup, i, j - 1) + DepartingTangentVectorV(Vstup, i, j + 1); // /2
+            Vector4 F = -ArrivingTangentVectorU(Vstup, i - 1, j) + DepartingTangentVectorU(Vstup, i + 1, j); // /2
             Vector4 G = -Vstup[i - 1, j - 1] - Vstup[i + 1, j + 1] + Vstup[i - 1, j + 1] + Vstup[i + 1, j - 1]; // /(2*2)
 
             return (E + F) / 2 + G / 4;
