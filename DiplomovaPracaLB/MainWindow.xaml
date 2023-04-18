@@ -32,10 +32,10 @@
             </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="200"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="200"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="1" x:Name="Váhy" CornerRadius="0,0,0,0">
+            <Border Grid.Row="2" x:Name="Váhy" CornerRadius="0,0,4,4">
                 <Canvas>
                     <TextBlock Grid.Row="0" Text="» Nastaviteľné váhy bodov" Canvas.Top="10" Canvas.Left="28" TextAlignment="Right"/>
                     <StackPanel  Orientation="Horizontal" Canvas.Left="20" Canvas.Top="40" Height="35">
@@ -67,7 +67,7 @@
 
                 </Canvas>
             </Border>
-            <Border Grid.Row="2" x:Name="Parametre_pre_slidy" CornerRadius="0,0,4,4">
+            <Border Grid.Row="1" x:Name="Parametre_pre_slidy" CornerRadius="0,0,0,0">
                 <Grid Margin="10,10,10,10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -220,7 +220,7 @@
             </Border>
             <Border x:Name="LevelDetailu">
                 <Canvas Width="180" Background="Transparent">
-                    <TextBlock Canvas.Left="10" Canvas.Top="10" FontWeight="Bold">Level detailov</TextBlock>
+                    <TextBlock Canvas.Left="10" Canvas.Top="10" FontWeight="Bold">Úroveň detailov</TextBlock>
                     <Grid Canvas.Top="70" Canvas.Left="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="40"/>

@@ -74,14 +74,14 @@ namespace DiplomovaPracaLB
             selectedShadingType = TypeOfShading.FLAT;
 
             //Spracovanie
-            //TerrainData MatlabDataSet1 = new MatlabTerrainData("TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
-            //TerrainData HeightmapData1 = new HeightmapTerrainData("HeightmapSmaller.png");
-            TerrainData GeoTiff1 = new TerrainDataGeoTiff("2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
+            TerrainData MatlabDataSet1 = new TerrainDataMatlab("TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
+            //TerrainData HeightmapData1 = new TerrainDataHeightmap("HeightmapSmaller.png");
+            //TerrainData GeoTiff1 = new TerrainDataGeoTiff("2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
 
             //Ktory sa ma zobrazit
-            //DisplayedTerrain = MatlabDataSet1;
+            DisplayedTerrain = MatlabDataSet1;
             //DisplayedTerrain = HeightmapData1;
-            DisplayedTerrain = GeoTiff1;
+            //DisplayedTerrain = GeoTiff1;
             LevelOfDetail = 3;
 
             InitializeComponent();  //az teraz sa nacita okno
@@ -297,8 +297,6 @@ namespace DiplomovaPracaLB
 
         public void DrawPoints(Vector4[,] Vertices)
         {
-            //zdroj https://gdbooks.gitbooks.io/legacyopengl/content/Chapter3/Points.html
-
             Vector3 z_eps = new Vector3(0.0f, 0.0f, 0.0055f);
 
             float[] point_color = { 0.3f, 0.3f, 0.3f };
@@ -559,8 +557,10 @@ namespace DiplomovaPracaLB
                 float new_weight;
                 try
                 {
-                    new_weight = float.Parse(TextBox_Weight.Text);
-                    if (Slider_Weight.Maximum >= new_weight && Slider_Weight.Minimum <= new_weight)
+                    new_weight = 1+float.Parse(TextBox_Weight.Text)/1000000;
+                    double lower = Slider_Weight.Minimum;
+                    double upper = Slider_Weight.Maximum;
+                    if (lower <= new_weight && upper >= new_weight )
                     {
                         Slider_Weight.Value = new_weight;     //zmena sa iniciuje sliderom
                     }
@@ -747,7 +747,7 @@ namespace DiplomovaPracaLB
 
         private void ChangeLevelOfDetail(int new_LOD)
         {
-            if (new_LOD >= 0 && new_LOD <= 10)
+            if (new_LOD >= 0 && new_LOD <= 100)
             {
                 LevelOfDetail = new_LOD;
                 TextBox_LOD.Text = new_LOD.ToString();      //toto je len pre buttony; pre textbox sa nic nezmeni, ale lepsie prepisat na to iste, nez na zle a zase naspat.
