@@ -37,8 +37,6 @@ namespace DiplomovaPracaLB
             {
                 u[i] = v[0] * M[0, i] + v[1] * M[1, i] + v[2] * M[2, i] + v[3] * M[3, i];
             }
-            Console.WriteLine(v[0] + " " + v[1] + " " + v[2] + " " + v[3] + " ] * matica =");
-            Console.WriteLine("= " + u[0] + " " + u[1] + " " + u[2] + " " + u[3]);
             return u;
         }
 
@@ -51,8 +49,6 @@ namespace DiplomovaPracaLB
             {
                 u[i] = v[0] * M[0, i] + v[1] * M[1, i] + v[2] * M[2, i];
             }
-            Console.WriteLine(v[0] + " " + v[1] + " " + v[2] + " ] * matica =");
-            Console.WriteLine("= " + u[0] + " " + u[1] + " " + u[2]);
             return u; //vysledny je akoby riadkovy
         }
 
@@ -66,8 +62,6 @@ namespace DiplomovaPracaLB
                 u[i] = M[i, 0] * v[0] + M[i, 1] * v[1] + M[i, 2] * v[2] + M[i, 3] * v[3];
 
             }
-            Console.WriteLine(v[0] + " " + v[1] + " " + v[2] + " " + v[3] + " ] * matica =");
-            Console.WriteLine("= " + u[0] + " " + u[1] + " " + u[2] + " " + u[3]);
             return u;   //vysledny je akoby stlpcovy
         }
 
@@ -81,8 +75,6 @@ namespace DiplomovaPracaLB
                 u[i] = M[i, 0] * v[0] + M[i, 1] * v[1] + M[i, 2] * v[2];
 
             }
-            Console.WriteLine(v[0] + " " + v[1] + " " + v[2] + " ] * matica =");
-            Console.WriteLine("= " + u[0] + " " + u[1] + " " + u[2]);
             return u;   //vysledny je akoby stlpcovy
         }
 
