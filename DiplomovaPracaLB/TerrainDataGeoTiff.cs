@@ -30,7 +30,7 @@ namespace DiplomovaPracaLB
     {
         public TerrainDataGeoTiff(string file_name, int num_of_tiles_x, int num_of_tiles_y)
         {
-            InputDataPoints = GeoTiffDataFromCSV(file_name, num_of_tiles_x, num_of_tiles_y);
+            OriginalDataPoints = GeoTiffDataFromCSV(file_name, num_of_tiles_x, num_of_tiles_y);
             Initialize();
         }
 

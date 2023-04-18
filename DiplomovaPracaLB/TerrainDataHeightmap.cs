@@ -33,7 +33,7 @@ namespace DiplomovaPracaLB
         public TerrainDataHeightmap(string file_name)
         {
             Heightmap = LoadHeightmap(file_name);
-            InputDataPoints = CreatePoints();
+            OriginalDataPoints = CreatePoints();
 
             Initialize();
         }
@@ -49,22 +49,24 @@ namespace DiplomovaPracaLB
             Bitmap map = (Bitmap)System.Drawing.Image.FromFile(file_name);   //bitmapa je Color[,]
 
 
-            //m = map.Width; n = map.Height;
+            a = map.Width; b = map.Height;
+            int start_width = 0; 
+            int start_height = 0;
 
             /*
             int start_width = 7 * map.Width / 8;
             int end_width = 15 * map.Width / 16;
             int start_height = 13 * map.Height / 32;
             int end_height = 15 * map.Height / 32;
-            */
+            
             int start_width = 0;
             int end_width = map.Width / 3;
             int start_height = 0;
             int end_height = map.Height / 3;
-
+            
             a = end_width - start_width;
             b = end_height - start_height;
-
+            */
 
             byte[,] H = new byte[a, b]; //heightmapa
 
@@ -110,7 +112,7 @@ namespace DiplomovaPracaLB
                                 //Points[i, j] = new Vector3(i*samplingSize, j*samplingSize,z );
                     float w = 1.0f; //zaciatocna vaha 
 
-                    Points[i, j] = new Vector4(i, j, z, w);
+                    Points[i, j] = new Vector4(i*3, j*3, z, w);
                 }
             }
 

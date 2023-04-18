@@ -32,7 +32,7 @@ namespace DiplomovaPracaLB
         {
             a = hmap_num_patterns + 1;
             b = hmap_num_patterns + 1;
-            InputDataPoints = MatlabDataIntoGrid(MatlabDataLoadText(file_name));
+            OriginalDataPoints = MatlabDataIntoGrid(MatlabDataLoadText(file_name));
 
             Initialize();
 

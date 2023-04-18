@@ -29,18 +29,43 @@ namespace DiplomovaPracaLB
 
     public abstract class TerrainData
     {
-        
+        protected Vector4[,] OriginalDataPoints;
         public Vector4[,] InputDataPoints;      //body na vstupe
         public Vector4[,] InputDataPointsOriginal;      //body s povodnymi vahami
         private Splajn Interpolation;
         public Vector3 posunutie;
         public Matrix3 skalovanie;
-        
+
+        private int density = 10;  //hustota podmnoziny datasetu    
+        private int[] border = new int[2];   //hranicne indexy pre porovnavaciu mriezku
+
         protected void Initialize()
         {
-            //InputData su uz nacitane
+            //OriginalData su uz nacitane
+            InputDataPoints = SelectSampleFromOrigData(density);
             SkopirujUdaje(InputDataPoints, ref InputDataPointsOriginal);
             FindExtremalCoordinates();
+        }
+
+        private Vector4[,] SelectSampleFromOrigData(int c)
+        {
+            int a = OriginalDataPoints.GetLength(0) / c; //vyuzivam celociselne delenie
+            int b = OriginalDataPoints.GetLength(1) / c;
+
+            border[0] = c * a;   
+            border[1] = c * b;
+
+            Vector4[,] IDP = new Vector4[a+1, b+1];
+
+            for (int i = 0; i * c < OriginalDataPoints.GetLength(0); i++)
+            {
+                for (int j = 0; j * c < OriginalDataPoints.GetLength(1); j++)
+                {
+                    IDP[i, j] = OriginalDataPoints[i * c, j * c];
+                }
+            }
+
+            return IDP;
         }
 
         public void ReInterpolate(int new_LOD)
