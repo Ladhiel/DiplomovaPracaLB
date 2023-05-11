@@ -581,14 +581,17 @@ namespace DiplomovaPracaLB
 
         private void Slider_Weight_ThumbDragCompleted(object sender, DragCompletedEventArgs e)
         {
+            if (ActivePoint_m_index > -1)
+            {
             do_not_recompute = false;
             RecomputeWeight((float)Slider_Weight.Value);
+        }
         }
 
         private void Slider_Weight_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             TextBox_Weight.Text = Math.Round((Slider_Weight.Value-1)*1000000, 0).ToString();
-            if (!do_not_recompute && ActivePoint_m_index > 0)       //niekedy je prekreslenie ziadane, niekedy nie
+            if (!do_not_recompute && ActivePoint_m_index > -1)       //niekedy je prekreslenie ziadane, niekedy nie
             {
                 RecomputeWeight((float)Slider_Weight.Value);
             }
@@ -596,7 +599,7 @@ namespace DiplomovaPracaLB
 
         private void Button_ResetThisWeight_Click(object sender, RoutedEventArgs e)
         {
-            if (DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index].W != 1.0f) //ak je vaha 1, netreba nic prepisovat a teda ani prekreslovat
+            if (ActivePoint_m_index > -1 &&  DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index].W != 1.0f) //ak je vaha 1, netreba nic prepisovat a teda ani prekreslovat
             {
                 DisplayedTerrain.ResetThisWeight(ActivePoint_m_index, ActivePoint_n_index);
                 do_not_recompute = true;    //aby sa neprekreslovalo 2x
