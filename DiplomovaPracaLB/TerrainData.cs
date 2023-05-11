@@ -76,6 +76,9 @@ namespace DiplomovaPracaLB
 
         public void ReInterpolate(int active_m_index, int active_n_index, float new_weight)
         {
+            InputDataPoints[active_m_index, active_n_index].X *= new_weight;
+            InputDataPoints[active_m_index, active_n_index].Y *= new_weight;
+            InputDataPoints[active_m_index, active_n_index].Z *= new_weight;
             InputDataPoints[active_m_index, active_n_index].W = new_weight;
             Interpolation.New(InputDataPoints);
         }
