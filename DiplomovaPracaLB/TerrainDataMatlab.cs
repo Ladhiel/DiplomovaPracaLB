@@ -35,10 +35,7 @@ namespace DiplomovaPracaLB
             OriginalDataPoints = MatlabDataIntoGrid(MatlabDataLoadText(file_name));
 
             Initialize();
-
-            //test zmeny na Gite
         }
-
 
         private List<Vector4> MatlabDataLoadText(string file_name)
         {
@@ -67,20 +64,14 @@ namespace DiplomovaPracaLB
                 {
                     //msg.MessageBox.Show("snazi sa nacitat prazdny riadok");
                 }
-
-
                 line = streamReader.ReadLine();
-
             }
-
             return LD;
         }
 
-
         private Vector4[,] MatlabDataIntoGrid(List<Vector4> LD)
         {
-
-            //Viem, ze matlab text subor ma 257*257 raidkov, kazdych 257 riadkov je jeden riadok v suradnici x pri pevnom y.
+            //Vieme, ze matlab text subor ma 257*257 raidkov, kazdych 257 riadkov je jeden riadok v suradnici x pri pevnom y.
             Vector4[,] PlanarGrid = new Vector4[a, b];
             int k = 0;
             for (int j = 0; j < b; j++)

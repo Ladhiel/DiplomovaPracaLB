@@ -29,7 +29,6 @@ namespace DiplomovaPracaLB
     public class TerrainDataHeightmap : TerrainData
     {
         private byte[,] Heightmap;
-        private int a, b;
         public TerrainDataHeightmap(string file_name)
         {
             Heightmap = LoadHeightmap(file_name);
@@ -38,7 +37,7 @@ namespace DiplomovaPracaLB
             Initialize();
         }
 
-        public byte[,] LoadHeightmap(string file_name)
+        private byte[,] LoadHeightmap(string file_name)
         {
             //Image je abstraktna trieda
             //Bitmapa je podtrieda Image
@@ -48,38 +47,12 @@ namespace DiplomovaPracaLB
 
             Bitmap map = (Bitmap)System.Drawing.Image.FromFile(file_name);   //bitmapa je Color[,]
 
-
-            a = map.Width; b = map.Height;
-            int start_width = 0; 
-            int start_height = 0;
-
-            /*
-            int start_width = 7 * map.Width / 8;
-            int end_width = 15 * map.Width / 16;
-            int start_height = 13 * map.Height / 32;
-            int end_height = 15 * map.Height / 32;
-            
-            int start_width = 0;
-            int end_width = map.Width / 3;
-            int start_height = 0;
-            int end_height = map.Height / 3;
-            
-            a = end_width - start_width;
-            b = end_height - start_height;
-            */
-
-            byte[,] H = new byte[a, b]; //heightmapa
-
-            for (int j = 0; j < b; j++)
+            byte[,] H = new byte[map.Width, map.Height]; //heightmapa
+            for (int j = 0; j < H.GetLength(1); j++)
             {
-                for (int i = 0; i < a; i++)
+                for (int i = 0; i < H.GetLength(0); i++)
                 {
-
-                    System.Drawing.Color color = map.GetPixel(start_width + i, start_height + j);
-                    //obraz je sedotonovy, stanci sa pozriet bez ujmy na vseobecnost na 1 farbeny udaj z RGB (nie alfa)
-                    byte h = color.R; //hodnota vysky, byty su od 0 po 255
-                    H[i, j] = h;
-                    //Console.WriteLine(color + " ");
+                    H[i, j] = map.GetPixel(i, j).R;//obraz je sedotonovy, hodnota vysky, byty su od 0 po 255
                 }
             }
 
@@ -88,36 +61,25 @@ namespace DiplomovaPracaLB
 
         private Vector4[,] CreatePoints()
         {
-
             //idem tu vela prenasobovat, aby som dostala realne cisla udajov (v metroch)
             //zmenu hodnot na metre mozno mozem obist, aby som sa vyhla stratam presnosti na numerickych vypctoch
             //ale! pomer x a z treba zachovat, pretoze to bude dolezite pri detekcii spicov, hrebenov; kvoli stupaniu
 
 
-            Vector4[,] Points = new Vector4[a, b]; //to-be IterpolatedPoints
-
-            for (int j = 0; j < b; j++)
+            Vector4[,] Points = new Vector4[Heightmap.GetLength(0), Heightmap.GetLength(1)]; //to-be IterpolatedPoints
+            for (int j = 0; j < Heightmap.GetLength(1); j++)
             {
-                for (int i = 0; i < a; i++)
+                for (int i = 0; i < Heightmap.GetLength(0); i++)
                 {
-
-                    //ked x1 po x2 su vzdialene o 1, predtavuje to 30 m
-                    //z1 od z2 ak su vzidalene o 
-
-
-                    float h = Heightmap[i, j];
                     //transformacia intervalov stary x patri [a,b] na novy y patri [c,d]; y=c+(x-a)*(d-c)/(b-a);          
                     //double z = Heightmap[i, j] * (max_height - min_height) / (255 - 0) + min_height;          
-                    float z = h;// * (100 -0) / (255 - 0) ;   //zatial to preskaluvavam do stvorca 100^3
+                    float z = Heightmap[i, j];// * (100 -0) / (255 - 0) ;   //zatial to preskaluvavam do stvorca 100^3
                                 //Points[i, j] = new Vector3(i*samplingSize, j*samplingSize,z );
-                    float w = 1.0f; //zaciatocna vaha 
-
-                    Points[i, j] = new Vector4(i*3, j*3, z, w);
+                    Points[i, j] = new Vector4(i*3, j*3, z, 1.0f); //tie trojky potom nahradit realnou hornodtou vzdialenosti
                 }
             }
 
             return Points;
         }
-
     }
 }
