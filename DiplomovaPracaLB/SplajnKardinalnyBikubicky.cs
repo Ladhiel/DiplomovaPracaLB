@@ -71,21 +71,21 @@ namespace DiplomovaPracaLB
 
             Vector4 P00 = Vstup[i, j];
             Vector4 P01 = Vstup[i, j + 1];
-            Vector4 P10 = Vstup[i+ 1, j];
-            Vector4 P11 = Vstup[i+1, j+ 1];
+            Vector4 P10 = Vstup[i + 1, j];
+            Vector4 P11 = Vstup[i + 1, j + 1];
             Vector4 Pu00 = TangentVectorU(Vstup, i, j);
-            Vector4 Pu01 = TangentVectorU(Vstup, i, j+1);
-            Vector4 Pu10 = TangentVectorU(Vstup, i+1, j);
-            Vector4 Pu11 = TangentVectorU(Vstup, i+1, j+1);
+            Vector4 Pu01 = TangentVectorU(Vstup, i, j + 1);
+            Vector4 Pu10 = TangentVectorU(Vstup, i + 1, j);
+            Vector4 Pu11 = TangentVectorU(Vstup, i + 1, j + 1);
             Vector4 Pv00 = TangentVectorV(Vstup, i, j);
             Vector4 Pv01 = TangentVectorV(Vstup, i, j + 1);
             Vector4 Pv10 = TangentVectorV(Vstup, i + 1, j);
             Vector4 Pv11 = TangentVectorV(Vstup, i + 1, j + 1);
-            
+
             Vector4 Puv00 = AdiniTwist(Vstup, i, j);
-            Vector4 Puv01 = AdiniTwist(Vstup, i, j+1);
-            Vector4 Puv10 = AdiniTwist(Vstup, i+1, j);
-            Vector4 Puv11 = AdiniTwist(Vstup, i+1, j+1);
+            Vector4 Puv01 = AdiniTwist(Vstup, i, j + 1);
+            Vector4 Puv10 = AdiniTwist(Vstup, i + 1, j);
+            Vector4 Puv11 = AdiniTwist(Vstup, i + 1, j + 1);
             /*
              * Nulove twisty
             Vector4 Puv00 = new Vector4(Vector3.Zero,1.0f);
@@ -108,7 +108,7 @@ namespace DiplomovaPracaLB
             Vector4 F = -TangentVectorU(Vstup, i - 1, j) + TangentVectorU(Vstup, i + 1, j); // /2
             Vector4 G = -Vstup[i - 1, j - 1] - Vstup[i + 1, j + 1] + Vstup[i - 1, j + 1] + Vstup[i + 1, j - 1]; // /(2*2)
 
-            return (E + F)/2 + G/4;
+            return (E + F) / 2 + G / 4;
         }
 
         //pri výpočte vektorov preba prejsť do nehomogénnych súradníc, aby váha vektora bola = 0!

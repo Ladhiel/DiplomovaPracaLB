@@ -557,7 +557,7 @@ namespace DiplomovaPracaLB
                 float new_weight;
                 try
                 {
-                    new_weight = 1+float.Parse(TextBox_Weight.Text)/1000000;
+                    new_weight = 1+float.Parse(TextBox_Weight.Text)/10000;
                     double lower = Slider_Weight.Minimum;
                     double upper = Slider_Weight.Maximum;
                     if (lower <= new_weight && upper >= new_weight )
@@ -583,14 +583,14 @@ namespace DiplomovaPracaLB
         {
             if (ActivePoint_m_index > -1)
             {
-            do_not_recompute = false;
-            RecomputeWeight((float)Slider_Weight.Value);
-        }
+                do_not_recompute = false;
+                RecomputeWeight((float)Slider_Weight.Value);
+            }
         }
 
         private void Slider_Weight_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            TextBox_Weight.Text = Math.Round((Slider_Weight.Value-1)*1000000, 0).ToString();
+            TextBox_Weight.Text = Math.Round((Slider_Weight.Value-1)*10000, 0).ToString();
             if (!do_not_recompute && ActivePoint_m_index > -1)       //niekedy je prekreslenie ziadane, niekedy nie
             {
                 RecomputeWeight((float)Slider_Weight.Value);

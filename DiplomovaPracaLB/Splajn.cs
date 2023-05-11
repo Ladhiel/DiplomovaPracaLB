@@ -40,7 +40,7 @@ namespace DiplomovaPracaLB
             return IP;
         }
 
-        public Vector3 Rationall(Vector4 vertex)
+        public Vector3 Rational(Vector4 vertex)
         {
             //z homogennych do afinnych suradnic
             if (vertex[3] == 0)
@@ -73,12 +73,8 @@ namespace DiplomovaPracaLB
         {
             //normalove vektory su pocitane pre vsetky stvorceky, kt pocet je v danom smere o 1 menej ako bodov
 
-            /*
             Vector3 u = Rational(V10) - Rational(V00);  //musim previes na vahu 1, aby rozdiel bol vektor
             Vector3 v = Rational(V01) - Rational(V00);
-            */
-            Vector3 u = new Vector3(V10 - V00);  //musim previes na vahu 1, aby rozdiel bol vektor
-            Vector3 v = new Vector3(V01 - V00);
             Vector3 c = Vector3.Cross(u, v);
             //niekedy su vrcholy usporiadane zostupne a niekedy opacne v datasete, ale chcem aby normaly smerovali "hore. nemam taky pripad datasetu, ze by tam boli previsy
             //test, ci zvieraju ostry uhol, tj ked skal.sucin je >0 (ked =0, tak je jedno)

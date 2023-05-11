@@ -37,7 +37,7 @@ namespace DiplomovaPracaLB
         public Vector3 posunutie;
         public Matrix3 skalovanie;
     
-        private int density = 10;  //hustota podmnoziny datasetu    
+        private int density = 2;  //hustota podmnoziny datasetu    
         private int[] border = new int[2];   //hranicne indexy pre porovnavaciu mriezku
 
         protected void Initialize()
@@ -51,13 +51,13 @@ namespace DiplomovaPracaLB
             private Vector4[,] SelectSampleFromOrigData(int dens)
         {
             //zapamatam ohranicenie mriezky, z kt. vyberam sample
-            int a = (OriginalDataPoints.GetLength(0) -1)/ dens; //vyuzivam celociselne delenie
-            int b = (OriginalDataPoints.GetLength(1) -1)/ dens;
+            int a = (OriginalDataPoints.GetLength(0) - 1) / dens; //vyuzivam celociselne delenie
+            int b = (OriginalDataPoints.GetLength(1) - 1) / dens;
 
             border[0] = dens * a;   
             border[1] = dens * b;
 
-            Vector4[,] IDP = new Vector4[a+1, b+1];
+            Vector4[,] IDP = new Vector4[a + 1, b + 1];
 
             for (int i = 0; i * dens < OriginalDataPoints.GetLength(0); i++)
             {
@@ -107,7 +107,7 @@ namespace DiplomovaPracaLB
 
         public void ResetThisWeight(int i, int j)
         {
-            InputDataPoints[i,j] = new Vector4(InputDataPointsOriginal[i,j]);
+            InputDataPoints[i, j] = new Vector4(InputDataPointsOriginal[i, j]);
             Interpolation.New(InputDataPoints);
         }
 
@@ -117,11 +117,11 @@ namespace DiplomovaPracaLB
             int b = Odkial.GetLength(1);
             Kam = new Vector4[a, b];
 
-            for(int i=0; i<a;i++)
+            for (int i = 0; i < a; i++)
             {
-                for (int j = 0;j< b;j++)
+                for (int j = 0; j < b; j++)
                 {
-                    Kam[i,j] = new Vector4(Odkial[i,j]);
+                    Kam[i, j] = new Vector4(Odkial[i, j]);
                 }
             }
         }
