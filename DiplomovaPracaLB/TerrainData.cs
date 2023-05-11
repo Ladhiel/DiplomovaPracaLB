@@ -29,9 +29,10 @@ namespace DiplomovaPracaLB
 
     public abstract class TerrainData
     {
-        protected Vector4[,] OriginalDataPoints;
-        public Vector4[,] InputDataPoints;      //body na vstupe
-        public Vector4[,] InputDataPointsOriginal;      //body s povodnymi vahami
+        protected Vector4[,] OriginalDataPoints;    //cely dataset bodov
+        public Vector4[,] InputDataPointsOriginal;  //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity, s povodnymi vahami
+        public Vector4[,] InputDataPoints;          //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity
+        
         private Splajn Interpolation;
         public Vector3 posunutie;
         public Matrix3 skalovanie;
@@ -161,7 +162,7 @@ namespace DiplomovaPracaLB
             skalovanie = Matrix3.CreateScale(2 / scale, 2 / scale, 2 / scale);
         }
 
-        //-----Getters
+        //-----Getters------------------------------------------------------------------
 
         public Vector4[,] GetInterpolationPoints()
         {

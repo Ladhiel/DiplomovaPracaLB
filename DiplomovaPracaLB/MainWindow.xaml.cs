@@ -75,13 +75,13 @@ namespace DiplomovaPracaLB
 
             //Spracovanie
             TerrainData MatlabDataSet1 = new TerrainDataMatlab("TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
-            //TerrainData HeightmapData1 = new TerrainDataHeightmap("HeightmapSmaller.png");
-            //TerrainData GeoTiff1 = new TerrainDataGeoTiff("2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
+            TerrainData HeightmapData1 = new TerrainDataHeightmap("HeightmapSmaller.png");
+            TerrainData GeoTiff1 = new TerrainDataGeoTiff("2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
 
             //Ktory sa ma zobrazit
-            DisplayedTerrain = MatlabDataSet1;
+            //DisplayedTerrain = MatlabDataSet1;
             //DisplayedTerrain = HeightmapData1;
-            //DisplayedTerrain = GeoTiff1;
+            DisplayedTerrain = GeoTiff1;
             LevelOfDetail = 3;
 
             InitializeComponent();  //az teraz sa nacita okno
