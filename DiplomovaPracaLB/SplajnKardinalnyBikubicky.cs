@@ -52,9 +52,9 @@ namespace DiplomovaPracaLB
                         for (int l = 0; l <= LOD + 1; l++)   //skarede - uz 4. vnoreny cyklus
                         {
                             w = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[3]), Ht[l]);
-                            x = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[0]), Ht[l])*w;
-                            y = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[1]), Ht[l])*w;
-                            z = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[2]), Ht[l])*w;
+                            x = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[0]), Ht[l]);
+                            y = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[1]), Ht[l]);
+                            z = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[2]), Ht[l]);
 
                             IP[a + k, b + l] = new Vector4(x, y, z, w);
                         }
@@ -111,16 +111,16 @@ namespace DiplomovaPracaLB
             return (E + F)/2 + G/4;
         }
 
+        //pri výpočte vektorov preba prejsť do nehomogénnych súradníc, aby váha vektora bola = 0!
         private Vector4 TangentVectorU(Vector4[,] Vstup, int i, int j)
         {
-            return tension * (Vstup[i + 1, j] - Vstup[i - 1, j]);
-            //TODO tu mozem pridat okrajovu podmienku ak je index i-1<0
+            //vektor nech je vektor, tak nech je vaha nula
+            return tension * new Vector4(Rational(Vstup[i + 1, j]) - Rational(Vstup[i - 1, j]), 0.0f);
         }
 
         private Vector4 TangentVectorV(Vector4[,] Vstup, int i, int j)
         {
-            return tension * (Vstup[i, j + 1] - Vstup[i, j - 1]);
-            //TODO tu mozem pridat okrajovu podmienku ak je index i-1<0
+            return tension * new Vector4(Rational(Vstup[i, j + 1]) - Rational(Vstup[i, j - 1]), 0.0f);
         }
     }
 }
