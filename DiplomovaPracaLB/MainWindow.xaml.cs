@@ -79,9 +79,9 @@ namespace DiplomovaPracaLB
             TerrainData GeoTiff1 = new TerrainDataGeoTiff("2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
 
             //Ktory sa ma zobrazit
-            //DisplayedTerrain = MatlabDataSet1;
+            DisplayedTerrain = MatlabDataSet1;
             //DisplayedTerrain = HeightmapData1;
-            DisplayedTerrain = GeoTiff1;
+            //DisplayedTerrain = GeoTiff1;
             LevelOfDetail = 3;
 
             InitializeComponent();  //az teraz sa nacita okno
@@ -557,7 +557,7 @@ namespace DiplomovaPracaLB
                 float new_weight;
                 try
                 {
-                    new_weight = 1+float.Parse(TextBox_Weight.Text)/10000;
+                    new_weight = float.Parse(TextBox_Weight.Text);
                     double lower = Slider_Weight.Minimum;
                     double upper = Slider_Weight.Maximum;
                     if (lower <= new_weight && upper >= new_weight )
@@ -590,7 +590,7 @@ namespace DiplomovaPracaLB
 
         private void Slider_Weight_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            TextBox_Weight.Text = Math.Round((Slider_Weight.Value-1)*10000, 0).ToString();
+            TextBox_Weight.Text = Math.Round(Slider_Weight.Value,4).ToString();
             if (!do_not_recompute && ActivePoint_m_index > -1)       //niekedy je prekreslenie ziadane, niekedy nie
             {
                 RecomputeWeight((float)Slider_Weight.Value);
