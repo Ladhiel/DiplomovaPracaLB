@@ -51,10 +51,10 @@ namespace DiplomovaPracaLB
                     {
                         for (int l = 0; l <= LOD + 1; l++)   //skarede - uz 4. vnoreny cyklus
                         {
-                            x = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[0]), Ht[l]);
-                            y = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[1]), Ht[l]);
-                            z = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[2]), Ht[l]);
                             w = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[3]), Ht[l]);
+                            x = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[0]), Ht[l])*w;
+                            y = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[1]), Ht[l])*w;
+                            z = Vector4.Dot(MyMultiply(Ht[k], Matica_P_Udajov[2]), Ht[l])*w;
 
                             IP[a + k, b + l] = new Vector4(x, y, z, w);
                         }
