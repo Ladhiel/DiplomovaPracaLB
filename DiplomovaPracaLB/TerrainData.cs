@@ -36,7 +36,7 @@ namespace DiplomovaPracaLB
         private Splajn Interpolation;
         public Vector3 posunutie;
         public Matrix3 skalovanie;
-
+    
         private int density = 10;  //hustota podmnoziny datasetu    
         private int[] border = new int[2];   //hranicne indexy pre porovnavaciu mriezku
 
@@ -48,21 +48,22 @@ namespace DiplomovaPracaLB
             FindExtremalCoordinates();
         }
 
-        private Vector4[,] SelectSampleFromOrigData(int c)
+            private Vector4[,] SelectSampleFromOrigData(int dens)
         {
-            int a = OriginalDataPoints.GetLength(0) / c; //vyuzivam celociselne delenie
-            int b = OriginalDataPoints.GetLength(1) / c;
+            //zapamatam ohranicenie mriezky, z kt. vyberam sample
+            int a = (OriginalDataPoints.GetLength(0) -1)/ dens; //vyuzivam celociselne delenie
+            int b = (OriginalDataPoints.GetLength(1) -1)/ dens;
 
-            border[0] = c * a;   
-            border[1] = c * b;
+            border[0] = dens * a;   
+            border[1] = dens * b;
 
             Vector4[,] IDP = new Vector4[a+1, b+1];
 
-            for (int i = 0; i * c < OriginalDataPoints.GetLength(0); i++)
+            for (int i = 0; i * dens < OriginalDataPoints.GetLength(0); i++)
             {
-                for (int j = 0; j * c < OriginalDataPoints.GetLength(1); j++)
+                for (int j = 0; j * dens < OriginalDataPoints.GetLength(1); j++)
                 {
-                    IDP[i, j] = OriginalDataPoints[i * c, j * c];
+                    IDP[i, j] = OriginalDataPoints[i * dens, j * dens];
                 }
             }
 
