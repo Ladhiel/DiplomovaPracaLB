@@ -113,7 +113,7 @@
                         <TextBlock Text="Kardinálny splajn" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
 
                         <Border Grid.Row="1">
-                            <RadioButton x:Name="RadioButton_KochanekBartels" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" Checked="RadioButton_SplajnKochanekBartels_Checked" IsChecked="True"/>
+                            <RadioButton x:Name="RadioButton_KochanekBartels" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" Checked="RadioButton_SplajnKochanekBartels_Checked" IsChecked="False"/>
                         </Border>
                         <TextBlock Text="Kochanek-Bartels splajn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
 
