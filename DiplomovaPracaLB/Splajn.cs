@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using System.Windows;
+using OpenTK;
 
 
 namespace DiplomovaPracaLB
@@ -39,12 +40,12 @@ namespace DiplomovaPracaLB
             return IP;
         }
 
-        public Vector3 Rational(Vector4 vertex)
+        public Vector3 Rationall(Vector4 vertex)
         {
             //z homogennych do afinnych suradnic
             if (vertex[3] == 0)
             {
-               // MessageBox.Show("pozor, bod ma nulovu vahu");
+                MessageBox.Show("pozor, bod ma nulovu vahu");
                 return Vector3.Zero;
             }
             if (vertex[3] == 1)
@@ -71,8 +72,13 @@ namespace DiplomovaPracaLB
         private Vector3 ComputeNormalVectorInPoint(Vector4 V00, Vector4 V01, Vector4 V10)  //vypocita normalu pre plochu/bod danu vektormi V10-V00 a V01-V00
         {
             //normalove vektory su pocitane pre vsetky stvorceky, kt pocet je v danom smere o 1 menej ako bodov
+
+            /*
             Vector3 u = Rational(V10) - Rational(V00);  //musim previes na vahu 1, aby rozdiel bol vektor
             Vector3 v = Rational(V01) - Rational(V00);
+            */
+            Vector3 u = new Vector3(V10 - V00);  //musim previes na vahu 1, aby rozdiel bol vektor
+            Vector3 v = new Vector3(V01 - V00);
             Vector3 c = Vector3.Cross(u, v);
             //niekedy su vrcholy usporiadane zostupne a niekedy opacne v datasete, ale chcem aby normaly smerovali "hore. nemam taky pripad datasetu, ze by tam boli previsy
             //test, ci zvieraju ostry uhol, tj ked skal.sucin je >0 (ked =0, tak je jedno)
