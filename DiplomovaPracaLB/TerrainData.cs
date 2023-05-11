@@ -32,12 +32,12 @@ namespace DiplomovaPracaLB
         protected Vector4[,] OriginalDataPoints;    //cely dataset bodov
         public Vector4[,] InputDataPointsOriginal;  //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity, s povodnymi vahami
         public Vector4[,] InputDataPoints;          //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity
-        
+
         private Splajn Interpolation;
         public Vector3 posunutie;
         public Matrix3 skalovanie;
-    
-        private int density = 2;  //hustota podmnoziny datasetu    
+
+        private int density = 10;  //hustota podmnoziny datasetu    
         private int[] border = new int[2];   //hranicne indexy pre porovnavaciu mriezku
 
         protected void Initialize()
@@ -48,13 +48,13 @@ namespace DiplomovaPracaLB
             FindExtremalCoordinates();
         }
 
-            private Vector4[,] SelectSampleFromOrigData(int dens)
+        private Vector4[,] SelectSampleFromOrigData(int dens)
         {
             //zapamatam ohranicenie mriezky, z kt. vyberam sample
             int a = (OriginalDataPoints.GetLength(0) - 1) / dens; //vyuzivam celociselne delenie
             int b = (OriginalDataPoints.GetLength(1) - 1) / dens;
 
-            border[0] = dens * a;   
+            border[0] = dens * a;
             border[1] = dens * b;
 
             Vector4[,] IDP = new Vector4[a + 1, b + 1];
@@ -77,9 +77,9 @@ namespace DiplomovaPracaLB
 
         public void ReInterpolate(int active_m_index, int active_n_index, float new_weight)
         {
-            InputDataPoints[active_m_index, active_n_index].X *= new_weight;
-            InputDataPoints[active_m_index, active_n_index].Y *= new_weight;
-            InputDataPoints[active_m_index, active_n_index].Z *= new_weight;
+            InputDataPoints[active_m_index, active_n_index].X = new_weight * InputDataPointsOriginal[active_m_index, active_n_index].X;
+            InputDataPoints[active_m_index, active_n_index].Y = new_weight * InputDataPointsOriginal[active_m_index, active_n_index].Y;
+            InputDataPoints[active_m_index, active_n_index].Z = new_weight * InputDataPointsOriginal[active_m_index, active_n_index].Z;
             InputDataPoints[active_m_index, active_n_index].W = new_weight;
             Interpolation.New(InputDataPoints);
         }
@@ -177,6 +177,5 @@ namespace DiplomovaPracaLB
         {
             return Interpolation.Normals;
         }
-
     }
 }
