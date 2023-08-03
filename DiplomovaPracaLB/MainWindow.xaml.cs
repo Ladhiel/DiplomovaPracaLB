@@ -225,7 +225,10 @@ namespace DiplomovaPracaLB
             // Modelview matrix
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
-            Matrix4 matLook = Matrix4.LookAt((float)(Dist * Math.Cos(Theta) * Math.Cos(Phi)), (float)(Dist * Math.Sin(Phi) * Math.Cos(Theta)), (float)(Dist * Math.Sin(Theta)), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+            Vector3 CameraPosition = new Vector3((float)(Dist * Math.Cos(Theta) * Math.Cos(Phi)), (float)(Dist * Math.Sin(Phi) * Math.Cos(Theta)), (float)(Dist * Math.Sin(Theta)));
+            Vector3 CameraFront = new Vector3(0.0f, 0.0f, 0.0f);
+            Matrix4 matLook = Matrix4.LookAt(CameraPosition, CameraFront, Vector3.UnitZ);
+
             GL.LoadMatrix(ref matLook);
 
             // perspective projection
@@ -236,7 +239,7 @@ namespace DiplomovaPracaLB
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-
+            
             //TU SA KRESLIA PRIMITIVY BEZ MATERIALU
             if (show_Axes) DrawAxes();
             if (show_Points) DrawPoints(DisplayedTerrain.InputDataPoints);
@@ -626,12 +629,12 @@ namespace DiplomovaPracaLB
             DisplayedTerrain.ReInterpolate(ActivePoint_m_index, ActivePoint_n_index, w);
             glControl.Invalidate();
         }
-        //-------------------------------------------------DOLNÁ LIŠTA NÁSTROJOV --------------------------------------------
+        //-------------------------------------------------DOLNÝ PANEL NÁSTROJOV --------------------------------------------
 
         private void RadioButton_ChangeLightPosition_Checked(object sender, RoutedEventArgs e)
         {
             string s = (sender as RadioButton).Name;
-            int i = int.Parse(s.Substring(s.Length - 1)) - 1;   //posledny znak v nazve je indexpozicie
+            int i = int.Parse(s.Substring(s.Length - 1)) - 1;   //posledny znak v nazve je index pozicie
 
             light_position = LightPositionsAboveModelHemiSphere[i];
             GL.Light(LightName.Light0, LightParameter.Position, light_position);
