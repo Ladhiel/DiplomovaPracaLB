@@ -7,12 +7,15 @@ namespace DiplomovaPracaLB
     public abstract partial class Splajn
     {
         protected int LOD;
+        protected int M, N; //pocet vrcholov vstupnych bodov v mriezke
         protected int m, n; //pocet vrcholov v zjemnenom vzorkovani      indexy od 0 po m-1
         public Vector4[,] InterpolationPoints;
         public Vector3[,] Normals;              //normalove vektory v lavych dolnych rohov jemneho vzorkovania
 
         protected void Interpolate(Vector4[,] Vstup)
         {
+            M = Vstup.GetLength(0);
+            N = Vstup.GetLength(1);
             InterpolationPoints = CreateInterpolationPoints(Vstup);
             ComputeNormals(InterpolationPoints);
         }

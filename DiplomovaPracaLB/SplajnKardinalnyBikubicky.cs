@@ -17,8 +17,8 @@ namespace DiplomovaPracaLB
         protected override void LoadDimensions(int _Level_Of_Detail, Vector4[,] Vstup)
         {
             LOD = _Level_Of_Detail;
-            m = (Vstup.GetLength(0) - 4 - 1) * (LOD + 1) + 1; //-4 krajne body z myslienky Anidiho twistov Coonsa odcitam od vstupnych 
-            n = (Vstup.GetLength(1) - 4 - 1) * (LOD + 1) + 1;
+            m = (M - 4 - 1) * (LOD + 1) + 1; //-4 krajne body z myslienky Anidiho twistov Coonsa odcitam od vstupnych 
+            n = (N - 4 - 1) * (LOD + 1) + 1;
         }
 
         protected override Vector4[,] CreateInterpolationPoints(Vector4[,] Vstup)
@@ -37,9 +37,9 @@ namespace DiplomovaPracaLB
 
             float x, y, z, w;
 
-            for (int j = 2; j < Vstup.GetLength(1) - 3; j++)
+            for (int j = 2; j < N - 3; j++)
             {
-                for (int i = 2; i < Vstup.GetLength(0) - 3; i++)
+                for (int i = 2; i < M - 3; i++)
                 {
                     int a = (i - 2) * (LOD + 1); //index laveho dolneho rohu v IntrepolacncyhBodoch
                     int b = (j - 2) * (LOD + 1);

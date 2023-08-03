@@ -40,10 +40,10 @@ namespace DiplomovaPracaLB
             x_max = xmax;
             y_min = ymin;
             y_max = ymax;
+
             typ_of_basis = typ;
             shape_param = input_shape_param;
             
-
             ComputeDistancesForEachTwoInputPoints(Vstup); 
 
             Interpolate(Vstup);
@@ -53,8 +53,8 @@ namespace DiplomovaPracaLB
         protected override void LoadDimensions(int _Level_Of_Detail, Vector4[,] Vstup)
         {
             LOD = _Level_Of_Detail;
-            m = (Vstup.GetLength(0) - 1) * (LOD + 1) + 1;   //rovnake vzorkovanie ako originalne vsupne udaje, pretoze RBF su funkcie a rozdiel od ostatnych implementovanyh ploch
-            n = (Vstup.GetLength(1) - 1) * (LOD + 1) + 1;
+            m = (M - 1) * (LOD + 1) + 1;   //rovnake vzorkovanie ako originalne vsupne udaje, pretoze RBF su funkcie a rozdiel od ostatnych implementovanyh ploch
+            n = (N - 1) * (LOD + 1) + 1;
             num_of_input_points = m * n;
         }
 
