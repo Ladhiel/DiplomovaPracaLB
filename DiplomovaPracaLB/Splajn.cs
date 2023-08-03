@@ -23,12 +23,11 @@ namespace DiplomovaPracaLB
 
         public void AdjustLOD(Vector4[,] Vstup, int new_LOD)
         {
-            LOD = new_LOD;
-            LoadDimensions(Vstup);
+            LoadDimensions(new_LOD, Vstup);
             Interpolate(Vstup);
         }
 
-        protected virtual void LoadDimensions(Vector4[,] Vstup)
+        protected virtual void LoadDimensions(int _Level_Of_Detail, Vector4[,] Vstup)
         {
            //kazdy splajn svoje 
         }

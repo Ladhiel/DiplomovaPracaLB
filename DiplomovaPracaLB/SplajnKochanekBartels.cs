@@ -12,13 +12,13 @@ namespace DiplomovaPracaLB
             tension = (1 - _tension) / 2;
             continuity = _con;
             bias = _bias;
-            LOD = _LOD;
-            LoadDimensions(Vstup);
+            LoadDimensions(_LOD, Vstup);
             Interpolate(Vstup);
         }
 
-        protected override void LoadDimensions(Vector4[,] Vstup)
+        protected override void LoadDimensions(int _Level_Of_Detail, Vector4[,] Vstup)
         {
+            LOD = _Level_Of_Detail;
             m = (Vstup.GetLength(0) - 4 - 1) * (LOD + 1) + 1; //-4 krajne body z myslienky Anidiho twistov Coonsa odcitam od vstupnych 
             n = (Vstup.GetLength(1) - 4 - 1) * (LOD + 1) + 1;
         }
