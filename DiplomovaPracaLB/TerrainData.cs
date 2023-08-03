@@ -40,6 +40,8 @@ namespace DiplomovaPracaLB
         private int density = 10;  //hustota podmnoziny datasetu    
         private int[] border = new int[2];   //hranicne indexy pre porovnavaciu mriezku
 
+        float min_z, max_z, min_x, max_x, min_y, max_y;
+
         protected void Initialize()
         {
             //OriginalData su uz nacitane
@@ -128,7 +130,7 @@ namespace DiplomovaPracaLB
 
         protected void FindExtremalCoordinates()
         {
-            float min_z, max_z, min_x, max_x, min_y, max_y;
+            
             float span_x, span_y, span_z, mid_x, mid_y, mid_z;
 
             min_x = float.MaxValue;
