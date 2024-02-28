@@ -44,19 +44,33 @@ namespace DiplomovaPracaLB
         //UI settings
         float[] FarebnaLegendaHodnoty;
         float[][] FarebnaLegendaFarby;
+        float[] ErrorTresholdValues;
+        float[][] ErrorColorScheme;
         float pointsize;
         bool show_Axes, show_Points, show_Wireframe, show_Quads, do_not_recompute, dragging;
         TypeOfShading selectedShadingType;
+        TerrainType selectedTerrainType;
 
         //data
         public int LevelOfDetail;    //pocet bodov zjemnenia medzi 2 vstupnymi bodmi, LOD=0 su vstupne data, medzi 2 vstupmnymi bodmi bude LOD bodov
         public TerrainData DisplayedTerrain;
+        public Splajn DisplayedSplajn;
 
         private enum TypeOfShading
         {
             FLAT,
             GOURAUD
         };
+
+        private enum TerrainType
+        {
+            MATLAB1,
+            MATLAB2,
+            HEIGHTMAP1,
+            HEIGHTMAP2,
+            GEOTIFF1,
+            GEOTIFF2
+        }
 
         public MainWindow()
         {
@@ -72,21 +86,39 @@ namespace DiplomovaPracaLB
             dragging = false;
 
             selectedShadingType = TypeOfShading.FLAT;
+            selectedTerrainType = TerrainType.HEIGHTMAP1;
 
-            //Spracovanie
-            TerrainData MatlabDataSet1 = new TerrainDataMatlab("TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
-            TerrainData HeightmapData1 = new TerrainDataHeightmap("HeightmapSmaller.png");
-            TerrainData GeoTiff1 = new TerrainDataGeoTiff("2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
+            switch (selectedTerrainType)
+            {
+                default:
+                case (TerrainType.HEIGHTMAP1):
+                {
+                    DisplayedTerrain = new TerrainDataHeightmap("HeightmapSmaller.png");
+                    break;
+                }
+                case(TerrainType.MATLAB1):
+                {
+                    DisplayedTerrain = new TerrainDataMatlab("TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
+                    break;
+                }
+                case (TerrainType.GEOTIFF1):
+                {
+                    DisplayedTerrain = new TerrainDataGeoTiff("2022-12-03TIFYn48_e017_1arc_v3.tif_900.txt", 30, 27);
+                        break;
+                }
+                case (TerrainType.GEOTIFF2):
+                {
+                    //DisplayedTerrain = GDAL
+                    break;
+                }
+            }
 
-            //Ktory sa ma zobrazit
-            DisplayedTerrain = MatlabDataSet1;
-            //DisplayedTerrain = HeightmapData1;
-            //DisplayedTerrain = GeoTiff1;
             LevelOfDetail = 3;
+            DisplayedTerrain.SetDensity(LevelOfDetail + 1);
 
             InitializeComponent();  //az teraz sa nacita okno
             TextBox_LOD.Text = LevelOfDetail.ToString();
-            //TODO TextBox_Weight.Text = InputDataPoints[MW.ActivePoint_m_index, MW.ActivePoint_n_index].W.ToString();
+            //TODO TextBox_Weight.Text = WeightedDataPointsSample[MW.ActivePoint_m_index, MW.ActivePoint_n_index].W.ToString();
 
 
         }
@@ -217,6 +249,13 @@ namespace DiplomovaPracaLB
             {
                 MessageBox.Show("Počet výškových hodnôt legendy musí byť o 1 menší ako počet farieb v legende. Program sa skončí.");
             }
+            ErrorTresholdValues = new float[] { 0.5f, 5.0f, 20.0f, 50.0f };
+            ErrorColorScheme = new float[][] {
+                new float[3] { 0.34f, 0.57f, 0.16f }, //zelená
+                new float[3] { 1.0f, 1.0f, 0.0f },//žltá
+                new float[3] { 1.0f, 0.41f, 0.12f },//oranžová
+                new float[3] { 1.0f, 0.0f, 0.0f },//červená
+            };
         }
 
         // drawing 
@@ -242,7 +281,7 @@ namespace DiplomovaPracaLB
             
             //TU SA KRESLIA PRIMITIVY BEZ MATERIALU
             if (show_Axes) DrawAxes();
-            if (show_Points) DrawPoints(DisplayedTerrain.InputDataPoints);
+            if (show_Points) DrawPoints(DisplayedTerrain.WeightedDataPointsSample);
             if (show_Wireframe) DrawWireframe(DisplayedTerrain.GetInterpolationPoints());
             //DrawNormals(DisplayedTerrain.InterpolationPoints, DisplayedTerrain.Normals);
             DrawActivePoint();
@@ -260,7 +299,7 @@ namespace DiplomovaPracaLB
             glControl.SwapBuffers();
 
             //testovacie
-            TextBox3.Text = DisplayedTerrain.InputDataPoints[0, 0].X.ToString() + " " + DisplayedTerrain.InputDataPoints[0, 0].Y.ToString() + " " + DisplayedTerrain.InputDataPoints[0, 0].Z.ToString();
+            TextBox3.Text = DisplayedTerrain.WeightedDataPointsSample[0, 0].X.ToString() + " " + DisplayedTerrain.WeightedDataPointsSample[0, 0].Y.ToString() + " " + DisplayedTerrain.WeightedDataPointsSample[0, 0].Z.ToString();
 
         }
 
@@ -335,7 +374,7 @@ namespace DiplomovaPracaLB
                 GL.PointSize(2.0f * pointsize);
                 GL.Color3(0.85f, 0.53f, 0.10f); //highlight
                 GL.Begin(PrimitiveType.Points);
-                Vector3 activeP = Rational(DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index]);
+                Vector3 activeP = Rational(DisplayedTerrain.WeightedDataPointsSample[ActivePoint_m_index, ActivePoint_n_index]);
                 GL.Vertex3(SaT(activeP) + z_eps);
 
                 GL.End();
@@ -521,6 +560,22 @@ namespace DiplomovaPracaLB
 
 
 
+        public void UseKardBilin(float tenstion, int LOD)
+        {
+            DisplayedSplajn = new SplajnKardinalnyBilinearny(DisplayedTerrain.WeightedDataPointsSample, LOD, tenstion);
+        }
+
+        public void UseKardBicubic(float tenstion, int LOD)
+        {
+            DisplayedSplajn = new SplajnKardinalnyBikubicky(DisplayedTerrain.WeightedDataPointsSample, LOD, tenstion);
+        }
+
+        public void UseKochanekBartels(float tenstion, float continuity, float bias, int LOD)
+        {
+            DisplayedSplajn = new KochanekBartelsSplajn(DisplayedTerrain.WeightedDataPointsSample, LOD, tenstion, continuity, bias);
+        }
+
+
         //-----------------------------------------------------------------------------------------------------------------------
 
         /////////////////////////////////////////////////////////
@@ -545,12 +600,12 @@ namespace DiplomovaPracaLB
         ///----------------------------PRAVÁ LIŠTA NÁSTROJOV--------------------------------------------------------------
         private void RadioButton_SplajnKard_Checked(object sender, RoutedEventArgs e)
         {
-            SplineParamFrame.Content = new Page_Kard(DisplayedTerrain, this);
+            SplineParamFrame.Content = new Page_Kard(this);
         }
 
         private void RadioButton_SplajnKochanekBartels_Checked(object sender, RoutedEventArgs e)
         {
-            SplineParamFrame.Content = new Page_KochanekBartels(DisplayedTerrain, this);
+            SplineParamFrame.Content = new Page_KochanekBartels(this);
         }
 
         private void TextBox_Weight_KeyDown(object sender, KeyEventArgs e)
@@ -602,7 +657,7 @@ namespace DiplomovaPracaLB
 
         private void Button_ResetThisWeight_Click(object sender, RoutedEventArgs e)
         {
-            if (ActivePoint_m_index > -1 &&  DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index].W != 1.0f) //ak je vaha 1, netreba nic prepisovat a teda ani prekreslovat
+            if (ActivePoint_m_index > -1 &&  DisplayedTerrain.WeightedDataPointsSample[ActivePoint_m_index, ActivePoint_n_index].W != 1.0f) //ak je vaha 1, netreba nic prepisovat a teda ani prekreslovat
             {
                 DisplayedTerrain.ResetThisWeight(ActivePoint_m_index, ActivePoint_n_index);
                 do_not_recompute = true;    //aby sa neprekreslovalo 2x
@@ -757,7 +812,7 @@ namespace DiplomovaPracaLB
             {
                 LevelOfDetail = new_LOD;
                 TextBox_LOD.Text = new_LOD.ToString();      //toto je len pre buttony; pre textbox sa nic nezmeni, ale lepsie prepisat na to iste, nez na zle a zase naspat.
-                DisplayedTerrain.ReInterpolate(new_LOD);
+                DisplayedSplajn.AdjustLOD(DisplayedTerrain.WeightedDataPointsSample, new_LOD);
                 glControl.Invalidate();
             }
             else
@@ -832,11 +887,11 @@ namespace DiplomovaPracaLB
                 end = UnProject(new Vector3(e.X, e.Y, 1.0f), projMatrix, modelMatrix, new Size(viewport[2], viewport[3]));
 
                 double se = Math.Sqrt(Vector3.Dot(start - end, start - end));
-                for (int k = 0; k < DisplayedTerrain.InputDataPoints.GetLength(0); k++)
-                    for (int i = 0; i < DisplayedTerrain.InputDataPoints.GetLength(1); i++)
+                for (int k = 0; k < DisplayedTerrain.WeightedDataPointsSample.GetLength(0); k++)
+                    for (int i = 0; i < DisplayedTerrain.WeightedDataPointsSample.GetLength(1); i++)
                     {
-                        double sA = Math.Sqrt(Vector3.Dot(SaT(DisplayedTerrain.InputDataPoints[k, i]) - start, SaT(DisplayedTerrain.InputDataPoints[k, i]) - start));
-                        double eA = Math.Sqrt(Vector3.Dot(SaT(DisplayedTerrain.InputDataPoints[k, i]) - end, SaT(DisplayedTerrain.InputDataPoints[k, i]) - end));
+                        double sA = Math.Sqrt(Vector3.Dot(SaT(DisplayedTerrain.WeightedDataPointsSample[k, i]) - start, SaT(DisplayedTerrain.WeightedDataPointsSample[k, i]) - start));
+                        double eA = Math.Sqrt(Vector3.Dot(SaT(DisplayedTerrain.WeightedDataPointsSample[k, i]) - end, SaT(DisplayedTerrain.WeightedDataPointsSample[k, i]) - end));
                         if (sA + eA > se - 0.001 && sA + eA < se + 0.001)
                         {
                             if (ActivePoint_m_index != k || ActivePoint_n_index != i)
@@ -862,7 +917,7 @@ namespace DiplomovaPracaLB
 
         private void UpdateWeightUI()
         {
-            float w = DisplayedTerrain.InputDataPoints[ActivePoint_m_index, ActivePoint_n_index].W;
+            float w = DisplayedTerrain.WeightedDataPointsSample[ActivePoint_m_index, ActivePoint_n_index].W;
 
             Slider_Weight.Value = w;
         }

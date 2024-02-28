@@ -32,7 +32,7 @@ namespace DiplomovaPracaLB
         public TerrainDataHeightmap(string file_name)
         {
             Heightmap = LoadHeightmap(file_name);
-            OriginalDataPoints = CreatePoints();
+            DataPointsAll = CreatePoints();
 
             Initialize();
         }

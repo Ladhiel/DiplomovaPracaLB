@@ -29,11 +29,11 @@ namespace DiplomovaPracaLB
 
     public abstract class TerrainData
     {
-        protected Vector4[,] OriginalDataPoints;    //cely dataset bodov
-        public Vector4[,] InputDataPointsOriginal;  //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity, s povodnymi vahami
-        public Vector4[,] InputDataPoints;          //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity
+        protected Vector4[,] DataPointsAll;    //cely dataset bodov
+        public Vector4[,] DataPointsSample;  //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity, s povodnymi vahami
+        public Vector4[,] WeightedDataPointsSample;          //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity
 
-        private Splajn Interpolation;
+        //private Splajn Interpolation;
         public Vector3 posunutie;
         public Matrix3 skalovanie;
 
@@ -45,75 +45,68 @@ namespace DiplomovaPracaLB
         protected void Initialize()
         {
             //OriginalData su uz nacitane
-            InputDataPoints = SelectSampleFromOrigData(density);
-            SkopirujUdaje(InputDataPoints, ref InputDataPointsOriginal);
+            WeightedDataPointsSample = SelectSampleFromOrigData();
+            ZalohujSample();
             FindExtremalCoordinates();
         }
 
-        private Vector4[,] SelectSampleFromOrigData(int dens)
+        private Vector4[,] SelectSampleFromOrigData()
         {
             //zapamatam ohranicenie mriezky, z kt. vyberam sample
-            int a = (OriginalDataPoints.GetLength(0) - 1) / dens; //vyuzivam celociselne delenie
-            int b = (OriginalDataPoints.GetLength(1) - 1) / dens;
+            int a = (DataPointsAll.GetLength(0) - 1) / density; //vyuzivam celociselne delenie
+            int b = (DataPointsAll.GetLength(1) - 1) / density;
 
-            border[0] = dens * a;
-            border[1] = dens * b;
+            border[0] = density * a;
+            border[1] = density * b;
 
             Vector4[,] IDP = new Vector4[a + 1, b + 1];
 
-            for (int i = 0; i * dens < OriginalDataPoints.GetLength(0); i++)
+            for (int i = 0; i * density < DataPointsAll.GetLength(0); i++)
             {
-                for (int j = 0; j * dens < OriginalDataPoints.GetLength(1); j++)
+                for (int j = 0; j * density < DataPointsAll.GetLength(1); j++)
                 {
-                    IDP[i, j] = OriginalDataPoints[i * dens, j * dens];
+                    IDP[i, j] = DataPointsAll[i * density, j * density];
                 }
             }
 
             return IDP;
         }
 
-        public void ReInterpolate(int new_LOD)
-        {
-            Interpolation.AdjustLOD(InputDataPoints, new_LOD);
-        }
 
         public void ReInterpolate(int active_m_index, int active_n_index, float new_weight)
         {
-            InputDataPoints[active_m_index, active_n_index].X = new_weight * InputDataPointsOriginal[active_m_index, active_n_index].X;
-            InputDataPoints[active_m_index, active_n_index].Y = new_weight * InputDataPointsOriginal[active_m_index, active_n_index].Y;
-            InputDataPoints[active_m_index, active_n_index].Z = new_weight * InputDataPointsOriginal[active_m_index, active_n_index].Z;
-            InputDataPoints[active_m_index, active_n_index].W = new_weight;
-            Interpolation.New(InputDataPoints);
+            WeightedDataPointsSample[active_m_index, active_n_index].X = new_weight * DataPointsSample[active_m_index, active_n_index].X;
+            WeightedDataPointsSample[active_m_index, active_n_index].Y = new_weight * DataPointsSample[active_m_index, active_n_index].Y;
+            WeightedDataPointsSample[active_m_index, active_n_index].Z = new_weight * DataPointsSample[active_m_index, active_n_index].Z;
+            WeightedDataPointsSample[active_m_index, active_n_index].W = new_weight;
+            Interpolation.New(WeightedDataPointsSample);
         }
 
-        public void UseKardBilin(float tenstion, int LOD)
-        {
-            Interpolation = new SplajnKardinalnyBilinearny(InputDataPoints, LOD, tenstion);
-        }
-
-        public void UseKardBicubic(float tenstion, int LOD)
-        {
-            Interpolation = new SplajnKardinalnyBikubicky(InputDataPoints, LOD, tenstion);
-        }
-
-        public void UseKochanekBartels(float tenstion, float continuity, float bias, int LOD)
-        {
-            Interpolation = new KochanekBartelsSplajn(InputDataPoints, LOD, tenstion, continuity, bias);
-        }
+       
 
         public void ResetAllWeights()
         {
-            SkopirujUdaje(InputDataPointsOriginal, ref InputDataPoints);    //nacitaju sa povodne
-            Interpolation.New(InputDataPoints);
+            ObnovSample();
+            Interpolation.New(WeightedDataPointsSample);
         }
 
         public void ResetThisWeight(int i, int j)
         {
-            InputDataPoints[i, j] = new Vector4(InputDataPointsOriginal[i, j]);
-            Interpolation.New(InputDataPoints);
+            WeightedDataPointsSample[i, j] = new Vector4(DataPointsSample[i, j]);
+            Interpolation.New(WeightedDataPointsSample);
         }
 
-        private void SkopirujUdaje(Vector4[,] Odkial, ref Vector4[,] Kam)
+        private void ZalohujSample()
+        {
+            SkopirujUdaje(ref WeightedDataPointsSample, ref DataPointsSample);
+        }
+
+        private void ObnovSample()
+        {
+            SkopirujUdaje(ref DataPointsSample, ref WeightedDataPointsSample);    //nacitaju sa povodne
+        }
+
+        private void SkopirujUdaje(ref Vector4[,] Odkial, ref Vector4[,] Kam)
         {
             int a = Odkial.GetLength(0);
             int b = Odkial.GetLength(1);
@@ -139,13 +132,13 @@ namespace DiplomovaPracaLB
             max_y = float.MinValue;
             min_z = float.MaxValue;
             max_z = float.MinValue;
-            for (int j = 0; j < InputDataPoints.GetLength(1); j++)
+            for (int j = 0; j < WeightedDataPointsSample.GetLength(1); j++)
             {
-                for (int i = 0; i < InputDataPoints.GetLength(0); i++)
+                for (int i = 0; i < WeightedDataPointsSample.GetLength(0); i++)
                 {
-                    float x = InputDataPoints[i, j].X;
-                    float y = InputDataPoints[i, j].Y;
-                    float z = InputDataPoints[i, j].Z;
+                    float x = WeightedDataPointsSample[i, j].X;
+                    float y = WeightedDataPointsSample[i, j].Y;
+                    float z = WeightedDataPointsSample[i, j].Z;
 
                     if (x < min_x) min_x = x;
                     if (x > max_x) max_x = x;
@@ -170,14 +163,13 @@ namespace DiplomovaPracaLB
 
         //-----Getters------------------------------------------------------------------
 
-        public Vector4[,] GetInterpolationPoints()
+        public void SetDensity(int new_density)
         {
-            return Interpolation.InterpolationPoints;
-        }
+            if(0<=new_density && new_density <=20);
+            {
+                density = new_density;
+            }
 
-        public Vector3[,] GetNormals()
-        {
-            return Interpolation.Normals;
         }
     }
 }

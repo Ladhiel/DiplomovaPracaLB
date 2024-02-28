@@ -88,6 +88,22 @@ namespace DiplomovaPracaLB
             return c;
         }
 
-        
+        public ref Vector4[,] GetInterpolationPoints()
+        {
+            return ref InterpolationPoints;
+        }
+
+        public ref Vector3[,] GetNormals()
+        {
+            return ref Normals;
+        }
+
+        public int GetSize(int k)
+        {
+            if (k == 0) return m;
+            if (k == 1) return n;
+            return 0;
+        }
+
     }
 }

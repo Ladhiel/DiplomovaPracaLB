@@ -44,7 +44,7 @@ namespace DiplomovaPracaLB
             typ_of_basis = typ;
             shape_param = input_shape_param;
             
-            ComputeDistancesForEachTwoInputPoints(Vstup); 
+            //ComputeDistancesForEachTwoInputPoints(Vstup); 
 
             Interpolate(Vstup);
 
@@ -60,7 +60,7 @@ namespace DiplomovaPracaLB
 
         protected override Vector4[,] CreateInterpolationPoints(Vector4[,] Vstup)
         {
-            ComputeRBFunctionValuesForDistances(Vstup);  //velke PHI
+            //ComputeRBFunctionValuesForDistances(Vstup);  //velke PHI
 
             Vector4[,] IP = new Vector4[m, n];
 
