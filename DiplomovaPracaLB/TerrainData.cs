@@ -37,7 +37,7 @@ namespace DiplomovaPracaLB
         public Vector3 posunutie;
         public Matrix3 skalovanie;
 
-        private int density = 10;  //hustota podmnoziny datasetu    
+        private int density = 1;  //hustota podmnoziny datasetu    
         private int[] border = new int[2];   //hranicne indexy pre porovnavaciu mriezku
 
         float min_z, max_z, min_x, max_x, min_y, max_y;
@@ -73,27 +73,18 @@ namespace DiplomovaPracaLB
         }
 
 
-        public void ReInterpolate(int active_m_index, int active_n_index, float new_weight)
+
+       public void SetWeight(int active_m_index, int active_n_index, float new_weight)
         {
             WeightedDataPointsSample[active_m_index, active_n_index].X = new_weight * DataPointsSample[active_m_index, active_n_index].X;
             WeightedDataPointsSample[active_m_index, active_n_index].Y = new_weight * DataPointsSample[active_m_index, active_n_index].Y;
             WeightedDataPointsSample[active_m_index, active_n_index].Z = new_weight * DataPointsSample[active_m_index, active_n_index].Z;
             WeightedDataPointsSample[active_m_index, active_n_index].W = new_weight;
-            Interpolation.New(WeightedDataPointsSample);
         }
 
-       
-
-        public void ResetAllWeights()
-        {
-            ObnovSample();
-            Interpolation.New(WeightedDataPointsSample);
-        }
-
-        public void ResetThisWeight(int i, int j)
+       public void ResetWeight(int i, int j)
         {
             WeightedDataPointsSample[i, j] = new Vector4(DataPointsSample[i, j]);
-            Interpolation.New(WeightedDataPointsSample);
         }
 
         private void ZalohujSample()
@@ -101,7 +92,7 @@ namespace DiplomovaPracaLB
             SkopirujUdaje(ref WeightedDataPointsSample, ref DataPointsSample);
         }
 
-        private void ObnovSample()
+        public void ObnovSample()
         {
             SkopirujUdaje(ref DataPointsSample, ref WeightedDataPointsSample);    //nacitaju sa povodne
         }

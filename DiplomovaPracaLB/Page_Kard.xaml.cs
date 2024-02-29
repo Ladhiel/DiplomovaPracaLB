@@ -31,7 +31,7 @@ namespace DiplomovaPracaLB
             dragging = false;
             MW = Hlavne_okno;
             InitializeComponent();      //nacitanim hodnoty slidera sa spousti aj vykreslenie
-            MW.DisplayedTerrain.UseKardBicubic(0, MW.LevelOfDetail);
+            MW.UseKardBicubic(0, MW.LevelOfDetail);
         }
 
         //zdroj spustenia slideru pri pusteni bezca
@@ -61,7 +61,7 @@ namespace DiplomovaPracaLB
         private void ChangeTensionparameter(float new_tension)
         {
             //TD.UseKardBilin(new_tension, MW.LevelOfDetail);
-            MW.DisplayedTerrain.UseKardBicubic(new_tension, MW.LevelOfDetail);
+            MW.UseKardBicubic(new_tension, MW.LevelOfDetail);
             MW.glControl.Invalidate();
 
         }

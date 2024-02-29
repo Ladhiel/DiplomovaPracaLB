@@ -34,7 +34,7 @@ namespace DiplomovaPracaLB
             float default_tension = 0.0f;
             float default_continuity = 0.0f;
             float default_bias = 0.0f;
-            MW.DisplayedTerrain.UseKochanekBartels(default_tension, default_continuity, default_bias, MW.LevelOfDetail);
+            MW.UseKochanekBartels(default_tension, default_continuity, default_bias, MW.LevelOfDetail);
             
         }
 
@@ -59,7 +59,7 @@ namespace DiplomovaPracaLB
 
         private void ReCompute()
         {
-            MW.DisplayedTerrain.UseKochanekBartels(tension, continuity, bias, MW.LevelOfDetail);
+            MW.UseKochanekBartels(tension, continuity, bias, MW.LevelOfDetail);
             MW.glControl.Invalidate();
         }
 

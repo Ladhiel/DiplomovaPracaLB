@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Data;
+using System.Windows;
 using OpenTK;
 
 
@@ -7,15 +8,13 @@ namespace DiplomovaPracaLB
     public abstract partial class Splajn
     {
         protected int LOD;
-        protected int M, N; //pocet vrcholov vstupnych bodov v mriezke
         protected int m, n; //pocet vrcholov v zjemnenom vzorkovani      indexy od 0 po m-1
-        public Vector4[,] InterpolationPoints;
-        public Vector3[,] Normals;              //normalove vektory v lavych dolnych rohov jemneho vzorkovania
+        protected Vector4[,] InterpolationPoints;
+        private Vector3[,] Normals;              //normalove vektory v lavych dolnych rohov jemneho vzorkovania
+        private float[,] ErrorValues;
 
         protected void Interpolate(Vector4[,] Vstup)
         {
-            M = Vstup.GetLength(0);
-            N = Vstup.GetLength(1);
             InterpolationPoints = CreateInterpolationPoints(Vstup);
             ComputeNormals(InterpolationPoints);
         }
@@ -88,7 +87,19 @@ namespace DiplomovaPracaLB
             return c;
         }
 
-        public ref Vector4[,] GetInterpolationPoints()
+        public void Evaluate(ref Vector4[,] RefTerrain)
+        {
+
+
+
+
+
+        }
+
+
+
+
+        public ref Vector4[,] GetPoints()
         {
             return ref InterpolationPoints;
         }
@@ -102,6 +113,18 @@ namespace DiplomovaPracaLB
         {
             if (k == 0) return m;
             if (k == 1) return n;
+            return 0;
+        }
+
+        public float GetErrorValue(int i,int j)
+        {
+            if(ErrorValues.Length != 0)
+            {
+                if(0<=i && i<=m && 0<=j && j <=n)
+                {
+                    return ErrorValues[i, j];
+                }
+            }
             return 0;
         }
 

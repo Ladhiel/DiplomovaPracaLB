@@ -50,6 +50,7 @@ namespace DiplomovaPracaLB
         bool show_Axes, show_Points, show_Wireframe, show_Quads, do_not_recompute, dragging;
         TypeOfShading selectedShadingType;
         TerrainType selectedTerrainType;
+        bool show_evaluation; //color of terrain depends of vertical distance from real dataset
 
         //data
         public int LevelOfDetail;    //pocet bodov zjemnenia medzi 2 vstupnymi bodmi, LOD=0 su vstupne data, medzi 2 vstupmnymi bodmi bude LOD bodov
@@ -84,6 +85,7 @@ namespace DiplomovaPracaLB
             show_Wireframe = false;
             show_Quads = true;
             dragging = false;
+            show_evaluation = false;    
 
             selectedShadingType = TypeOfShading.FLAT;
             selectedTerrainType = TerrainType.HEIGHTMAP1;
@@ -113,8 +115,8 @@ namespace DiplomovaPracaLB
                 }
             }
 
-            LevelOfDetail = 3;
-            DisplayedTerrain.SetDensity(LevelOfDetail + 1);
+            LevelOfDetail = 0;
+            //DisplayedTerrain.SetDensity(LevelOfDetail + 1);
 
             InitializeComponent();  //az teraz sa nacita okno
             TextBox_LOD.Text = LevelOfDetail.ToString();
@@ -282,7 +284,7 @@ namespace DiplomovaPracaLB
             //TU SA KRESLIA PRIMITIVY BEZ MATERIALU
             if (show_Axes) DrawAxes();
             if (show_Points) DrawPoints(DisplayedTerrain.WeightedDataPointsSample);
-            if (show_Wireframe) DrawWireframe(DisplayedTerrain.GetInterpolationPoints());
+            if (show_Wireframe) DrawWireframe(DisplayedSplajn.GetPoints());
             //DrawNormals(DisplayedTerrain.InterpolationPoints, DisplayedTerrain.Normals);
             DrawActivePoint();
             //DrawPositionLight();
@@ -291,7 +293,7 @@ namespace DiplomovaPracaLB
             GL.Enable(EnableCap.DepthTest);
 
             //TU SA KRESLIA PRIMITIVY S MATERIALOM
-            if (show_Quads) DrawQuads(DisplayedTerrain.GetInterpolationPoints(), DisplayedTerrain.GetNormals());
+            if (show_Quads) DrawQuads(ref DisplayedSplajn);
 
             GL.Disable(EnableCap.Lighting);
 
@@ -416,8 +418,11 @@ namespace DiplomovaPracaLB
             GL.End();
         }
 
-        public void DrawQuads(Vector4[,] Vertices, Vector3[,] Normals)
+        public void DrawQuads(ref Splajn RefSplajn)
         {
+            Vector4[,] Vertices = RefSplajn.GetPoints();
+            Vector3[,] Normals = RefSplajn.GetNormals();
+
             //4. TODO vytvorim plochy medzi stvrocekami
             //https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glPolygonMode.xml
             //https://www.khronos.org/opengl/wiki/How_lighting_works
@@ -442,10 +447,23 @@ namespace DiplomovaPracaLB
                 {
                     if (selectedShadingType == TypeOfShading.FLAT)
                     {
+                       
                         //rovanaka farba aj normala pre vsetky 4 rohy
                         //defaultne berie farbu z posledneho vrchola
                         GL.Normal3(Normals[i, j]);
-                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend((Vertices[i, j] + Vertices[i + 1, j] + Vertices[i + 1, j + 1] + Vertices[i, j + 1]) / 4));
+                        float[] p_color;
+                        if(show_evaluation)
+                        {
+                            float mean_error = (RefSplajn.GetErrorValue(i, j) + RefSplajn.GetErrorValue(i + 1, j) + RefSplajn.GetErrorValue(i, j + 1) + RefSplajn.GetErrorValue(i + 1, j + 1)) / 4;
+                            p_color = GetVertexColorByError(mean_error);
+                        }
+                        else
+                        {
+                            Vector4 MeanPoint = (Vertices[i, j] + Vertices[i + 1, j] + Vertices[i + 1, j + 1] + Vertices[i, j + 1]) / 4;
+                            p_color = GetVertexColorByElevation(MeanPoint);
+                        }
+                        
+                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, p_color);
                         GL.Vertex3(SaT(Vertices[i, j]));
                         GL.Vertex3(SaT(Vertices[i + 1, j]));
                         GL.Vertex3(SaT(Vertices[i + 1, j + 1]));
@@ -458,20 +476,37 @@ namespace DiplomovaPracaLB
                         int b = 1;
                         if (i == M - 1) a = 0;  //okrajove body nemaju vypocitanu vlastnu normalu, pozicaju si ju od predchadzajuceho bodu
                         if (j == N - 1) b = 0;
+
+                        float[] color00, color01, color10, color11;
+                        if(show_evaluation)
+                        {
+                            color00 = GetVertexColorByError(RefSplajn.GetErrorValue(i, j));
+                            color01 = GetVertexColorByError(RefSplajn.GetErrorValue(i, j+1));
+                            color10 = GetVertexColorByError(RefSplajn.GetErrorValue(i+1, j));
+                            color11 = GetVertexColorByError(RefSplajn.GetErrorValue(i+1, j+1));
+                        }
+                        else
+                        {
+                            color00 = GetVertexColorByElevation(Vertices[i, j]);
+                            color01 = GetVertexColorByElevation(Vertices[i, j + 1]);
+                            color10 = GetVertexColorByElevation(Vertices[i + 1, j]);
+                            color11 = GetVertexColorByElevation(Vertices[i + 1, j + 1]);
+                        }
+
                         GL.Normal3(Normals[i, j]);
-                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i, j]));
+                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, color00);
                         GL.Vertex3(SaT(Vertices[i, j]));
 
                         GL.Normal3(Normals[i + a, j]);
-                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i + 1, j]));
+                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, color10);
                         GL.Vertex3(SaT(Vertices[i + 1, j]));
 
                         GL.Normal3(Normals[i + a, j + b]);
-                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i + 1, j + 1]));
+                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, color11);
                         GL.Vertex3(SaT(Vertices[i + 1, j + 1]));
 
                         GL.Normal3(Normals[i, j + b]);
-                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, VertexColorByLegend(Vertices[i, j + 1]));
+                        GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, color01);
                         GL.Vertex3(SaT(Vertices[i, j + 1]));
                     }
                 }
@@ -511,37 +546,42 @@ namespace DiplomovaPracaLB
             return new Vector3(vertex.X / vertex.W, vertex.Y / vertex.W, vertex.Z / vertex.W);
         }
 
-        private float[] VertexColorByLegend(Vector3 Vertex)    //priradi bodu (s naozajstvou, netransformovanou hodnotou !!!) farbu podla legendy 
+        private float[] GetVertexColorByElevation(Vector4 vertex)
         {
-            float h = (float)Vertex.Z;      //nadmorska vyska bodu
+            float point_height = Rational(vertex).Z;
+            return GetMixedColorFromScheme(point_height, FarebnaLegendaHodnoty, FarebnaLegendaFarby);
+        }
 
-            if (h < FarebnaLegendaHodnoty[0])   //všetky nižšie ako najnizsia hodnota
+        private float[] GetVertexColorByError(float point_error)
+        {
+            return GetMixedColorFromScheme(point_error, ErrorTresholdValues, ErrorColorScheme);
+        }
+
+        private float[] GetMixedColorFromScheme(float value, float[] TresholdValues, float[][] ColorScheme)
+        {
+            if (value < TresholdValues[0])   //všetky nižšie ako najnizsia hodnota
             {
-                return FarebnaLegendaFarby[0];
+                return ColorScheme[0];
             }
 
-            for (int i = 1; i < FarebnaLegendaHodnoty.Length; i++)
+            for (int i = 1; i < TresholdValues.Length; i++)
             {
-                if (h < FarebnaLegendaHodnoty[i])
+                if (value < TresholdValues[i])
                 {
-                    float p = ((float)h - FarebnaLegendaHodnoty[i - 1]) / (FarebnaLegendaHodnoty[i] - FarebnaLegendaHodnoty[i - 1]);  //výpočet parametra (pozície) na rovnomerne parametrizovanej úsečke medzi 2 v hodnotami legendy
+                    float p = ((float)value - TresholdValues[i - 1]) / (TresholdValues[i] - TresholdValues[i - 1]);  //výpočet parametra (pozície) na rovnomerne parametrizovanej úsečke medzi 2 v hodnotami legendy
                     RecomputeEaseInEaseOutParam(ref p);
 
-                    float r = (1 - p) * FarebnaLegendaFarby[i - 1][0] + p * FarebnaLegendaFarby[i][0];     //red
-                    float g = (1 - p) * FarebnaLegendaFarby[i - 1][1] + p * FarebnaLegendaFarby[i][1];      //green
-                    float b = (1 - p) * FarebnaLegendaFarby[i - 1][2] + p * FarebnaLegendaFarby[i][2];      //blue
+                    float r = (1 - p) * ColorScheme[i - 1][0] + p * ColorScheme[i][0];     //red
+                    float g = (1 - p) * ColorScheme[i - 1][1] + p * ColorScheme[i][1];     //green
+                    float b = (1 - p) * ColorScheme[i - 1][2] + p * ColorScheme[i][2];     //blue
 
                     return new float[3] { r, g, b };
                 }
             }
 
-            return FarebnaLegendaFarby.Last();  //všetko vyššie ako najvyssia hodnota
+            return ColorScheme.Last();  //všetko vyššie ako najvyssia hodnota
         }
 
-        private float[] VertexColorByLegend(Vector4 vertex)    //priradi bodu (s naozajstvou, netransformovanou hodnotou !!!) farbu podla legendy 
-        {
-            return VertexColorByLegend(Rational(vertex));  //všetko vyššie ako najvyssia hodnota
-        }
 
         private float RecomputeEaseInEaseOutParam(ref float p)     //pretransformuje parameter, z linearnej parametrizacie na ease in ease out; iba pre lepsi farebny efekts
         {
@@ -659,7 +699,8 @@ namespace DiplomovaPracaLB
         {
             if (ActivePoint_m_index > -1 &&  DisplayedTerrain.WeightedDataPointsSample[ActivePoint_m_index, ActivePoint_n_index].W != 1.0f) //ak je vaha 1, netreba nic prepisovat a teda ani prekreslovat
             {
-                DisplayedTerrain.ResetThisWeight(ActivePoint_m_index, ActivePoint_n_index);
+                DisplayedTerrain.ResetWeight(ActivePoint_m_index, ActivePoint_n_index);
+                DisplayedSplajn.New(DisplayedTerrain.WeightedDataPointsSample);
                 do_not_recompute = true;    //aby sa neprekreslovalo 2x
                 Slider_Weight.Value = 1;
                 do_not_recompute = false;
@@ -670,7 +711,8 @@ namespace DiplomovaPracaLB
         private void Button_ResetAllWeights_Click(object sender, RoutedEventArgs e)
         {
             //je jednoduchsie netestovat, ci treba menit vahu
-            DisplayedTerrain.ResetAllWeights();
+            DisplayedTerrain.ObnovSample();
+            DisplayedSplajn.New(DisplayedTerrain.WeightedDataPointsSample);
 
             do_not_recompute = true; //aby sa neprekreslovalo 2x
             Slider_Weight.Value = 1;
@@ -681,9 +723,11 @@ namespace DiplomovaPracaLB
 
         private void RecomputeWeight(float w)
         {
-            DisplayedTerrain.ReInterpolate(ActivePoint_m_index, ActivePoint_n_index, w);
+            DisplayedTerrain.SetWeight(ActivePoint_m_index, ActivePoint_n_index, w);
+            DisplayedSplajn.New(DisplayedTerrain.WeightedDataPointsSample);
             glControl.Invalidate();
         }
+
         //-------------------------------------------------DOLNÝ PANEL NÁSTROJOV --------------------------------------------
 
         private void RadioButton_ChangeLightPosition_Checked(object sender, RoutedEventArgs e)
