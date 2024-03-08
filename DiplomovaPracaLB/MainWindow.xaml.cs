@@ -85,7 +85,7 @@ namespace DiplomovaPracaLB
             show_Wireframe = false;
             show_Quads = true;
             dragging = false;
-            show_evaluation = false;    
+            show_evaluation = true;    
 
             selectedShadingType = TypeOfShading.FLAT;
             selectedTerrainType = TerrainType.HEIGHTMAP1;
@@ -240,23 +240,23 @@ namespace DiplomovaPracaLB
             //farby terénu
             FarebnaLegendaHodnoty = new float[] { -0.5f, 200, 500, 1000, 1500 };
             FarebnaLegendaFarby = new float[][] {
-                new float[3] { 0.0f, 0.4f, 0.55f }, //modrá
+                new float[3] { 0.0f, 0.4f, 0.55f },   //modrá
                 new float[3] { 0.34f, 0.57f, 0.16f }, //zelená
-                new float[3] { 0.95f, 0.89f, 0.33f },//žltá
-                new float[3] { 0.95f, 0.75f, 0.4f },//svetlohnedá
-                new float[3] { .8f, .44f, .28f },//hnedá
-                new float[3] { .51f, .28f, .23f }   //tmavohnedá
+                new float[3] { 0.95f, 0.89f, 0.33f }, //žltá
+                new float[3] { 0.95f, 0.75f, 0.4f },  //svetlohnedá
+                new float[3] { .8f, .44f, .28f },     //hnedá
+                new float[3] { .51f, .28f, .23f }     //tmavohnedá
             };
             if (FarebnaLegendaHodnoty.Length + 1 != FarebnaLegendaFarby.Length)
             {
                 MessageBox.Show("Počet výškových hodnôt legendy musí byť o 1 menší ako počet farieb v legende. Program sa skončí.");
             }
-            ErrorTresholdValues = new float[] { 0.5f, 5.0f, 20.0f, 50.0f };
+            ErrorTresholdValues = new float[] { 0.5f, 5.0f, 20.0f};
             ErrorColorScheme = new float[][] {
                 new float[3] { 0.34f, 0.57f, 0.16f }, //zelená
-                new float[3] { 1.0f, 1.0f, 0.0f },//žltá
-                new float[3] { 1.0f, 0.41f, 0.12f },//oranžová
-                new float[3] { 1.0f, 0.0f, 0.0f },//červená
+                new float[3] { 1.0f, 1.0f, 0.0f },    //žltá
+                new float[3] { 1.0f, 0.41f, 0.12f },  //oranžová
+                new float[3] { 1.0f, 0.0f, 0.0f },    //červená
             };
         }
 
@@ -301,7 +301,7 @@ namespace DiplomovaPracaLB
             glControl.SwapBuffers();
 
             //testovacie
-            TextBox3.Text = DisplayedTerrain.WeightedDataPointsSample[0, 0].X.ToString() + " " + DisplayedTerrain.WeightedDataPointsSample[0, 0].Y.ToString() + " " + DisplayedTerrain.WeightedDataPointsSample[0, 0].Z.ToString();
+            //TextBox3.Text = DisplayedTerrain.WeightedDataPointsSample[0, 0].X.ToString() + " " + DisplayedTerrain.WeightedDataPointsSample[0, 0].Y.ToString() + " " + DisplayedTerrain.WeightedDataPointsSample[0, 0].Z.ToString();
 
         }
 

@@ -17,6 +17,7 @@ namespace DiplomovaPracaLB
         {
             InterpolationPoints = CreateInterpolationPoints(Vstup);
             ComputeNormals(InterpolationPoints);
+            Evaluate(ref RefTerrain);
         }
         public void New(Vector4[,] Vstup)
         {
@@ -87,17 +88,32 @@ namespace DiplomovaPracaLB
             return c;
         }
 
-        public void Evaluate(ref Vector4[,] RefTerrain)
+        public void Evaluate(ref TerrainData RefTerrain)
         {
+            ErrorValues = new float[m, n];
 
+            Vector3 S = Vector3.Zero;   //SplajnPoint
+            float terrain_point_elevation;
 
+            for (int i =0;i<m;i++)
+            {
+                for (int j =0;j<n;j++)
+                {
+                    S = Rational(InterpolationPoints[i, j]);
+                    if (isRBF)
+                    {
+                        terrain_point_elevation = RefTerrain.GetRealZ(i,j); //same-indexed verices in both terrain and splajn have same x and y values
+                    }
+                    else
+                    {
+                        //with parametric surfaces, it is sometimes hard to find z for given x and y. It's easier to find approximate point on the real data = regular grid
+                        terrain_point_elevation = RefTerrain.GetApproximateZver2(S.X, S.Y);
+                    }
 
-
-
+                    ErrorValues[i, j] = Math.Abs(S.Z - terrain_point_elevation);
+                }
+            }
         }
-
-
-
 
         public ref Vector4[,] GetPoints()
         {
@@ -118,7 +134,7 @@ namespace DiplomovaPracaLB
 
         public float GetErrorValue(int i,int j)
         {
-            if(ErrorValues.Length != 0)
+            if(ErrorValues != null)
             {
                 if(0<=i && i<=m && 0<=j && j <=n)
                 {
@@ -127,6 +143,5 @@ namespace DiplomovaPracaLB
             }
             return 0;
         }
-
     }
 }
