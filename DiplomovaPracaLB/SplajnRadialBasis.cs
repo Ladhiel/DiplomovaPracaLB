@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static alglib;
 
 namespace DiplomovaPracaLB
 {
@@ -31,10 +32,10 @@ namespace DiplomovaPracaLB
         private float[,] RBFvalues; //hodnoty vzialenodstnej funkcie pre kazde 2 body - zavisi od vstupu a voľby bázy
       
 
-        public SplajnRadialBasis(Vector4[,] Vstup, int _LOD, BASIS_FUNCTION typ, float input_shape_param, float xmin, float xmax, float ymin, float ymax)
+        public SplajnRadialBasis(ref TerrainData RefTerrain, int _LOD, BASIS_FUNCTION typ, float input_shape_param, float xmin, float xmax, float ymin, float ymax)
         {
-            
-            LoadDimensions(_LOD, Vstup);
+            isRBF = true;
+            LoadDimensions(_LOD, RefTerrain.GetSampleSize());
 
             x_min = xmin;
             x_max = xmax;
@@ -43,18 +44,18 @@ namespace DiplomovaPracaLB
 
             typ_of_basis = typ;
             shape_param = input_shape_param;
-            
+
             //ComputeDistancesForEachTwoInputPoints(Vstup); 
 
-            Interpolate(Vstup);
+            Interpolate(ref RefTerrain);
 
         }
 
-        protected override void LoadDimensions(int _Level_Of_Detail, Vector4[,] Vstup)
+        protected override void LoadDimensions(int _Level_Of_Detail, int[] InputSize)
         {
             LOD = _Level_Of_Detail;
-            m = (Vstup.GetLength(0) - 1) * (LOD + 1) + 1;   //rovnake vzorkovanie ako originalne vsupne udaje, pretoze RBF su funkcie a rozdiel od ostatnych implementovanyh ploch
-            n = (Vstup.GetLength(1) - 1) * (LOD + 1) + 1;
+            m = (InputSize[0] - 1) * (LOD + 1) + 1;   //rovnake vzorkovanie ako originalne vsupne udaje, pretoze RBF su funkcie a rozdiel od ostatnych implementovanyh ploch
+            n = (InputSize[1] - 1) * (LOD + 1) + 1;
             num_of_input_points = m * n;
         }
 

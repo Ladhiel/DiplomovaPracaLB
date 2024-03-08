@@ -1,4 +1,4 @@
-﻿using System.Data;
+﻿using System;
 using System.Windows;
 using OpenTK;
 
@@ -13,24 +13,20 @@ namespace DiplomovaPracaLB
         private Vector3[,] Normals;              //normalove vektory v lavych dolnych rohov jemneho vzorkovania
         private float[,] ErrorValues;
 
-        protected void Interpolate(Vector4[,] Vstup)
+        public void Interpolate(ref TerrainData RefTerrain)
         {
-            InterpolationPoints = CreateInterpolationPoints(Vstup);
+            InterpolationPoints = CreateInterpolationPoints(RefTerrain.WeightedDataPointsSample);
             ComputeNormals(InterpolationPoints);
             Evaluate(ref RefTerrain);
         }
-        public void New(Vector4[,] Vstup)
+
+        public void ReInterpolate(ref TerrainData RefTerrain, int new_LOD)
         {
-            Interpolate(Vstup);
+            LoadDimensions(new_LOD, RefTerrain.GetSampleSize());
+            Interpolate(ref RefTerrain);
         }
 
-        public void AdjustLOD(Vector4[,] Vstup, int new_LOD)
-        {
-            LoadDimensions(new_LOD, Vstup);
-            Interpolate(Vstup);
-        }
-
-        protected virtual void LoadDimensions(int _Level_Of_Detail, Vector4[,] Vstup)
+        protected virtual void LoadDimensions(int _Level_Of_Detail, int[] InputSize)
         {
            //kazdy splajn svoje 
         }

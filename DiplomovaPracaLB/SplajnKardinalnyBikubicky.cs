@@ -7,18 +7,18 @@ namespace DiplomovaPracaLB
     {
         float tension;
 
-        public SplajnKardinalnyBikubicky(Vector4[,] Vstup, int _LOD, float _tension)
+        public SplajnKardinalnyBikubicky(ref TerrainData RefTerrain, int _LOD, float _tension)
         {
             tension = (1 - _tension) / 2;   //prirodzenejsi priebeh parametra z knihy D. Salomona
-            LoadDimensions(_LOD, Vstup);
-            Interpolate(Vstup);
+            LoadDimensions(_LOD, RefTerrain.GetSampleSize());
+            Interpolate(ref RefTerrain);
         }
 
-        protected override void LoadDimensions(int _Level_Of_Detail, Vector4[,] Vstup)
+        protected override void LoadDimensions(int _Level_Of_Detail, int[] InputSize)
         {
             LOD = _Level_Of_Detail;
-            m = (Vstup.GetLength(0) - 4 - 1) * (LOD + 1) + 1; //-4 krajne body z myslienky Anidiho twistov Coonsa odcitam od vstupnych 
-            n = (Vstup.GetLength(1) - 4 - 1) * (LOD + 1) + 1;
+            m = (InputSize[0] - 4 - 1) * (LOD + 1) + 1; //-4 krajne body z myslienky Anidiho twistov Coonsa odcitam od vstupnych 
+            n = (InputSize[1] - 4 - 1) * (LOD + 1) + 1;
         }
 
         protected override Vector4[,] CreateInterpolationPoints(Vector4[,] Vstup)

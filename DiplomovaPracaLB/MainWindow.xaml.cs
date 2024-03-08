@@ -602,17 +602,19 @@ namespace DiplomovaPracaLB
 
         public void UseKardBilin(float tenstion, int LOD)
         {
-            DisplayedSplajn = new SplajnKardinalnyBilinearny(DisplayedTerrain.WeightedDataPointsSample, LOD, tenstion);
+            DisplayedSplajn = new SplajnKardinalnyBilinearny(ref DisplayedTerrain, LOD, tenstion);
         }
 
         public void UseKardBicubic(float tenstion, int LOD)
         {
-            DisplayedSplajn = new SplajnKardinalnyBikubicky(DisplayedTerrain.WeightedDataPointsSample, LOD, tenstion);
+            DisplayedSplajn = new SplajnKardinalnyBikubicky(ref DisplayedTerrain, LOD, tenstion);
+            DisplayedSplajn.Evaluate(ref DisplayedTerrain);
         }
 
         public void UseKochanekBartels(float tenstion, float continuity, float bias, int LOD)
         {
-            DisplayedSplajn = new KochanekBartelsSplajn(DisplayedTerrain.WeightedDataPointsSample, LOD, tenstion, continuity, bias);
+            DisplayedSplajn = new KochanekBartelsSplajn(ref DisplayedTerrain, LOD, tenstion, continuity, bias);
+            DisplayedSplajn.Evaluate(ref DisplayedTerrain);
         }
 
 
@@ -700,10 +702,12 @@ namespace DiplomovaPracaLB
             if (ActivePoint_m_index > -1 &&  DisplayedTerrain.WeightedDataPointsSample[ActivePoint_m_index, ActivePoint_n_index].W != 1.0f) //ak je vaha 1, netreba nic prepisovat a teda ani prekreslovat
             {
                 DisplayedTerrain.ResetWeight(ActivePoint_m_index, ActivePoint_n_index);
-                DisplayedSplajn.New(DisplayedTerrain.WeightedDataPointsSample);
+                DisplayedSplajn.Interpolate(ref DisplayedTerrain);
+
                 do_not_recompute = true;    //aby sa neprekreslovalo 2x
                 Slider_Weight.Value = 1;
                 do_not_recompute = false;
+                
                 glControl.Invalidate();
             }
         }
@@ -712,7 +716,7 @@ namespace DiplomovaPracaLB
         {
             //je jednoduchsie netestovat, ci treba menit vahu
             DisplayedTerrain.ObnovSample();
-            DisplayedSplajn.New(DisplayedTerrain.WeightedDataPointsSample);
+            DisplayedSplajn.Interpolate(ref DisplayedTerrain);
 
             do_not_recompute = true; //aby sa neprekreslovalo 2x
             Slider_Weight.Value = 1;
@@ -724,7 +728,7 @@ namespace DiplomovaPracaLB
         private void RecomputeWeight(float w)
         {
             DisplayedTerrain.SetWeight(ActivePoint_m_index, ActivePoint_n_index, w);
-            DisplayedSplajn.New(DisplayedTerrain.WeightedDataPointsSample);
+            DisplayedSplajn.Interpolate(ref DisplayedTerrain);
             glControl.Invalidate();
         }
 
@@ -738,7 +742,7 @@ namespace DiplomovaPracaLB
             light_position = LightPositionsAboveModelHemiSphere[i];
             GL.Light(LightName.Light0, LightParameter.Position, light_position);
             glControl.Invalidate();
-            Console.WriteLine(LightPositionsAboveModelHemiSphere[0][0] + " " + LightPositionsAboveModelHemiSphere[0][1] + " " + LightPositionsAboveModelHemiSphere[0][2]);
+            //Console.WriteLine(LightPositionsAboveModelHemiSphere[0][0] + " " + LightPositionsAboveModelHemiSphere[0][1] + " " + LightPositionsAboveModelHemiSphere[0][2]);
         }
 
         private void Slider_ChangeLightIntensity(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -856,7 +860,8 @@ namespace DiplomovaPracaLB
             {
                 LevelOfDetail = new_LOD;
                 TextBox_LOD.Text = new_LOD.ToString();      //toto je len pre buttony; pre textbox sa nic nezmeni, ale lepsie prepisat na to iste, nez na zle a zase naspat.
-                DisplayedSplajn.AdjustLOD(DisplayedTerrain.WeightedDataPointsSample, new_LOD);
+                
+                DisplayedSplajn.ReInterpolate(ref DisplayedTerrain, new_LOD);
                 glControl.Invalidate();
             }
             else
