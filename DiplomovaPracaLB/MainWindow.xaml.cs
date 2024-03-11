@@ -22,6 +22,8 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Windows.Controls.Primitives;
 
+using OSGeo.GDAL;
+
 namespace DiplomovaPracaLB
 {
     public partial class MainWindow : Window
@@ -75,6 +77,10 @@ namespace DiplomovaPracaLB
 
         public MainWindow()
         {
+            //naciatanie GDAL
+            GdalConfiguration.ConfigureGdal();
+           
+
             //UI:
             IsRightDown = false;
             IsLeftDown = false;
@@ -88,16 +94,11 @@ namespace DiplomovaPracaLB
             show_evaluation = true;    
 
             selectedShadingType = TypeOfShading.FLAT;
-            selectedTerrainType = TerrainType.HEIGHTMAP1;
+            selectedTerrainType = TerrainType.GEOTIFF2;
 
             switch (selectedTerrainType)
             {
                 default:
-                case (TerrainType.HEIGHTMAP1):
-                {
-                    DisplayedTerrain = new TerrainDataHeightmap("HeightmapSmaller.png");
-                    break;
-                }
                 case(TerrainType.MATLAB1):
                 {
                     DisplayedTerrain = new TerrainDataMatlab("TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
@@ -110,7 +111,7 @@ namespace DiplomovaPracaLB
                 }
                 case (TerrainType.GEOTIFF2):
                 {
-                    //DisplayedTerrain = GDAL
+                    DisplayedTerrain = new TerrainDataGeoTiff("n48_e017_1arc_v3MaleKarpaty.tif");
                     break;
                 }
             }
