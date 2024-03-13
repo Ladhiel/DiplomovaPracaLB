@@ -87,7 +87,7 @@ namespace DiplomovaPracaLB
 
             //TU NASTAVIT CO SA CHCEME ZOBRAZIT
             show_Axes = false;
-            show_Points = true;
+            show_Points = false;
             show_Wireframe = false;
             show_Quads = true;
             dragging = false;
@@ -121,7 +121,8 @@ namespace DiplomovaPracaLB
 
             InitializeComponent();  //az teraz sa nacita okno
             TextBox_LOD.Text = LevelOfDetail.ToString();
-            //TODO TextBox_Weight.Text = WeightedDataPointsSample[MW.ActivePoint_m_index, MW.ActivePoint_n_index].W.ToString();
+          
+
 
 
         }
@@ -963,6 +964,12 @@ namespace DiplomovaPracaLB
                     }
             }
             glControl.Invalidate();
+
+            if (ActivePoint_m_index >= 0 && ActivePoint_n_index >= 0)
+            {
+                TextBox3.Text = DisplayedTerrain.WeightedDataPointsSample[ActivePoint_m_index, ActivePoint_n_index].X.ToString() + "\n" + DisplayedTerrain.WeightedDataPointsSample[ActivePoint_m_index, ActivePoint_n_index].Y.ToString()+"\n"+ DisplayedTerrain.WeightedDataPointsSample[ActivePoint_m_index, ActivePoint_n_index].Z.ToString();
+            }
+
         }
 
         private void UpdateWeightUI()

@@ -26,6 +26,8 @@ using OpenTK.Graphics.OpenGL;
 using OSGeo.GDAL;
 using System.Data;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
+using OSGeo.OSR;
+using OSGeo.OGR;
 
 namespace DiplomovaPracaLB
 {
@@ -49,32 +51,83 @@ namespace DiplomovaPracaLB
             Dataset geotiffdata = Gdal.Open(file_name, Access.GA_ReadOnly);
 
             if (geotiffdata == null)
-            { 
+            {
                 Console.WriteLine("Can't open " + file_name);
                 return null;
             }
-            
+
             //GEOTIFF INFO------------
             Console.WriteLine(geotiffdata.GetDriver().GetDescription());
             Console.WriteLine(geotiffdata.GetSpatialRef().__str__());   //projetion info in text form
+            Console.WriteLine(geotiffdata.GetSpatialRef().GetUTMZone());
 
+            double corner_UTM_x = 0, corner_UTM_y = 0, pixelSize_UTM_x = 0, pixelSize_UTM_y = 0;    //UTM, teda udaje pre plochy teren. Geotif je originalne na "sferoide"
             //File location info
-            double corner_x, corner_y, pixelSize_x, pixelSize_y;
-            { 
-                double[] adfGeoTransform = new double[6];
-                geotiffdata.GetGeoTransform(adfGeoTransform);
+            {
+                //precitanie udajov
+                double corner_geo_x, corner_geo_y, pixelSize_geo_x, pixelSize_geo_y;    //x = longitude, y= latitude
+                {
+                    double[] adfGeoTransform = new double[6];       //directly from GDAL documentation
+                    geotiffdata.GetGeoTransform(adfGeoTransform);
 
-                //upper left raster corner coordinates in units from SpatialRef
-                corner_x = adfGeoTransform[0];
-                corner_y = adfGeoTransform[3];
+                    //upper left raster corner coordinates in units from SpatialRef
+                    corner_geo_x = adfGeoTransform[0];
+                    corner_geo_y = adfGeoTransform[3];
 
-                //pixel size in units from SpatialRef
-                pixelSize_x = adfGeoTransform[1];
-                pixelSize_y = -adfGeoTransform[5]; //z konvencie to hodnota -dy. treba davat pozor v ktorej zemepisnej dlzke sme. Slovensko je napravo od 0°, tak beriem +dy
+                    //pixel size in units from SpatialRef
+                    pixelSize_geo_x = adfGeoTransform[1];
+                    pixelSize_geo_y = -adfGeoTransform[5]; //z konvencie to hodnota -dy. treba davat pozor v ktorej zemepisnej dlzke sme. Slovensko je napravo od 0°, tak beriem +dy
 
-                Console.WriteLine("tif file size:" + geotiffdata.RasterXSize + "x" + geotiffdata.RasterYSize);
-                Console.WriteLine(("Origin = (%.6f,%.6f)", adfGeoTransform[0], adfGeoTransform[3]));
-                Console.WriteLine(("Pixel Size = (%.6f,%.6f)", adfGeoTransform[1], adfGeoTransform[5]));
+                    Console.WriteLine("tif file size:" + geotiffdata.RasterXSize + "x" + geotiffdata.RasterYSize);
+                    Console.WriteLine(("Origin = (%.6f,%.6f)", adfGeoTransform[0], adfGeoTransform[3]));
+                    Console.WriteLine(("Pixel Size = (%.6f,%.6f)", adfGeoTransform[1], adfGeoTransform[5]));
+
+                }
+
+                //preved z lat long na UTM
+                {
+                    //ESRI su kody pre suradnicove systemy pouzivane pre mapy, je ich asi 20 000.
+                    //WKT je Well Known Text - popis transformacie suradnic
+
+                    Console.WriteLine(geotiffdata.GetProjection());
+                    Console.WriteLine(geotiffdata.GetSpatialRef().GetType());
+                    Console.WriteLine(geotiffdata.GetSpatialRef().GetName());
+                    Console.WriteLine(geotiffdata.GetSpatialRef());
+                    Console.WriteLine(geotiffdata.GetSpatialRef().GetAxisName("GEOGCS", 0));
+                    Console.WriteLine(geotiffdata.GetSpatialRef().GetAxisName("GEOGCS", 1));
+                    int isNorth = (int)geotiffdata.GetSpatialRef().GetAxisOrientation("GEOGCS", 0);
+                    Console.WriteLine(geotiffdata.GetSpatialRef().GetAxisName("GEOGCS", 1));
+
+
+                    SpatialReference geoESRI = new SpatialReference("");
+                    geoESRI.SetWellKnownGeogCS("WGS84");
+                    SpatialReference flatESRI = new SpatialReference("");
+                    int is_north = (int)geotiffdata.GetSpatialRef().GetAxisOrientation("GEOGCS", 0);  //returns enum AxisOrientation. "1" is North.
+                    int UTMzone = (int)Math.Floor((corner_geo_x + 180) / 6) + 1;         //najdi casovu zonu (poludniky)
+                    flatESRI.SetUTM(UTMzone, is_north);
+
+                    OSGeo.OGR.Geometry point1 = new OSGeo.OGR.Geometry(wkbGeometryType.wkbPoint);
+                    OSGeo.OGR.Geometry point2 = new OSGeo.OGR.Geometry(wkbGeometryType.wkbPoint);
+                    point1.AddPoint(corner_geo_x, corner_geo_y, 1);    // na z nezalezi      uppper left
+                    point2.AddPoint(corner_geo_x + pixelSize_geo_x * geotiffdata.RasterXSize, corner_geo_y - pixelSize_geo_y * geotiffdata.RasterYSize, 1);   //lower right
+                    point1.AssignSpatialReference(geoESRI);
+                    point2.AssignSpatialReference(geoESRI);
+                    point1.TransformTo(flatESRI);//konverzia suradnic
+                    point2.TransformTo(flatESRI);
+
+                    double[] outUTM = { 0, 0 };
+
+                    point1.GetPoint(0, outUTM);
+                    corner_UTM_x = outUTM[0];
+                    corner_UTM_y = outUTM[1];
+
+                    point2.GetPoint(0, outUTM);
+                    double opposite_UTM_x = outUTM[0];
+                    double opposite_UTM_y = outUTM[1];
+
+                    pixelSize_UTM_x = (opposite_UTM_x - corner_UTM_x) / geotiffdata.RasterXSize;
+                    pixelSize_UTM_y = (opposite_UTM_y - corner_UTM_y) / geotiffdata.RasterYSize;
+                }
             }
 
             OSGeo.GDAL.Band rasterBand = geotiffdata.GetRasterBand(1);
@@ -84,22 +137,22 @@ namespace DiplomovaPracaLB
 
 
             //dataset points:
-            float[] hodnoty_test = new float[rasterXSize * rasterYSize];    // holds read values
-            rasterBand.ReadRaster(0, 0, rasterXSize, rasterYSize, hodnoty_test, rasterXSize, rasterYSize, 0, 0);    //reads elevation values
+            float[] hodnoty_test = new float[rasterXSize * rasterYSize];    // drzi precitane hodnoty
+            rasterBand.ReadRaster(0, 0, rasterXSize, rasterYSize, hodnoty_test, rasterXSize, rasterYSize, 0, 0);    //cita vyskove hodnoty
 
-            Vector4[,] LD = new Vector4[rasterXSize, rasterYSize];  //holds dataset points
+            Vector4[,] LD = new Vector4[rasterXSize, rasterYSize];  //drzi si body datasetu
             double x = 0, y = 0, z = 0; //temp coord values
             
             for (int j = 0; j < rasterYSize; j++)
             {
-                y = corner_y + j * pixelSize_y;
+                y = corner_UTM_y + j * pixelSize_UTM_y;
 
                 for (int i = 0; i < rasterXSize; i++)
                 {
-                    x = corner_x + i * pixelSize_x;
+                    x = corner_UTM_x - i * pixelSize_UTM_x;
                     z = hodnoty_test[i* rasterXSize+j];
 
-                    LD[i, j] = new Vector4((float)x, (float)y, (float)z/10000, 1.0f);
+                    LD[i, j] = new Vector4((float)x/10, (float)y/10, (float)z, 1.0f);  
                     //Console.WriteLine("["+x+"\t"+y+ "\t" + z +"]");
                 }
             }
