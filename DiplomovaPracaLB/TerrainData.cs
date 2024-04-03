@@ -32,6 +32,8 @@ namespace DiplomovaPracaLB
         private Vector4[,] DataPointsSample;  //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity, s povodnymi vahami
         public Vector4[,] WeightedDataPointsSample;          //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity
 
+        public Vector[,] TempEvalPoints;
+
         //private Splajn Interpolation;
         public Vector3 posunutie;
         public Matrix3 skalovanie;

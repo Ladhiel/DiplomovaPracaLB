@@ -61,13 +61,23 @@ namespace DiplomovaPracaLB
             Console.WriteLine(geotiffdata.GetSpatialRef().__str__());   //projetion info in text form
             Console.WriteLine(geotiffdata.GetSpatialRef().GetUTMZone());
 
+            string outS = "";
+            string[] s = geotiffdata.GetMetadata(outS);
+            foreach(string s2 in s)
+            {
+                Console.WriteLine("line " + s2);
+            }
+            //string unitType = rasterBand.GetMetadataItem("UNIT_TYPE", "");
+
+
             double corner_UTM_x = 0, corner_UTM_y = 0, pixelSize_UTM_x = 0, pixelSize_UTM_y = 0;    //UTM, teda udaje pre plochy teren. Geotif je originalne na "sferoide"
             //File location info
             {
                 //precitanie udajov
                 double corner_geo_x, corner_geo_y, pixelSize_geo_x, pixelSize_geo_y;    //x = longitude, y= latitude
                 {
-                    double[] adfGeoTransform = new double[6];       //directly from GDAL documentation
+                    //directly from GDAL documentation:
+                    double[] adfGeoTransform = new double[6];       
                     geotiffdata.GetGeoTransform(adfGeoTransform);
 
                     //upper left raster corner coordinates in units from SpatialRef
@@ -76,7 +86,7 @@ namespace DiplomovaPracaLB
 
                     //pixel size in units from SpatialRef
                     pixelSize_geo_x = adfGeoTransform[1];
-                    pixelSize_geo_y = -adfGeoTransform[5]; //z konvencie to hodnota -dy. treba davat pozor v ktorej zemepisnej dlzke sme. Slovensko je napravo od 0°, tak beriem +dy
+                    pixelSize_geo_y = -adfGeoTransform[5]; //z konvencie to hodnota -dy
 
                     Console.WriteLine("tif file size:" + geotiffdata.RasterXSize + "x" + geotiffdata.RasterYSize);
                     Console.WriteLine(("Origin = (%.6f,%.6f)", adfGeoTransform[0], adfGeoTransform[3]));
@@ -131,6 +141,8 @@ namespace DiplomovaPracaLB
             }
 
             OSGeo.GDAL.Band rasterBand = geotiffdata.GetRasterBand(1);
+
+            Console.WriteLine(rasterBand.GetUnitType());    //metres
 
             int rasterXSize=0, rasterYSize=0;
             GetRasterBandBasicInfo(ref rasterBand, out rasterXSize, out rasterYSize);
