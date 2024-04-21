@@ -94,7 +94,7 @@ namespace DiplomovaPracaLB
             show_evaluation = true;    
 
             selectedShadingType = TypeOfShading.FLAT;
-            selectedTerrainType = TerrainType.GEOTIFF2;
+            selectedTerrainType = TerrainType.GEOTIFF1;
 
             switch (selectedTerrainType)
             {
@@ -116,7 +116,7 @@ namespace DiplomovaPracaLB
                 }
             }
 
-            LevelOfDetail = 0;
+            LevelOfDetail = 3;
             //DisplayedTerrain.SetDensity(LevelOfDetail + 1);
 
             InitializeComponent();  //az teraz sa nacita okno
@@ -253,7 +253,7 @@ namespace DiplomovaPracaLB
             {
                 MessageBox.Show("Počet výškových hodnôt legendy musí byť o 1 menší ako počet farieb v legende. Program sa skončí.");
             }
-            ErrorTresholdValues = new float[] { 0.5f, 5.0f, 20.0f};
+            ErrorTresholdValues = new float[] { 0.1f, 0.25f, .50f};
             ErrorColorScheme = new float[][] {
                 new float[3] { 0.34f, 0.57f, 0.16f }, //zelená
                 new float[3] { 1.0f, 1.0f, 0.0f },    //žltá
@@ -285,7 +285,7 @@ namespace DiplomovaPracaLB
             
             //TU SA KRESLIA PRIMITIVY BEZ MATERIALU
             if (show_Axes) DrawAxes();
-            if (show_Points) DrawPoints(DisplayedTerrain.WeightedDataPointsSample);
+            if (show_Points) DrawPoints(DisplayedTerrain.WeightedDataPointsSample); DrawPoints(DisplayedSplajn.TmpPoints);
             if (show_Wireframe) DrawWireframe(DisplayedSplajn.GetPoints());
             //DrawNormals(DisplayedTerrain.InterpolationPoints, DisplayedTerrain.Normals);
             DrawActivePoint();
@@ -534,15 +534,15 @@ namespace DiplomovaPracaLB
 
         public Vector3 Rational(Vector4 vertex)
         {
-            //pred zobrazenim predelim vahou
-            if (vertex.W == 0)
-            {
-                MessageBox.Show("pozor, bod ma nulovu vahu");
-                return Vector3.Zero;
-            }
-            if (vertex.W == 1)
+            //pred zobrazenim predelim vahou (vaha ma iny zmysel pri RBF)
+            if (DisplayedSplajn.isRBF || vertex.W == 1)
             {
                 return new Vector3(vertex.X, vertex.Y, vertex.Z);     //len za zabudne w-suradnica
+            }
+            if (vertex.W == 0)
+            {
+                //MessageBox.Show("pozor, bod ma nulovu vahu");
+                return Vector3.Zero;
             }
 
             return new Vector3(vertex.X / vertex.W, vertex.Y / vertex.W, vertex.Z / vertex.W);
@@ -559,8 +559,9 @@ namespace DiplomovaPracaLB
             return GetMixedColorFromScheme(point_error, ErrorTresholdValues, ErrorColorScheme);
         }
 
-        private float[] GetMixedColorFromScheme(float value, float[] TresholdValues, float[][] ColorScheme)
+        private float[] GetMixedColorFromScheme(float in_value, float[] TresholdValues, float[][] ColorScheme)
         {
+            float value = in_value / (DisplayedTerrain.GetMinMaxVal(true, 2)- DisplayedTerrain.GetMinMaxVal(false, 2));
             if (value < TresholdValues[0])   //všetky nižšie ako najnizsia hodnota
             {
                 return ColorScheme[0];
@@ -570,14 +571,14 @@ namespace DiplomovaPracaLB
             {
                 if (value < TresholdValues[i])
                 {
-                    float p = ((float)value - TresholdValues[i - 1]) / (TresholdValues[i] - TresholdValues[i - 1]);  //výpočet parametra (pozície) na rovnomerne parametrizovanej úsečke medzi 2 v hodnotami legendy
+                    double p = (value - TresholdValues[i - 1]) / (TresholdValues[i] - TresholdValues[i - 1]);  //výpočet parametra (pozície) na rovnomerne parametrizovanej úsečke medzi 2 v hodnotami legendy
                     RecomputeEaseInEaseOutParam(ref p);
 
-                    float r = (1 - p) * ColorScheme[i - 1][0] + p * ColorScheme[i][0];     //red
-                    float g = (1 - p) * ColorScheme[i - 1][1] + p * ColorScheme[i][1];     //green
-                    float b = (1 - p) * ColorScheme[i - 1][2] + p * ColorScheme[i][2];     //blue
+                    double r = (1 - p) * ColorScheme[i - 1][0] + p * ColorScheme[i][0];     //red
+                    double g = (1 - p) * ColorScheme[i - 1][1] + p * ColorScheme[i][1];     //green
+                    double b = (1 - p) * ColorScheme[i - 1][2] + p * ColorScheme[i][2];     //blue
 
-                    return new float[3] { r, g, b };
+                    return new float[3] { (float)r, (float)g, (float)b };
                 }
             }
 
@@ -585,13 +586,13 @@ namespace DiplomovaPracaLB
         }
 
 
-        private float RecomputeEaseInEaseOutParam(ref float p)     //pretransformuje parameter, z linearnej parametrizacie na ease in ease out; iba pre lepsi farebny efekts
+        private double RecomputeEaseInEaseOutParam(ref double p)     //pretransformuje parameter, z linearnej parametrizacie na ease in ease out; iba pre lepsi farebny efekts
         {
             //zdroj: https://easings.net/#easeInOutQuad
 
             if (p < 0.5) return 2 * p * p;
             //else
-            return 1 - (float)Math.Pow(-2 * p + 2, 2) / 2;
+            return 1 - Math.Pow(-2 * p + 2, 2) / 2;
         }
 
 
@@ -602,23 +603,34 @@ namespace DiplomovaPracaLB
 
 
 
-        public void UseKardBilin(float tenstion, int LOD)
+        public void UseKardBilin(float tenstion)
         {
-            DisplayedSplajn = new SplajnKardinalnyBilinearny(ref DisplayedTerrain, LOD, tenstion);
-        }
-
-        public void UseKardBicubic(float tenstion, int LOD)
-        {
-            DisplayedSplajn = new SplajnKardinalnyBikubicky(ref DisplayedTerrain, LOD, tenstion);
+            DisplayedSplajn = new SplajnKardinalnyBilinearny(ref DisplayedTerrain, LevelOfDetail, tenstion);
             DisplayedSplajn.Evaluate(ref DisplayedTerrain);
+            if (glControl != null) glControl.Invalidate();
         }
 
-        public void UseKochanekBartels(float tenstion, float continuity, float bias, int LOD)
+        public void UseKardBicubic(float tenstion)
         {
-            DisplayedSplajn = new KochanekBartelsSplajn(ref DisplayedTerrain, LOD, tenstion, continuity, bias);
+            DisplayedSplajn = new SplajnKardinalnyBikubicky(ref DisplayedTerrain, LevelOfDetail, tenstion);
             DisplayedSplajn.Evaluate(ref DisplayedTerrain);
+            
+            if(glControl!= null) glControl.Invalidate();
         }
 
+        public void UseKochanekBartels(float tenstion, float continuity, float bias)
+        {
+            DisplayedSplajn = new KochanekBartelsSplajn(ref DisplayedTerrain, LevelOfDetail, tenstion, continuity, bias);
+            DisplayedSplajn.Evaluate(ref DisplayedTerrain);
+            if (glControl != null) glControl.Invalidate();
+        }
+
+        public void UseRBF(BASIS_FUNCTION eRBFType, double param)
+        {
+           DisplayedSplajn = new SplajnRadialBasis(ref DisplayedTerrain, LevelOfDetail, eRBFType, param);
+           DisplayedSplajn.Evaluate(ref DisplayedTerrain);
+            if (glControl != null) glControl.Invalidate();
+        }
 
         //-----------------------------------------------------------------------------------------------------------------------
 
@@ -646,11 +658,35 @@ namespace DiplomovaPracaLB
         {
             SplineParamFrame.Content = new Page_Kard(this);
         }
-
         private void RadioButton_SplajnKochanekBartels_Checked(object sender, RoutedEventArgs e)
         {
             SplineParamFrame.Content = new Page_KochanekBartels(this);
         }
+        private void RadioButton_RBF_GAUSSIAN_Checked(object sender, RoutedEventArgs e)
+        {
+            SplineParamFrame.Content = new Page_RBF(this, BASIS_FUNCTION.GAUSSIAN);
+        }
+        private void RadioButton_RBF_MULTIQUADRATIC_Checked(object sender, RoutedEventArgs e)
+        {
+            SplineParamFrame.Content = new Page_RBF(this, BASIS_FUNCTION.MULTIQUADRATIC);
+        }
+        private void RadioButton_RBF_INVERSE_QUADRATIC_Checked(object sender, RoutedEventArgs e)
+        {
+            SplineParamFrame.Content = new Page_RBF(this, BASIS_FUNCTION.INVERSE_QUADRATIC);
+        }
+        private void RadioButton_RBF_INVERSE_MULTIQUADRATIC_Checked(object sender, RoutedEventArgs e)
+        {
+            SplineParamFrame.Content = new Page_RBF(this, BASIS_FUNCTION.INVERSE_MULTIQUADRATIC);
+        }
+        private void RadioButton_RBF_POLYHARMONIC_Checked(object sender, RoutedEventArgs e)
+        {
+            SplineParamFrame.Content = new Page_RBF(this, BASIS_FUNCTION.POLYHARMONIC);
+        }
+        private void RadioButton_RBF_TIN_Checked(object sender, RoutedEventArgs e)
+        {
+            SplineParamFrame.Content = new Page_RBF(this, BASIS_FUNCTION.THIN_PLATE);
+        }
+
 
         private void TextBox_Weight_KeyDown(object sender, KeyEventArgs e)
         {
@@ -791,7 +827,7 @@ namespace DiplomovaPracaLB
             glControl.Invalidate();
         }
 
-      
+
         private void Button_ShowQuads_Click(object sender, RoutedEventArgs e)
         {
             if (show_Quads)

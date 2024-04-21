@@ -28,9 +28,9 @@ namespace DiplomovaPracaLB
 
     public abstract class TerrainData
     {
-        protected Vector4[,] DataPointsAll;    //cely dataset bodov
-        private Vector4[,] DataPointsSample;  //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity, s povodnymi vahami
-        public Vector4[,] WeightedDataPointsSample;          //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity
+        protected   Vector4[,] DataPointsAll;    //cely dataset bodov
+        private     Vector4[,] DataPointsSample;            //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity, s povodnymi vahami
+        public      Vector4[,] WeightedDataPointsSample;    //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity
 
         public Vector[,] TempEvalPoints;
 
@@ -38,10 +38,10 @@ namespace DiplomovaPracaLB
         public Vector3 posunutie;
         public Matrix3 skalovanie;
 
-        private int density = 10;  //hustota podmnoziny datasetu    
+        private int density = 4;  //hustota podmnoziny datasetu    
         private int[] border = new int[2];   //hranicne indexy pre porovnavaciu mriezku
 
-        float min_z, max_z, min_x, max_x, min_y, max_y;
+        private float min_z, max_z, min_x, max_x, min_y, max_y;
 
         protected void Initialize()
         {
@@ -73,7 +73,7 @@ namespace DiplomovaPracaLB
             return IDP;
         }
 
-       public void SetWeight(int active_m_index, int active_n_index, float new_weight)
+        public void SetWeight(int active_m_index, int active_n_index, float new_weight)
         {
             WeightedDataPointsSample[active_m_index, active_n_index].X = new_weight * DataPointsSample[active_m_index, active_n_index].X;
             WeightedDataPointsSample[active_m_index, active_n_index].Y = new_weight * DataPointsSample[active_m_index, active_n_index].Y;
@@ -81,7 +81,7 @@ namespace DiplomovaPracaLB
             WeightedDataPointsSample[active_m_index, active_n_index].W = new_weight;
         }
 
-       public void ResetWeight(int i, int j)
+        public void ResetWeight(int i, int j)
         {
             WeightedDataPointsSample[i, j] = new Vector4(DataPointsSample[i, j]);
         }
@@ -110,7 +110,6 @@ namespace DiplomovaPracaLB
         }
         protected void FindExtremalCoordinates()
         {
-            
             float span_x, span_y, span_z, mid_x, mid_y, mid_z;
 
             min_x = float.MaxValue;
@@ -148,6 +147,7 @@ namespace DiplomovaPracaLB
             skalovanie = Matrix3.CreateScale(2 / scale, 2 / scale, 2 / scale);
         }
 
+        /*
         private void FindClosestSquare(float x, float y, ref int out_i, ref int out_j)
         {
             //vychadzam z toho, ze vstupne udaje su v pravidelnej mriezke
@@ -163,21 +163,34 @@ namespace DiplomovaPracaLB
             float temp_y = Math.Abs(y - min_y);
             out_j = (int)Math.Floor(temp_y / dielik_y);
         }
-
+        */
         private void FindClosestSquarever2(float x, float y, ref int out_i, ref int out_j)
         {
-            //vychadzam z toho, ze vstupne udaje su v pravidelnej mriezke
-            
-            float span_x = Math.Abs(max_x - min_x);
-            float dielik_x = span_x / DataPointsAll.GetLength(0);
-            float temp_x = Math.Abs(x - min_x);
+            //vychadzam z toho, ze vstupne udaje su v pravidelnej mriezke, cize to funguje len na naozaj pravidene data a nie Geotiff
+
+
+            int m = DataPointsAll.GetLength(0);
+            int n = DataPointsAll.GetLength(1);
+
+            float span_x = Math.Abs(DataPointsAll[0, 0].X - DataPointsAll[m - 1, n - 1].X);
+            float span_y = Math.Abs(DataPointsAll[0, 0].Y - DataPointsAll[m - 1, n - 1].Y);
+            float dielik_x = span_x / (n - 1);
+            float dielik_y = span_y / (m - 1);
+            float temp_x = Math.Abs(x - DataPointsAll[0, 0].X/*min_x*/);
+            float temp_y = Math.Abs(y - DataPointsAll[0, 0].Y /*min_y*/);
             out_i = (int)Math.Floor(temp_x / dielik_x);
 
-
-            float span_y = Math.Abs(max_y - min_y);
-            float dielik_y = span_y / DataPointsAll.GetLength(1);
-            float temp_y = Math.Abs(y - min_y);
             out_j = (int)Math.Floor(temp_y / dielik_y);
+
+            //minimum nie je nutne 0 a max nie je nutne m
+            if (DataPointsAll[0, 0].X > DataPointsAll[1, 1].X)
+            {
+                out_i = DataPointsAll.GetLength(0) - out_i -1;
+            }
+            if (DataPointsAll[0, 0].Y > DataPointsAll[1, 1].Y)
+            {
+               // out_j = DataPointsAll.GetLength(1) - out_j - 1;
+            }
         }
 
         public float GetApproximateZver2(float x, float y)
@@ -187,8 +200,8 @@ namespace DiplomovaPracaLB
             float approx_z = 0.0f;
 
             int i = 0, j = 0;
-            float dielik_x = (max_x - min_x) / DataPointsAll.GetLength(0);
-            float dielik_y = (max_y - min_y) / DataPointsAll.GetLength(1);
+            float dielik_x = (max_x - min_x) / (DataPointsAll.GetLength(0)-1);
+            float dielik_y = (max_y - min_y) / (DataPointsAll.GetLength(1)-1);
             FindClosestSquarever2(x, y, ref i, ref j);
 
             //TODO toto sa mozno hodi aj do textu:
@@ -198,7 +211,10 @@ namespace DiplomovaPracaLB
             //storvcek [i,j] rozdelim na 4 trojuholniky, ktorych zakladnami su hrany stvoreka a 3. vrhol maju v strede stvoreka.
             //stylom diamant-stvorec stredny bod:
 
+          
             Vector3 MidP = new Vector3((DataPointsAll[i, j] + DataPointsAll[i + 1, j] + DataPointsAll[i + 1, j + 1] + DataPointsAll[i, j + 1]) / 4);
+            
+            return DataPointsAll[i, j].Z;
 
             //test: ktory z trojuholnikov ma bod s tymito (x,y)?
             /*
@@ -220,7 +236,7 @@ namespace DiplomovaPracaLB
             //testujem bod polohu (x,y) voci diagonalam
             //pre x najdeme body na diagonalach (x, y1) (x, y2)
             //usetrim testovanie ci je bod vonku, lebo odpoveda na tu otazku poznam (nie).
-
+            
             //predpokladam ze body datasetu su zoradene vzostupne od najmensej po najvyssiu suradnicu v oboh dimenziach
             double lokal_x = DataPointsAll[i, j].X - x;
             double lokal_y = DataPointsAll[i, j].Y - y;
@@ -257,9 +273,10 @@ namespace DiplomovaPracaLB
             Vector3 n = Vector3.Cross(u, v);    //nezalezi na orientacii trojuholnika, kedze testujem len ci lezi na rovine
             approx_z = -(n.X * (x - MidP.X) + n.X * (y - MidP.Y)) / n.Z + MidP.Z;
 
+            
             return approx_z;
         }
-
+        /*
         public float GetApproximateZ(float x, float y)
         {
             float approx_z = 0.0f;
@@ -275,8 +292,21 @@ namespace DiplomovaPracaLB
           
             return approx_z;
         }
-
+        */
         //-----Getters------------------------------------------------------------------
+
+        public float GetMinMaxVal(bool false_is_min_and_true_is_max, int axis_index)
+        {
+            if(false_is_min_and_true_is_max)
+            {
+                if (axis_index == 0) return max_x;
+                if (axis_index == 1) return max_y;
+                return max_z;
+            }
+            if (axis_index == 0) return min_x;
+            if (axis_index == 1) return min_y;
+            return min_z;
+        }
 
         public float GetRealZ(int i, int j)
         {
@@ -289,6 +319,10 @@ namespace DiplomovaPracaLB
             {
                 density = new_density;
             }
+        }
+        public int GetDensity()
+        {
+            return density;
         }
 
         public int[] GetSampleSize()

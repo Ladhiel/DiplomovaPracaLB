@@ -7,16 +7,17 @@ namespace DiplomovaPracaLB
 {
     public abstract partial class Splajn
     {
-        protected int LOD;
-        protected int m, n; //pocet vrcholov v zjemnenom vzorkovani      indexy od 0 po m-1
-        protected Vector4[,] InterpolationPoints;
-        private Vector3[,] Normals;              //normalove vektory v lavych dolnych rohov jemneho vzorkovania
-        private float[,] ErrorValues;
-        protected bool isRBF = false;
+        protected int           LOD;
+        protected int           m, n; //pocet vrcholov v zjemnenom vzorkovani      indexy od 0 po m-1
+        protected Vector4[,]    InterpolationPoints;
+        public    Vector4[,]    TmpPoints;
+        private   Vector3[,]    Normals;              //normalove vektory v lavych dolnych rohov jemneho vzorkovania
+        private   float[,]      ErrorValues;
+        public    bool          isRBF = false;
 
         public void Interpolate(ref TerrainData RefTerrain)
         {
-            InterpolationPoints = CreateInterpolationPoints(RefTerrain.WeightedDataPointsSample);
+            InterpolationPoints = CreateInterpolationPoints(ref RefTerrain.WeightedDataPointsSample);
             ComputeNormals(InterpolationPoints);
             Evaluate(ref RefTerrain);
         }
@@ -32,7 +33,7 @@ namespace DiplomovaPracaLB
            //kazdy splajn svoje 
         }
 
-        protected virtual Vector4[,] CreateInterpolationPoints(Vector4[,] Vector)
+        protected virtual Vector4[,] CreateInterpolationPoints(ref Vector4[,] Vector)
         {
             //kazdy splajn svoje
             Vector4[,] IP = new Vector4[m, n];
@@ -87,26 +88,32 @@ namespace DiplomovaPracaLB
 
         public void Evaluate(ref TerrainData RefTerrain)
         {
+            //return;//TODO odstran
+            if (RefTerrain.GetDensity() != LOD + 1) return;
+
+            //todo uprav, aby sedeli pocty
+            TmpPoints = new Vector4[m, n];
             ErrorValues = new float[m, n];
 
             Vector3 S = Vector3.Zero;   //SplajnPoint
             float terrain_point_elevation;
 
-            for (int i =0;i<m;i++)
+            for (int i = 0; i < m; i++)
             {
-                for (int j =0;j<n;j++)
+                for (int j = 0; j < n; j++)
                 {
                     S = Rational(InterpolationPoints[i, j]);
                     if (isRBF)
                     {
                         terrain_point_elevation = RefTerrain.GetRealZ(i,j); //same-indexed verices in both terrain and splajn have same x and y values
+                        TmpPoints[i, j] = new Vector4((float)S.X, (float)S.Y, terrain_point_elevation, 1);
                     }
                     else
                     {
                         //with parametric surfaces, it is sometimes hard to find z for given x and y. It's easier to find approximate point on the real data = regular grid
                         terrain_point_elevation = RefTerrain.GetApproximateZver2(S.X, S.Y);
                     }
-
+                    TmpPoints[i, j] = new Vector4((float)S.X, (float)S.Y, terrain_point_elevation, 1);  //todo vymaz
                     ErrorValues[i, j] = Math.Abs(S.Z - terrain_point_elevation);
                 }
             }

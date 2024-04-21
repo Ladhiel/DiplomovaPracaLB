@@ -23,7 +23,7 @@ namespace DiplomovaPracaLB
             n = (InputSize[1] - 4 - 1) * (LOD + 1) + 1;
         }
 
-        protected override Vector4[,] CreateInterpolationPoints(Vector4[,] Vstup)
+        protected override Vector4[,] CreateInterpolationPoints(ref Vector4[,] Vstup)
         {
             Vector4[,] IP = new Vector4[m, n];
 

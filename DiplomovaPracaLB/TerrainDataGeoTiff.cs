@@ -125,6 +125,8 @@ namespace DiplomovaPracaLB
                     point1.TransformTo(flatESRI);//konverzia suradnic
                     point2.TransformTo(flatESRI);
 
+                    //TODO skus https://gdal-dev.osgeo.narkive.com/uaqZQhTd/utm-to-lat-lon
+
                     double[] outUTM = { 0, 0 };
 
                     point1.GetPoint(0, outUTM);

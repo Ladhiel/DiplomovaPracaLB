@@ -85,6 +85,11 @@
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
                         </Grid.RowDefinitions>
                         <Grid.Resources>
                             <Style TargetType="{x:Type Border}">
@@ -114,6 +119,37 @@
                         </Border>
                         <TextBlock Text="Kochanek-Bartels splajn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
 
+                        <TextBlock Text="  Radiálny bázický splajn s bázou:" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" IsHitTestVisible="False" Foreground="#FFC4CDC1" FontSize="14"/>
+
+                        <Border Grid.Row="3">
+                            <RadioButton x:Name="RadioButton_RBF_GAUSSIAN" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" Checked="RadioButton_RBF_GAUSSIAN_Checked" IsChecked="False"/>
+                        </Border>
+                        <TextBlock Text="Gaussovská" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+
+                        <Border Grid.Row="4">
+                            <RadioButton x:Name="RadioButton_RBF_MULTIQUADRATIC" Checked="RadioButton_RBF_MULTIQUADRATIC_Checked" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn"  IsChecked="False"/>
+                        </Border>
+                        <TextBlock Text="Multikvadratická" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+
+                        <Border Grid.Row="5">
+                            <RadioButton x:Name="RadioButton_RBF_INVERSE_QUADRATIC" Checked="RadioButton_RBF_INVERSE_QUADRATIC_Checked" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn"  IsChecked="False"/>
+                        </Border>
+                        <TextBlock Text="Inverzná kvadratická" Grid.Row="5" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+
+                        <Border Grid.Row="6">
+                            <RadioButton x:Name="RadioButton_RBF_INVERSE_MULTIQUADRATIC" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" Checked="RadioButton_RBF_INVERSE_MULTIQUADRATIC_Checked" IsChecked="False"/>
+                        </Border>
+                        <TextBlock Text="Inverzná multikvadratická" Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+
+                        <Border Grid.Row="7">
+                            <RadioButton x:Name="RadioButton_RBF_POLYHARMONIC" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" Checked="RadioButton_RBF_POLYHARMONIC_Checked" IsChecked="False"/>
+                        </Border>
+                        <TextBlock Text="Polyharmonická" Grid.Row="7" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+
+                        <Border Grid.Row="8">
+                            <RadioButton x:Name="RadioButton_RBF_TIN" Checked="RadioButton_RBF_TIN_Checked" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" IsChecked="False"/>
+                        </Border>
+                        <TextBlock Text="Tenkostenný splajn" Grid.Row="8" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
 
                     </Grid>
                 </StackPanel>

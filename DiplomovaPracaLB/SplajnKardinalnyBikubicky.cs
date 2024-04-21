@@ -9,6 +9,7 @@ namespace DiplomovaPracaLB
 
         public SplajnKardinalnyBikubicky(ref TerrainData RefTerrain, int _LOD, float _tension)
         {
+            isRBF = false;
             tension = (1 - _tension) / 2;   //prirodzenejsi priebeh parametra z knihy D. Salomona
             LoadDimensions(_LOD, RefTerrain.GetSampleSize());
             Interpolate(ref RefTerrain);
@@ -21,7 +22,7 @@ namespace DiplomovaPracaLB
             n = (InputSize[1] - 4 - 1) * (LOD + 1) + 1;
         }
 
-        protected override Vector4[,] CreateInterpolationPoints(Vector4[,] Vstup)
+        protected override Vector4[,] CreateInterpolationPoints(ref Vector4[,] Vstup)
         {
             Vector4[,] IP = new Vector4[m, n];
 

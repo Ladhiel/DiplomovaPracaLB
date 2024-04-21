@@ -86,6 +86,9 @@
     <Compile Include="Page_KochanekBartels.xaml.cs">
       <DependentUpon>Page_KochanekBartels.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Page_RBF.xaml.cs">
+      <DependentUpon>Page_RBF.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SplajnAdditionalMethods.cs" />
     <Compile Include="SplajnKochanekBartels.cs" />
     <Compile Include="SplajnKardinalnyBikubicky.cs" />
@@ -115,6 +118,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Page_KochanekBartels.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Page_RBF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
