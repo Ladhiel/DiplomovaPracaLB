@@ -99,6 +99,7 @@
     <Compile Include="Splajn.cs" />
     <Compile Include="SplajnRadialBasis.cs" />
     <Compile Include="TerrainData.cs" />
+    <Compile Include="TerrainDataXYZ.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

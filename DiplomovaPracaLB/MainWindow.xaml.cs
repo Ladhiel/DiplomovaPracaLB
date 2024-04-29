@@ -72,7 +72,8 @@ namespace DiplomovaPracaLB
             HEIGHTMAP1,
             HEIGHTMAP2,
             GEOTIFF1,
-            GEOTIFF2
+            GEOTIFF2,
+            XYZ
         }
 
         public MainWindow()
@@ -91,10 +92,10 @@ namespace DiplomovaPracaLB
             show_Wireframe = false;
             show_Quads = true;
             dragging = false;
-            show_evaluation = true;    
+            show_evaluation = false;    
 
             selectedShadingType = TypeOfShading.FLAT;
-            selectedTerrainType = TerrainType.GEOTIFF1;
+            selectedTerrainType = TerrainType.XYZ;
 
             switch (selectedTerrainType)
             {
@@ -112,6 +113,12 @@ namespace DiplomovaPracaLB
                 case (TerrainType.GEOTIFF2):
                 {
                     DisplayedTerrain = new TerrainDataGeoTiff("n48_e017_1arc_v3MaleKarpaty.tif");
+                    break;
+                }
+                case (TerrainType.XYZ):
+                {
+                    DisplayedTerrain = new TerrainDataXYZ("Senica" +
+                        "UTM_cutoutXYZ.xyz", 0, 0);   
                     break;
                 }
             }
@@ -240,7 +247,8 @@ namespace DiplomovaPracaLB
             pointsize = ChangePointSize();
 
             //farby terénu
-            FarebnaLegendaHodnoty = new float[] { -0.5f, 200, 500, 1000, 1500 };
+            //FarebnaLegendaHodnoty = new float[] { -0.5f, 200, 500, 1000, 1500 };
+            FarebnaLegendaHodnoty = new float[] { -0.5f, 200, 400, 800, 1200, 1500 };
             FarebnaLegendaFarby = new float[][] {
                 new float[3] { 0.0f, 0.4f, 0.55f },   //modrá
                 new float[3] { 0.34f, 0.57f, 0.16f }, //zelená
@@ -249,10 +257,7 @@ namespace DiplomovaPracaLB
                 new float[3] { .8f, .44f, .28f },     //hnedá
                 new float[3] { .51f, .28f, .23f }     //tmavohnedá
             };
-            if (FarebnaLegendaHodnoty.Length + 1 != FarebnaLegendaFarby.Length)
-            {
-                MessageBox.Show("Počet výškových hodnôt legendy musí byť o 1 menší ako počet farieb v legende. Program sa skončí.");
-            }
+           
             ErrorTresholdValues = new float[] { 0.1f, 0.25f, .50f};
             ErrorColorScheme = new float[][] {
                 new float[3] { 0.34f, 0.57f, 0.16f }, //zelená
@@ -285,7 +290,8 @@ namespace DiplomovaPracaLB
             
             //TU SA KRESLIA PRIMITIVY BEZ MATERIALU
             if (show_Axes) DrawAxes();
-            if (show_Points) DrawPoints(DisplayedTerrain.WeightedDataPointsSample); DrawPoints(DisplayedSplajn.TmpPoints);
+            if (show_Points) DrawPoints(DisplayedTerrain.WeightedDataPointsSample);
+            if(show_evaluation) DrawPoints(DisplayedSplajn.TmpPoints);
             if (show_Wireframe) DrawWireframe(DisplayedSplajn.GetPoints());
             //DrawNormals(DisplayedTerrain.InterpolationPoints, DisplayedTerrain.Normals);
             DrawActivePoint();
@@ -561,11 +567,17 @@ namespace DiplomovaPracaLB
 
         private float[] GetMixedColorFromScheme(float in_value, float[] TresholdValues, float[][] ColorScheme)
         {
-            float value = in_value / (DisplayedTerrain.GetMinMaxVal(true, 2)- DisplayedTerrain.GetMinMaxVal(false, 2));
+            float value = in_value /*/ (DisplayedTerrain.GetMinMaxVal(true, 2)- DisplayedTerrain.GetMinMaxVal(false, 2))*/;
             if (value < TresholdValues[0])   //všetky nižšie ako najnizsia hodnota
             {
                 return ColorScheme[0];
             }
+
+            if (value >= TresholdValues.Last())
+            {
+                return ColorScheme.Last();
+            }
+
 
             for (int i = 1; i < TresholdValues.Length; i++)
             {
@@ -606,14 +618,14 @@ namespace DiplomovaPracaLB
         public void UseKardBilin(float tenstion)
         {
             DisplayedSplajn = new SplajnKardinalnyBilinearny(ref DisplayedTerrain, LevelOfDetail, tenstion);
-            DisplayedSplajn.Evaluate(ref DisplayedTerrain);
+           // DisplayedSplajn.Evaluate(ref DisplayedTerrain);
             if (glControl != null) glControl.Invalidate();
         }
 
         public void UseKardBicubic(float tenstion)
         {
             DisplayedSplajn = new SplajnKardinalnyBikubicky(ref DisplayedTerrain, LevelOfDetail, tenstion);
-            DisplayedSplajn.Evaluate(ref DisplayedTerrain);
+           // DisplayedSplajn.Evaluate(ref DisplayedTerrain);
             
             if(glControl!= null) glControl.Invalidate();
         }
@@ -621,14 +633,14 @@ namespace DiplomovaPracaLB
         public void UseKochanekBartels(float tenstion, float continuity, float bias)
         {
             DisplayedSplajn = new KochanekBartelsSplajn(ref DisplayedTerrain, LevelOfDetail, tenstion, continuity, bias);
-            DisplayedSplajn.Evaluate(ref DisplayedTerrain);
+            //DisplayedSplajn.Evaluate(ref DisplayedTerrain);
             if (glControl != null) glControl.Invalidate();
         }
 
         public void UseRBF(BASIS_FUNCTION eRBFType, double param)
         {
            DisplayedSplajn = new SplajnRadialBasis(ref DisplayedTerrain, LevelOfDetail, eRBFType, param);
-           DisplayedSplajn.Evaluate(ref DisplayedTerrain);
+          // DisplayedSplajn.Evaluate(ref DisplayedTerrain);
             if (glControl != null) glControl.Invalidate();
         }
 

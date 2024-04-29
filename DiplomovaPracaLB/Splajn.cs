@@ -19,7 +19,7 @@ namespace DiplomovaPracaLB
         {
             InterpolationPoints = CreateInterpolationPoints(ref RefTerrain.WeightedDataPointsSample);
             ComputeNormals(InterpolationPoints);
-            Evaluate(ref RefTerrain);
+            //Evaluate(ref RefTerrain);
         }
 
         public void ReInterpolate(ref TerrainData RefTerrain, int new_LOD)
