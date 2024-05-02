@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using static alglib;
+using static alglib.directdensesolvers;
 
 namespace DiplomovaPracaLB
 {
@@ -115,7 +116,8 @@ namespace DiplomovaPracaLB
 
         private double RBFunction(double distance)
         {
-            shape_param = 0.5;
+            shape_param = 1;
+            //pre gaussa je  shape_param = 1.5;
             switch (type_of_basis)
             {
                 case (BASIS_FUNCTION.GAUSSIAN):
@@ -125,11 +127,11 @@ namespace DiplomovaPracaLB
                     }
                 case BASIS_FUNCTION.MULTIQUADRATIC:
                     {
-                        return Math.Sqrt(1+ distance * distance + shape_param * shape_param);
+                        return Math.Sqrt(1+ distance * distance * shape_param * shape_param);
                     }
                 case BASIS_FUNCTION.INVERSE_QUADRATIC:
                     {
-                        return 1 / Math.Sqrt(1+distance * distance + shape_param * shape_param);
+                        return 1 / Math.Sqrt(1+distance * distance * shape_param * shape_param);
                     }
                 case BASIS_FUNCTION.THIN_PLATE:
                     {
@@ -193,14 +195,16 @@ namespace DiplomovaPracaLB
             //inverse matrix
             matinvreport matinvreport = new matinvreport();
             int info = 0;
-            rmatrixinverse( ref RBFvalues, num_of_input_points, out info,  out matinvreport);
+            alglib.densesolverlsreport densesolverlsreportt;
+//            rmatrixinverse( ref RBFvalues, num_of_input_points, out info,  out matinvreport);
 
-           // solve A^(-1)*z = w; w =? ZLE SOM POCHOPILA FCIU Z ALGLIB
-            rmatrixsolvefast(RBFvalues, num_of_input_points, ref inOutArray, out info);
+            // solve A^(-1)*z = w; w =? ZLE SOM POCHOPILA FCIU Z ALGLIB
+            //rmatrixsolvefast(RBFvalues, num_of_input_points, ref inOutArray, out info);
+            rmatrixsolvels( RBFvalues, num_of_input_points, num_of_input_points, inOutArray,0.0,  out info, out densesolverlsreportt, out wieghts);
 
             for (int i = 0; i < num_of_input_points; i++)
             {
-               wieghts[i] = inOutArray[i];   //assign W value (weight) to points from the array
+               //wieghts[i] = inOutArray[i];   //assign W value (weight) to points from the array
             }
         }
     }

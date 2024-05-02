@@ -73,18 +73,29 @@ namespace DiplomovaPracaLB
         {
             //Vieme, ze matlab text subor ma 257*257 raidkov, kazdych 257 riadkov je jeden riadok v suradnici x pri pevnom y.
             //Vector4[,] PlanarGrid = new Vector4[a, b];    //TODO odkomentuj
-            Vector4[,] PlanarGrid = new Vector4[20, 20];
+            Vector4[,] PlanarGrid = new Vector4[a, b];
             int k = 0;
-            for (int j = 0; j < 20; j++)//b
+            for (int j = 0; j < b; j++)
             {
-                for (int i = 0; i < 20; i++)//a
+                for (int i = 0; i < a; i++)
                 {
                     PlanarGrid[i, j] = LD[k];
                     k++;
                 }
             }
 
-            return PlanarGrid;
+
+            Vector4[,] PlanarGridSmaller = new Vector4[20, 20];
+            for (int j = 0; j < 20; j++)
+            {
+                for (int i = 0; i < 20; i++)
+                {
+                    PlanarGridSmaller[i, j] = PlanarGrid[i, j];
+                }
+            }
+            a = 20;
+            b = 20;
+            return PlanarGridSmaller;
         }
     }
 }
