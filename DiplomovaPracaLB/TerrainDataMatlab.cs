@@ -72,11 +72,12 @@ namespace DiplomovaPracaLB
         private Vector4[,] MatlabDataIntoGrid(List<Vector4> LD)
         {
             //Vieme, ze matlab text subor ma 257*257 raidkov, kazdych 257 riadkov je jeden riadok v suradnici x pri pevnom y.
-            Vector4[,] PlanarGrid = new Vector4[a, b];
+            //Vector4[,] PlanarGrid = new Vector4[a, b];    //TODO odkomentuj
+            Vector4[,] PlanarGrid = new Vector4[20, 20];
             int k = 0;
-            for (int j = 0; j < b; j++)
+            for (int j = 0; j < 20; j++)//b
             {
-                for (int i = 0; i < a; i++)
+                for (int i = 0; i < 20; i++)//a
                 {
                     PlanarGrid[i, j] = LD[k];
                     k++;

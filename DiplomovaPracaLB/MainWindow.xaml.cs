@@ -95,7 +95,7 @@ namespace DiplomovaPracaLB
             show_evaluation = false;    
 
             selectedShadingType = TypeOfShading.FLAT;
-            selectedTerrainType = TerrainType.XYZ;
+            selectedTerrainType = TerrainType.MATLAB1;
 
             switch (selectedTerrainType)
             {
@@ -118,7 +118,7 @@ namespace DiplomovaPracaLB
                 case (TerrainType.XYZ):
                 {
                     DisplayedTerrain = new TerrainDataXYZ("Senica" +
-                        "UTM_cutoutXYZ.xyz", 0, 0);   
+                        "UTM_cutoutXYZ.xyz", 20);   
                     break;
                 }
             }

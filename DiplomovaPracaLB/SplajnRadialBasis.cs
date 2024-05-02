@@ -27,6 +27,8 @@ namespace DiplomovaPracaLB
         private int[] inputSize;
 
         public double shape_param;
+        private double Hardy_param;
+        private double Fasshauer_param;
         
         private BASIS_FUNCTION type_of_basis;
         
@@ -48,6 +50,8 @@ namespace DiplomovaPracaLB
 
             type_of_basis = type;
             shape_param = input_shape_param;
+            Hardy_param = 0.815*(x_max - x_min) / (double)(m - 1);
+            Fasshauer_param = (double)2 / Math.Sqrt(num_of_input_points);
 
             Interpolate(ref RefTerrain);
         }
@@ -111,20 +115,21 @@ namespace DiplomovaPracaLB
 
         private double RBFunction(double distance)
         {
+            shape_param = 0.5;
             switch (type_of_basis)
             {
                 case (BASIS_FUNCTION.GAUSSIAN):
                     {
                         if (shape_param == 0) return shape_param + 0.000001;
-                        return Math.Exp(-0.5f * distance * distance / (shape_param* shape_param));
+                        return Math.Exp(/*-0.5f* */ -distance * distance * (shape_param* shape_param));
                     }
                 case BASIS_FUNCTION.MULTIQUADRATIC:
                     {
-                        return Math.Sqrt(distance * distance + shape_param * shape_param);
+                        return Math.Sqrt(1+ distance * distance + shape_param * shape_param);
                     }
                 case BASIS_FUNCTION.INVERSE_QUADRATIC:
                     {
-                        return 1 / Math.Sqrt(distance * distance + shape_param * shape_param);
+                        return 1 / Math.Sqrt(1+distance * distance + shape_param * shape_param);
                     }
                 case BASIS_FUNCTION.THIN_PLATE:
                     {
@@ -168,7 +173,7 @@ namespace DiplomovaPracaLB
                 }
             }
 
-            return null;
+            return MatrixOfValues;
         }
 
         private void SolveSystemToGetWeights(ref Vector4[,] Vstup)
@@ -186,10 +191,11 @@ namespace DiplomovaPracaLB
             //we must solve Aw = z, w=?
             ComputeRBFunctionValuesForDistances(ref Vstup, ref RBFvalues);  //velke PHI
             //inverse matrix
-            matinvreport matinvreport = new matinvreport(); int info = 0;
+            matinvreport matinvreport = new matinvreport();
+            int info = 0;
             rmatrixinverse( ref RBFvalues, num_of_input_points, out info,  out matinvreport);
 
-            //solve A^(-1)*z = w; w =?
+           // solve A^(-1)*z = w; w =? ZLE SOM POCHOPILA FCIU Z ALGLIB
             rmatrixsolvefast(RBFvalues, num_of_input_points, ref inOutArray, out info);
 
             for (int i = 0; i < num_of_input_points; i++)

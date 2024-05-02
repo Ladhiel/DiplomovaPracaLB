@@ -10,7 +10,7 @@ namespace DiplomovaPracaLB
 {
     public class TerrainDataXYZ : TerrainData
     {
-        public TerrainDataXYZ(string file_name, int width, int height)
+        public TerrainDataXYZ(string file_name, int max_pixel_count)
         {
             //DataPointsAll = XYZIntoGrid(file_name, width, height);
             DataPointsAll = XYZIntoGridVer2(file_name);
