@@ -13,11 +13,11 @@ namespace DiplomovaPracaLB
         public TerrainDataXYZ(string file_name, int max_pixel_count)
         {
             //DataPointsAll = XYZIntoGrid(file_name, width, height);
-            DataPointsAll = XYZIntoGridVer2(file_name);
+            DataPointsAll = XYZIntoGridVer2(file_name, max_pixel_count);
             Initialize();
         }
 
-        private Vector4[,] XYZIntoGridVer2(string file_name)
+        private Vector4[,] XYZIntoGridVer2(string file_name, int max_pixel_count)
         {
             //vysledne UTM suradnice budu cele posunute, ale pomery vydialenosti budu spravne
 
@@ -56,18 +56,22 @@ namespace DiplomovaPracaLB
                     temp_y = y;
                 }
 
-
-
                 dimX++;
             }
 
-            //Vector4[,] LD = new Vector4[dimX, dimY];
-            Vector4[,] LD = new Vector4[50, 50];
-            for (int i = 0; i < 50/*dimX*/; i++)
+            int rememberDimX = dimX;
+            if(max_pixel_count != 0)
             {
-                for (int j = 0; j < 50/*dimY*/; j++)
+                if (dimX > max_pixel_count) dimX = max_pixel_count;
+                if (dimY > max_pixel_count) dimY = max_pixel_count;
+            }
+            Vector4[,] LD = new Vector4[dimX, dimY];
+
+            for (int i = 0; i < dimX; i++)
+            {
+                for (int j = 0; j < dimY; j++)
                 {
-                    int index = i + j * dimX;
+                    int index = i + j* rememberDimX;
 
                     lines[index].Trim();    //spredu a zozadu odoberie WhiteSpace
                     string[] coordinates = lines[index].Split(' ');     //rozdeli string podla ciraky na slova
@@ -78,20 +82,14 @@ namespace DiplomovaPracaLB
 
                         double x = double.Parse(coordinates[0]);
                         double y = double.Parse(coordinates[1]);
-                        double z = double.Parse(coordinates[2]);
+                        double z = double.Parse(coordinates[2])*3;
                         float w = 1.0f;
-
-                        //if (!(i == 0 && j == 0))
-                        //{
-                        //    x -= LD[0, 0].X;
-                        //    y -= LD[0, 0].Y;
-                        //}
 
                         Console.WriteLine(x + " " + y + " " + z);
                             
                         if(y_klesa)
                         {
-                            LD[i, 50/*dimY*/ - j -1] = new Vector4((float)x, (float)y, (float)z, w);
+                            LD[i, dimY - j -1] = new Vector4((float)x, (float)y, (float)z, w);
                         }
                         else
                         {

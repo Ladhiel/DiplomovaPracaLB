@@ -353,7 +353,7 @@
                 </Canvas>
             </Border>
 
-            
+
 
             <Border x:Name="tienovanie">
                 <Canvas Width="210" Background="Transparent">
@@ -394,7 +394,7 @@
                 </Canvas>
             </Border>
         </StackPanel>
-        <TextBox x:Name="TextBox3" HorizontalAlignment="Left" Margin="1013,20,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="153" Height="74" Grid.Row="1"/>
+        <TextBox x:Name="TextBox3" HorizontalAlignment="Left" Margin="1013,53,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="153" Height="74" Grid.Row="1"/>
 
     </Grid>
 </Window>

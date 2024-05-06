@@ -6,7 +6,6 @@ namespace DiplomovaPracaLB
     public class SplajnKardinalnyBikubicky : Splajn
     {
         float tension;
-
         public SplajnKardinalnyBikubicky(ref TerrainData RefTerrain, int _LOD, float _tension)
         {
             isRBF = false;
@@ -83,17 +82,29 @@ namespace DiplomovaPracaLB
             Vector4 Pv10 = TangentVectorV(Vstup, i + 1, j);
             Vector4 Pv11 = TangentVectorV(Vstup, i + 1, j + 1);
 
-            Vector4 Puv00 = AdiniTwist(Vstup, i, j);
-            Vector4 Puv01 = AdiniTwist(Vstup, i, j + 1);
-            Vector4 Puv10 = AdiniTwist(Vstup, i + 1, j);
-            Vector4 Puv11 = AdiniTwist(Vstup, i + 1, j + 1);
-            /*
-             * Nulove twisty
-            Vector4 Puv00 = new Vector4(Vector3.Zero,1.0f);
-            Vector4 Puv01 = new Vector4(Vector3.Zero, 1.0f);
-            Vector4 Puv10 = new Vector4(Vector3.Zero, 1.0f);
-            Vector4 Puv11 = new Vector4(Vector3.Zero, 1.0f);
-            */
+            Vector4 Puv00, Puv01, Puv10, Puv11;
+            if (true)
+            {
+                /*
+                Vector4 Puv00 = AdiniTwist(Vstup, i, j);
+                Vector4 Puv01 = AdiniTwist(Vstup, i, j + 1);
+                Vector4 Puv10 = AdiniTwist(Vstup, i + 1, j);
+                Vector4 Puv11 = AdiniTwist(Vstup, i + 1, j + 1);
+                */
+                Puv00 = AdiniTwist(Vstup, i, j);
+                Puv01 = AdiniTwist(Vstup, i, j + 1);
+                Puv10 = AdiniTwist(Vstup, i + 1, j);
+                Puv11 = AdiniTwist(Vstup, i + 1, j + 1);
+            }
+            else
+            {
+                //Nulove twisty
+                Puv00 = new Vector4(Vector3.Zero, 1.0f);
+                Puv01 = new Vector4(Vector3.Zero, 1.0f);
+                Puv10 = new Vector4(Vector3.Zero, 1.0f);
+                Puv11 = new Vector4(Vector3.Zero, 1.0f);
+            }
+
             P[0] = new Matrix4(P00.X, P01.X, Pv00.X, Pv01.X, P10.X, P11.X, Pv10.X, Pv11.X, Pu00.X, Pu01.X, Puv00.X, Puv01.X, Pu10.X, Pu11.X, Puv10.X, Puv11.X);
             P[1] = new Matrix4(P00.Y, P01.Y, Pv00.Y, Pv01.Y, P10.Y, P11.Y, Pv10.Y, Pv11.Y, Pu00.Y, Pu01.Y, Puv00.Y, Puv01.Y, Pu10.Y, Pu11.Y, Puv10.Y, Puv11.Y);
             P[2] = new Matrix4(P00.Z, P01.Z, Pv00.Z, Pv01.Z, P10.Z, P11.Z, Pv10.Z, Pv11.Z, Pu00.Z, Pu01.Z, Puv00.Z, Puv01.Z, Pu10.Z, Pu11.Z, Puv10.Z, Puv11.Z);

@@ -38,7 +38,7 @@ namespace DiplomovaPracaLB
         public Vector3 posunutie;
         public Matrix3 skalovanie;
 
-        private int density = 4;  //hustota podmnoziny datasetu    
+        private int density = 3;  //hustota podmnoziny datasetu    
         private int[] border = new int[2];   //hranicne indexy pre porovnavaciu mriezku
 
         private float min_z, max_z, min_x, max_x, min_y, max_y;

@@ -23,9 +23,12 @@ using OpenTK.Graphics.OpenGL;
 using System.Windows.Controls.Primitives;
 
 using OSGeo.GDAL;
+using static alglib;
 
 namespace DiplomovaPracaLB
 {
+    
+
     public partial class MainWindow : Window
     {
         public GLControl glControl;
@@ -73,7 +76,8 @@ namespace DiplomovaPracaLB
             HEIGHTMAP2,
             GEOTIFF1,
             GEOTIFF2,
-            XYZ
+            XYZ,
+            PARABHYPERB
         }
 
         public MainWindow()
@@ -95,7 +99,7 @@ namespace DiplomovaPracaLB
             show_evaluation = false;    
 
             selectedShadingType = TypeOfShading.FLAT;
-            selectedTerrainType = TerrainType.MATLAB1;
+            selectedTerrainType = TerrainType.XYZ;
 
             switch (selectedTerrainType)
             {
@@ -117,8 +121,13 @@ namespace DiplomovaPracaLB
                 }
                 case (TerrainType.XYZ):
                 {
-                    DisplayedTerrain = new TerrainDataXYZ("Senica" +
-                        "UTM_cutoutXYZ.xyz", 20);   
+                    DisplayedTerrain = new TerrainDataXYZ("Hlohovec" +
+                        "UTM_cutoutXYZ.xyz", 400);   
+                    break;
+                }
+                case (TerrainType.PARABHYPERB):
+                {
+                    DisplayedTerrain = new TerrainParabHyperb(21);
                     break;
                 }
             }
@@ -133,7 +142,6 @@ namespace DiplomovaPracaLB
 
 
         }
-
 
         //-----------------------------------------------------------------------------------------------------------------------
 
@@ -201,7 +209,7 @@ namespace DiplomovaPracaLB
             }
 
             // color of the window
-            GL.ClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+            GL.ClearColor(.63f, 0.77f, 0.88f, 1.0f);
             GL.ClearDepth(1.0f);
 
             //enable z-buffering
@@ -248,7 +256,7 @@ namespace DiplomovaPracaLB
 
             //farby terénu
             //FarebnaLegendaHodnoty = new float[] { -0.5f, 200, 500, 1000, 1500 };
-            FarebnaLegendaHodnoty = new float[] { -0.5f, 200, 400, 800, 1200, 1500 };
+            FarebnaLegendaHodnoty = new float[] { -100.0f, -0.5f, 200, 500, 1000, 1500 };
             FarebnaLegendaFarby = new float[][] {
                 new float[3] { 0.0f, 0.4f, 0.55f },   //modrá
                 new float[3] { 0.34f, 0.57f, 0.16f }, //zelená

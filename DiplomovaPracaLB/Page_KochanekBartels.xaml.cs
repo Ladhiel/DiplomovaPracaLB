@@ -63,7 +63,6 @@ namespace DiplomovaPracaLB
             MW.glControl.Invalidate();
         }
 
-
         //----Slider-------------------
         private void Slider_Tension_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
