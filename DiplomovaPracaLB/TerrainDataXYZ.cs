@@ -10,11 +10,10 @@ namespace DiplomovaPracaLB
 {
     public class TerrainDataXYZ : TerrainData
     {
-        public TerrainDataXYZ(string file_name, int max_pixel_count)
+        public TerrainDataXYZ(int input_density, string file_name, int max_pixel_count)
         {
-            //DataPointsAll = XYZIntoGrid(file_name, width, height);
             DataPointsAll = XYZIntoGridVer2(file_name, max_pixel_count);
-            Initialize();
+            Initialize(input_density);
         }
 
         private Vector4[,] XYZIntoGridVer2(string file_name, int max_pixel_count)
@@ -46,7 +45,7 @@ namespace DiplomovaPracaLB
                         dimY = (int)(preistotu);
 
                         //zistim ci y klesa alebo stupa
-                        if(temp_y > y)
+                        if (temp_y > y)
                         {
                             y_klesa = true;
                         }
@@ -59,19 +58,27 @@ namespace DiplomovaPracaLB
                 dimX++;
             }
 
-            int rememberDimX = dimX;
-            if(max_pixel_count != 0)
+            int i_max = dimX;
+            int j_max = dimY;
+            if (0 < max_pixel_count)
             {
-                if (dimX > max_pixel_count) dimX = max_pixel_count;
-                if (dimY > max_pixel_count) dimY = max_pixel_count;
-            }
-            Vector4[,] LD = new Vector4[dimX, dimY];
-
-            for (int i = 0; i < dimX; i++)
-            {
-                for (int j = 0; j < dimY; j++)
+                if (dimX > max_pixel_count)
                 {
-                    int index = i + j* rememberDimX;
+                    i_max = max_pixel_count;
+                }
+
+                if (dimY > max_pixel_count)
+                {
+                    j_max = max_pixel_count;
+                }
+            }
+
+            Vector4[,] LD = new Vector4[i_max, j_max];
+            for (int i = 0; i < i_max; i++)
+            {
+                for (int j = 0; j < j_max; j++)
+                {
+                    int index = i + j * dimX;
 
                     lines[index].Trim();    //spredu a zozadu odoberie WhiteSpace
                     string[] coordinates = lines[index].Split(' ');     //rozdeli string podla ciraky na slova
@@ -82,14 +89,14 @@ namespace DiplomovaPracaLB
 
                         double x = double.Parse(coordinates[0]);
                         double y = double.Parse(coordinates[1]);
-                        double z = double.Parse(coordinates[2])*3;
+                        double z = double.Parse(coordinates[2]) * 3;
                         float w = 1.0f;
 
                         Console.WriteLine(x + " " + y + " " + z);
-                            
-                        if(y_klesa)
+
+                        if (y_klesa)
                         {
-                            LD[i, dimY - j -1] = new Vector4((float)x, (float)y, (float)z, w);
+                            LD[i, j_max - j - 1] = new Vector4((float)x, (float)y, (float)z, w);
                         }
                         else
                         {

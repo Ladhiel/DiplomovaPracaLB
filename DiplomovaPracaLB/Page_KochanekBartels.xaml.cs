@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+
 namespace DiplomovaPracaLB
 {
     /// <summary>
@@ -30,12 +31,13 @@ namespace DiplomovaPracaLB
             dragging = false;
             MW = Hlavne_okno;
             InitializeComponent();      //nacitanim hodnoty slidera sa spousti aj vykreslenie
-            
+
             float default_tension = 0.0f;
             float default_continuity = 0.0f;
             float default_bias = 0.0f;
+
             MW.UseKochanekBartels(default_tension, default_continuity, default_bias);
-            
+
         }
 
         //-----fcie--------------

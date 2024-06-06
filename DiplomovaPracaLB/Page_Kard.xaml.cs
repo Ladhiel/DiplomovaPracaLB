@@ -26,9 +26,9 @@ namespace DiplomovaPracaLB
         //private float tension;
         bool dragging;
 
-        public Page_Kard( MainWindow Hlavne_okno)
+        public Page_Kard(MainWindow Hlavne_okno)
         {
-            
+
             dragging = false;
             MW = Hlavne_okno;
             InitializeComponent();      //nacitanim hodnoty slidera sa spousti aj vykreslenie

@@ -14,7 +14,6 @@
             <RowDefinition Height="90"/>
             <RowDefinition Height="90"/>
             <RowDefinition Height="50"/>
-            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <Canvas Grid.Row="0">
             <StackPanel  Orientation="Horizontal" Canvas.Left="10" Canvas.Top="10" Height="35">

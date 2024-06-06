@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using static alglib;
 
 
 namespace DiplomovaPracaLB

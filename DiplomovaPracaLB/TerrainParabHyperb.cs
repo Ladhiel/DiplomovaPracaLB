@@ -7,24 +7,25 @@ using System.Threading.Tasks;
 
 namespace DiplomovaPracaLB
 {
+    //Trieda na testovanie
     public class TerrainParabHyperb : TerrainData
     {
-        public TerrainParabHyperb(int k)
+        public TerrainParabHyperb(int input_density, int k)
         {
             int size = 2 * k + 1;
-            if(k==0)
+            if (k == 0)
             {
-                 DataPointsAll = new Vector4[1,1];
+                DataPointsAll = new Vector4[1, 1];
                 DataPointsAll[0, 0] = new Vector4(0, 0, 0, 1);
             }
             else
             {
-                DataPointsAll = new Vector4[k+1, k+1];
+                DataPointsAll = new Vector4[k + 1, k + 1];
                 float a = (float)3, b = (float)3;
-                float x = -(float)k/2, y = -(float)k/2, z = 0;
-                for (int i = 0; i < k+1; i++)
+                float x = -(float)k / 2, y = -(float)k / 2, z = 0;
+                for (int i = 0; i < k + 1; i++)
                 {
-                    for (int j = 0; j < k+1; j++)
+                    for (int j = 0; j < k + 1; j++)
                     {
                         //z = y * y / (b * b) - x * x / (a * a);
                         z = (float)(Math.Sin(x / 3) * Math.Sin(x / 3) * Math.Cos(y) + Math.Sin(2 * y));
@@ -35,9 +36,7 @@ namespace DiplomovaPracaLB
                     y = -(float)k / 2;
                 }
             }
-
-            Initialize();
+            Initialize(input_density);
         }
-        
     }
 }

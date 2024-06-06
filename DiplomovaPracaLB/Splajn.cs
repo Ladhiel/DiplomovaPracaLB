@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using g3;
 using OpenTK;
 
 
@@ -7,30 +8,38 @@ namespace DiplomovaPracaLB
 {
     public abstract partial class Splajn
     {
-        protected int           LOD;
-        protected int           m, n; //pocet vrcholov v zjemnenom vzorkovani      indexy od 0 po m-1
-        protected Vector4[,]    InterpolationPoints;
-        public    Vector4[,]    TmpPoints;
-        private   Vector3[,]    Normals;              //normalove vektory v lavych dolnych rohov jemneho vzorkovania
-        private   float[,]      ErrorValues;
-        public    bool          isRBF = false;
+        protected int LOD;
+        protected int m, n; //pocet vrcholov v zjemnenom vzorkovani      indexy od 0 po m-1
+        protected Vector4[,] InterpolationPoints;
+        public Vector4[,] TmpPoints;
+        private Vector3[,] Normals;              //normalove vektory v lavych dolnych rohov jemneho vzorkovania
+        private double[,] ErrorValues;
+        public bool isRBF = false;
+
+        public DMesh3 vymazmaMesh;
 
         public void Interpolate(ref TerrainData RefTerrain)
         {
-            InterpolationPoints = CreateInterpolationPoints(ref RefTerrain.WeightedDataPointsSample);
-            ComputeNormals(InterpolationPoints);
-            //Evaluate(ref RefTerrain);
+            if (ValidateDimensions())
+            {
+                InterpolationPoints = CreateInterpolationPoints(ref RefTerrain.WeightedDataPointsSample);
+                ComputeNormals(InterpolationPoints);
+                Evaluate(ref RefTerrain);
+            }
         }
 
         public void ReInterpolate(ref TerrainData RefTerrain, int new_LOD)
         {
             LoadDimensions(new_LOD, RefTerrain.GetSampleSize());
-            Interpolate(ref RefTerrain);
+            if (ValidateDimensions())
+            {
+                Interpolate(ref RefTerrain);
+            }
         }
 
         protected virtual void LoadDimensions(int _Level_Of_Detail, int[] InputSize)
         {
-           //kazdy splajn svoje 
+            //kazdy splajn svoje 
         }
 
         protected virtual Vector4[,] CreateInterpolationPoints(ref Vector4[,] Vector)
@@ -45,7 +54,7 @@ namespace DiplomovaPracaLB
             //z homogennych do afinnych suradnic
             if (vertex[3] == 0)
             {
-                MessageBox.Show("pozor, bod ma nulovu vahu");
+                MessageBox.Show("pozor, bod ma nulovu vahu. Riadok 52 v Splajn.cs");
                 return Vector3.Zero;
             }
             if (vertex[3] == 1)
@@ -58,6 +67,12 @@ namespace DiplomovaPracaLB
 
         protected void ComputeNormals(Vector4[,] Vertices)
         {
+            if (m < 1 || n < 1)
+            {
+                Normals = new Vector3[0, 0];
+                return;
+            }
+
             Normals = new Vector3[m - 1, n - 1];
 
             for (int i = 0; i < m - 1; i++)
@@ -68,11 +83,11 @@ namespace DiplomovaPracaLB
                 }
             }
         }
-        
+
         private Vector3 ComputeNormalVectorInPoint(Vector4 V00, Vector4 V01, Vector4 V10)  //vypocita normalu pre plochu/bod danu vektormi V10-V00 a V01-V00
         {
             //normalove vektory su pocitane pre vsetky stvorceky, kt pocet je v danom smere o 1 menej ako bodov
-            
+
             Vector3 u = Rational(V10) - Rational(V00);  //musim previes na vahu 1, aby rozdiel bol vektor
             Vector3 v = Rational(V01) - Rational(V00);
             Vector3 c = Vector3.Cross(u, v);
@@ -88,35 +103,117 @@ namespace DiplomovaPracaLB
 
         public void Evaluate(ref TerrainData RefTerrain)
         {
-            //return;//TODO odstran
-            if (RefTerrain.GetDensity() != LOD + 1) return;
+            int dens = RefTerrain.GetDensity();
+            if (dens != LOD + 1) return;
 
-            //todo uprav, aby sedeli pocty
             TmpPoints = new Vector4[m, n];
-            ErrorValues = new float[m, n];
+            ErrorValues = new double[m, n];
 
-            Vector3 S = Vector3.Zero;   //SplajnPoint
-            float terrain_point_elevation;
+            //Official g3Sharp tutorial: https://www.gradientspace.com/tutorials/2017/7/20/basic-mesh-creation-with-g3sharp
 
+            DMesh3 DataMesh = new DMesh3(MeshComponents.All);
+
+            int i_max = RefTerrain.DataPointsAll.GetLength(0);
+            int j_max = RefTerrain.DataPointsAll.GetLength(1);
+
+            //Add vertices to mesh
+            for (int i = 0; i < i_max; i++)
+            {
+                for (int j = 0; j < j_max; j++)
+                {
+                    // [i, j] --> [i * j_max + j]
+                    DataMesh.AppendVertex(new g3.Vector3f(RefTerrain.DataPointsAll[i, j].X, RefTerrain.DataPointsAll[i, j].Y, RefTerrain.DataPointsAll[i, j].Z));
+                }
+            }
+
+            //Make mesh from datagrid
+            int vi00, vi01, vi10, vi11;
+            for (int i = 0; i < i_max - 1; i++)
+            {
+                for (int j = 0; j < j_max - 1; j++)
+                {
+                    //vrcholy priesotorveho stvoruholnika maju indexy:
+                    vi00 = i * j_max + j;
+                    vi01 = i * j_max + j + 1;
+                    vi10 = (i + 1) * j_max + j;
+                    vi11 = (i + 1) * j_max + j + 1;
+
+
+                    double diag0011 = SquaredEuclidianDist2D(RefTerrain.DataPointsAll[i, j], RefTerrain.DataPointsAll[i + 1, j + 1]);
+                    double diag1001 = SquaredEuclidianDist2D(RefTerrain.DataPointsAll[i + 1, j], RefTerrain.DataPointsAll[i, j + 1]);
+
+                    if (diag0011 < diag1001) //Kratsia diagonala predeluje stvoruholnik na dva trojuholniky (standardny postup)
+                    {
+                        DataMesh.AppendTriangle(vi00, vi01, vi11);
+                        DataMesh.AppendTriangle(vi00, vi11, vi10);
+                        /*
+                            v00 ---- v01
+                              | \     |
+                              |   \   |
+                              |     \ |
+                            v10 ---- v11
+                        */
+                    }
+                    else
+                    {
+                        DataMesh.AppendTriangle(vi00, vi01, vi10);
+                        DataMesh.AppendTriangle(vi01, vi11, vi10);
+                        /*
+                            v00 ---- v01
+                              |     / |
+                              |   /   |
+                              | /     |
+                            v10 ---- v11
+                        */
+                    }
+                }
+            }
+
+            //BuildAABB
+            g3.DMeshAABBTree3 Spatial = new DMeshAABBTree3(DataMesh);
+            Spatial.Build();
+
+            //Find collided triangle
+            g3.Vector3f RayDir = new Vector3f(0, 0, 1);
             for (int i = 0; i < m; i++)
             {
                 for (int j = 0; j < n; j++)
                 {
-                    S = Rational(InterpolationPoints[i, j]);
-                    if (isRBF)
+                    //Ray parallel to z axis
+                    g3.Ray3d ZRay = new Ray3d(new Vector3f(InterpolationPoints[i, j].X, InterpolationPoints[i, j].Y, RefTerrain.GetMinMaxVal(false, 2) - 1), RayDir);
+
+                    //Collide ray and mesh
+                    int hit_tid = Spatial.FindNearestHitTriangle(ZRay);
+
+                    //If collided
+                    if (hit_tid != DMesh3.InvalidID)
                     {
-                        terrain_point_elevation = RefTerrain.GetRealZ(i,j); //same-indexed verices in both terrain and splajn have same x and y values
-                        TmpPoints[i, j] = new Vector4((float)S.X, (float)S.Y, terrain_point_elevation, 1);
+                        IntrRay3Triangle3 Intersection = MeshQueries.TriangleIntersection(DataMesh, hit_tid, ZRay);
+
+                        //Result = point on mesh
+                        TmpPoints[i, j] = new Vector4(
+                            (float)ZRay.PointAt(Intersection.RayParameter).x,
+                            (float)ZRay.PointAt(Intersection.RayParameter).y,
+                            (float)ZRay.PointAt(Intersection.RayParameter).z,
+                            1.0f);
+
+                        ErrorValues[i, j] = Math.Abs(TmpPoints[i, j].Z - InterpolationPoints[i, j].Z);
                     }
-                    else
-                    {
-                        //with parametric surfaces, it is sometimes hard to find z for given x and y. It's easier to find approximate point on the real data = regular grid
-                        terrain_point_elevation = RefTerrain.GetApproximateZver2(S.X, S.Y);
-                    }
-                    TmpPoints[i, j] = new Vector4((float)S.X, (float)S.Y, terrain_point_elevation, 1);  //todo vymaz
-                    ErrorValues[i, j] = Math.Abs(S.Z - terrain_point_elevation);
                 }
             }
+
+            vymazmaMesh = DataMesh;
+        }
+
+        private bool ValidateDimensions()
+        {
+            if (m < 0 || n < 0)
+            {
+                m = 0; n = 0;
+                MessageBox.Show("Not enough points in dataset to create intepolation. Decrease density or pick some bigger dataset.");
+                return false;
+            }
+            return true;
         }
 
         public ref Vector4[,] GetPoints()
@@ -136,11 +233,11 @@ namespace DiplomovaPracaLB
             return 0;
         }
 
-        public float GetErrorValue(int i,int j)
+        public double GetErrorValue(int i, int j)
         {
-            if(ErrorValues != null)
+            if (ErrorValues != null)
             {
-                if(0<=i && i<=m && 0<=j && j <=n)
+                if (0 <= i && i <= m && 0 <= j && j <= n)
                 {
                     return ErrorValues[i, j];
                 }

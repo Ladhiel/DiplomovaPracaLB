@@ -23,18 +23,19 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
+
 namespace DiplomovaPracaLB
 {
     public class TerrainDataMatlab : TerrainData
     {
         private int a, b;
-        public TerrainDataMatlab(string file_name, int hmap_num_patterns)
+        public TerrainDataMatlab(int input_density, string file_name, int hmap_num_patterns)
         {
             a = hmap_num_patterns + 1;
             b = hmap_num_patterns + 1;
             DataPointsAll = MatlabDataIntoGrid(MatlabDataLoadText(file_name));
 
-            Initialize();
+            Initialize(input_density);
         }
 
         private List<Vector4> MatlabDataLoadText(string file_name)
@@ -72,7 +73,6 @@ namespace DiplomovaPracaLB
         private Vector4[,] MatlabDataIntoGrid(List<Vector4> LD)
         {
             //Vieme, ze matlab text subor ma 257*257 raidkov, kazdych 257 riadkov je jeden riadok v suradnici x pri pevnom y.
-            //Vector4[,] PlanarGrid = new Vector4[a, b];    //TODO odkomentuj
             Vector4[,] PlanarGrid = new Vector4[a, b];
             int k = 0;
             for (int j = 0; j < b; j++)

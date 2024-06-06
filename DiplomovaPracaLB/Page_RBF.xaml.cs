@@ -23,7 +23,7 @@ namespace DiplomovaPracaLB
     {
         private MainWindow MW;
         bool dragging;
-        double param_c;
+        double param_c = 1;
         double min_param_val, max_param_val;
         BASIS_FUNCTION UsedRBFType;
 
@@ -35,9 +35,9 @@ namespace DiplomovaPracaLB
             UsedRBFType = new_RBFType;
 
             SetUIforThisRBFType(ref param_c);
-            
+
             MW.UseRBF(UsedRBFType, param_c);
-            
+
         }
 
         private void SetUIforThisRBFType(ref double outParam)
@@ -54,7 +54,7 @@ namespace DiplomovaPracaLB
                 case (BASIS_FUNCTION.GAUSSIAN):
                     {
                         TextBox_BazFcia.Text = "e^-(d/c)\u00B2";
-                        
+
                         min_param_val = 0;
                         max_param_val = 4;
 
@@ -62,18 +62,19 @@ namespace DiplomovaPracaLB
                     break;
                 case BASIS_FUNCTION.MULTIQUADRATIC:
                     {
-                        TextBox_BazFcia.Text = "√(1 + c\u00B2 + d²)";
-
+                        TextBox_BazFcia.Text = "√(1 + c\u00B2 * d²)";
+                        min_param_val = 0;
+                        max_param_val = 1;
                     }
                     break;
                 case BASIS_FUNCTION.INVERSE_QUADRATIC:
                     {
-                        TextBox_BazFcia.Text = "1/(1 + c\u00B2 + d²)";
+                        TextBox_BazFcia.Text = "1/(1 + c\u00B2 * d²)";
                     }
                     break;
                 case BASIS_FUNCTION.INVERSE_MULTIQUADRATIC:
                     {
-                        TextBox_BazFcia.Text = "1/√(1 + c\u00B2 + d²)";
+                        TextBox_BazFcia.Text = "1/√(1 + c\u00B2 * d²)";
                     }
                     break;
                 case BASIS_FUNCTION.POLYHARMONIC:
@@ -135,7 +136,7 @@ namespace DiplomovaPracaLB
                 ChangeParameter((float)e.NewValue);
             }
         }
-       
+
         private void Button_RBFParamReset_Click(object sender, RoutedEventArgs e)
         {
             SetUIforThisRBFType(ref param_c);  //default

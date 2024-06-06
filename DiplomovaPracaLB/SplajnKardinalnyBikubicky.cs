@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using System.Runtime.CompilerServices;
+using static alglib;
 
 namespace DiplomovaPracaLB
 {
@@ -83,14 +84,9 @@ namespace DiplomovaPracaLB
             Vector4 Pv11 = TangentVectorV(Vstup, i + 1, j + 1);
 
             Vector4 Puv00, Puv01, Puv10, Puv11;
-            if (true)
+            bool use_adini_twist = true;
+            if (use_adini_twist)
             {
-                /*
-                Vector4 Puv00 = AdiniTwist(Vstup, i, j);
-                Vector4 Puv01 = AdiniTwist(Vstup, i, j + 1);
-                Vector4 Puv10 = AdiniTwist(Vstup, i + 1, j);
-                Vector4 Puv11 = AdiniTwist(Vstup, i + 1, j + 1);
-                */
                 Puv00 = AdiniTwist(Vstup, i, j);
                 Puv01 = AdiniTwist(Vstup, i, j + 1);
                 Puv10 = AdiniTwist(Vstup, i + 1, j);
@@ -99,10 +95,10 @@ namespace DiplomovaPracaLB
             else
             {
                 //Nulove twisty
-                Puv00 = new Vector4(Vector3.Zero, 1.0f);
-                Puv01 = new Vector4(Vector3.Zero, 1.0f);
-                Puv10 = new Vector4(Vector3.Zero, 1.0f);
-                Puv11 = new Vector4(Vector3.Zero, 1.0f);
+                Puv00 = new Vector4(Vector3.Zero, 0.0f);
+                Puv01 = new Vector4(Vector3.Zero, 0.0f);
+                Puv10 = new Vector4(Vector3.Zero, 0.0f);
+                Puv11 = new Vector4(Vector3.Zero, 0.0f);
             }
 
             P[0] = new Matrix4(P00.X, P01.X, Pv00.X, Pv01.X, P10.X, P11.X, Pv10.X, Pv11.X, Pu00.X, Pu01.X, Puv00.X, Puv01.X, Pu10.X, Pu11.X, Puv10.X, Puv11.X);
