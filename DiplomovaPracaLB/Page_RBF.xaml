@@ -17,7 +17,7 @@
             </StackPanel>
             <StackPanel  Orientation="Horizontal" Canvas.Left="10" Canvas.Top="50" Height="35">
                 <TextBlock Text="Tvarovací &#x0a; parameter c = " TextAlignment="Center"  VerticalAlignment="Center" />
-                <TextBox x:Name="TextBox_ParamCValue" Text="hodnota" TextAlignment="Center" VerticalContentAlignment="Center" Width="100" IsReadOnly="True"/>
+                <TextBox x:Name="TextBox_ParamCValue" Text="hodnota" TextAlignment="Center" VerticalContentAlignment="Center" Width="100" KeyDown="TextBox_Parameter_KeyDown"/>
             </StackPanel>
             <StackPanel  Orientation="Horizontal" Canvas.Left="10" Canvas.Top="130" Height="35">
                 <TextBlock Text="Rozsah pre c : [ " TextAlignment="Center"  VerticalAlignment="Center" />
@@ -28,16 +28,33 @@
             </StackPanel>
             <Slider x:Name="Slider_RBFParam"
                     Thumb.DragCompleted="SliderRBF_ThumbDragCompleted" Thumb.DragStarted="SliderRBF_ThumbDragStarted" ValueChanged="Slider_RBFParam_Changed"
-                    Height="26" Width="200" Value="0" Maximum="1" Minimum="-1" TickFrequency="0.1" TickPlacement="BottomRight" Canvas.Left="10" Canvas.Top="165" HorizontalAlignment="Center" VerticalAlignment="Top" LargeChange="0.1" SmallChange="0.01"/>
-            <Button x:Name="Button_RBFparam_Reset" Width="162" Height="35" Click="Button_RBFParamReset_Click" Content="Zresetuj parameter" HorizontalContentAlignment="Center" Canvas.Left="10" Canvas.Top="200" HorizontalAlignment="Left" VerticalAlignment="Center">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="4,4,4,4"/>
-                        <Setter Property="BorderBrush" Value="#FF475448"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
-
+                    Height="26" Width="200" Value="0" Maximum="0.1" Minimum="0" Canvas.Left="10" Canvas.Top="165" HorizontalAlignment="Center" VerticalAlignment="Top" LargeChange="0.005" SmallChange="0.0005"/>
+            <StackPanel  Orientation="Horizontal" Canvas.Left="10" Canvas.Top="210">
+                <Button x:Name="Button_RBFparam_Hardy" Width="60" Height="25" Content="Hardy" HorizontalContentAlignment="Center" Canvas.Left="10" Canvas.Top="200" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_RBFParamHardy_Click">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="4,4,4,4"/>
+                            <Setter Property="BorderBrush" Value="#FF475448"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button x:Name="Button_RBFparam_Franke" Width="70" Height="25" Content="Franke" HorizontalContentAlignment="Center" Canvas.Left="10" Canvas.Top="240" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Button_RBFParamFranke_Click">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="4,4,4,4"/>
+                            <Setter Property="BorderBrush" Value="#FF475448"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button x:Name="Button_RBFparam_Fasshauer" Width="80" Height="25" Content="Fasshauer" HorizontalContentAlignment="Center" Canvas.Left="10" Canvas.Top="281" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Button_RBFParamFasshauer_Click">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="4,4,4,4"/>
+                            <Setter Property="BorderBrush" Value="#FF475448"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
             <StackPanel  Orientation="Horizontal" Canvas.Left="10" Canvas.Top="140" Height="35"/>
         </Canvas>
     </Grid>

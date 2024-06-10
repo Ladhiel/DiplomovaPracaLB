@@ -24,6 +24,11 @@ namespace DiplomovaPracaLB
         private MainWindow MW;
         bool dragging;
         double param_c = 1;
+        double Hardy_param;
+        double Franke_param;
+        double Fasshauer_param;
+
+
         double min_param_val, max_param_val;
         BASIS_FUNCTION UsedRBFType;
 
@@ -34,49 +39,30 @@ namespace DiplomovaPracaLB
             InitializeComponent();      //nacitanim hodnoty slidera sa spousti aj vykreslenie
             UsedRBFType = new_RBFType;
 
-            //default param:
-            double d = 1;   //TODO
-            param_c = 0.815 * d;         //chosen by Hardy 1971
-            SetUIforThisRBFType(ref param_c);
+            //default params:
+            double sample_size = MW.DisplayedTerrain.GetSampleSize()[0] * MW.DisplayedTerrain.GetSampleSize()[1];
+            double sqrt_sample_size = Math.Sqrt(sample_size);
+            Hardy_param = 0.815 * MW.DisplayedTerrain.GetAverageMinimalDistanceOfSample() / sample_size;  // chosen by Hardy 1971: 0.815 * (sum of nearest neightbour distances of N points)/N)
+            Franke_param = 1.25 * MW.DisplayedTerrain.GetApproximateDiameterOfSample() / sqrt_sample_size;
+            Fasshauer_param = 2 / sqrt_sample_size;
+
+            param_c = 0.00164;
+
+            SetUI(ref param_c);
 
             MW.UseRBF(UsedRBFType, param_c);
 
         }
 
-        private void SetUIforThisRBFType(ref double outParam)
+        private void SetUI(ref double outParam)
         {
+            TextBox_BazFcia.Text = Equation(UsedRBFType);
+
+            //min_param_val = double.MinValue;
+            //max_param_val = double.MaxValue;
+
             min_param_val = 0;
-            max_param_val = 0.01;
-            switch (UsedRBFType)
-            {
-                default:
-                case (BASIS_FUNCTION.GAUSSIAN):
-                    {
-                        TextBox_BazFcia.Text = "e^-(d*c)\u00B2";
-                    }
-                    break;
-                case BASIS_FUNCTION.MULTIQUADRATIC:
-                    {
-                        TextBox_BazFcia.Text = "√(1 + c\u00B2 * d²)";
-                    }
-                    break;
-                case BASIS_FUNCTION.INVERSE_QUADRATIC:
-                    {
-                        TextBox_BazFcia.Text = "1/(1 + c\u00B2 * d²)";
-                    }
-                    break;
-                case BASIS_FUNCTION.INVERSE_MULTIQUADRATIC:
-                    {
-                        TextBox_BazFcia.Text = "1/√(1 + c\u00B2 * d²)";
-                    }
-                    break;
-                case BASIS_FUNCTION.THIN_PLATE:
-                    {
-                        //todo pridaj tvarovaci parameter
-                        TextBox_BazFcia.Text = "d²&#xB7;ln(d)";
-                    }
-                    break;
-            }
+            max_param_val = 0.05;
 
             //if (min_param_val == double.MinValue) TextBox_ParamRangeMin.Text = "- inf";
             TextBox_ParamRangeMin.Text = min_param_val.ToString();
@@ -86,7 +72,7 @@ namespace DiplomovaPracaLB
             TextBox_ParamRangeMax.Text = max_param_val.ToString();
             Slider_RBFParam.Maximum = max_param_val;
 
-            TextBox_ParamCValue.Text = param_c.ToString();
+            TextBox_ParamCValue.Text = outParam.ToString();
         }
 
         private void ChangeParameter(double new_param_value)
@@ -121,9 +107,52 @@ namespace DiplomovaPracaLB
             }
         }
 
-        private void Button_RBFParamReset_Click(object sender, RoutedEventArgs e)
+        private void TextBox_Parameter_KeyDown(object sender, KeyEventArgs e)
         {
-            SetUIforThisRBFType(ref param_c);  //default
+            if (e.Key == Key.Enter)    //Enter
+            {
+                try
+                {
+                    float new_tension = float.Parse(TextBox_ParamCValue.Text);
+                    if (/*Slider_RBFParam.Maximum >= new_tension &&*/ Slider_RBFParam.Minimum <= new_tension)
+                    {
+                        Slider_RBFParam.Value = new_tension;     //zmena sa iniciuje sliderom
+                    }
+                    else MessageBox.Show("Vstup mimo rozahu!");
+                }
+                catch
+                {
+                    MessageBox.Show("Nesprávny vstup!");
+                }
+            }
+        }
+
+        private void Button_RBFParamHardy_Click(object sender, RoutedEventArgs e)
+        {
+            SetUI(ref Hardy_param);
+        }
+
+        private void Button_RBFParamFranke_Click(object sender, RoutedEventArgs e)
+        {
+            SetUI(ref Franke_param);
+        }
+
+        private void Button_RBFParamFasshauer_Click(object sender, RoutedEventArgs e)
+        {
+            SetUI(ref Fasshauer_param);
+        }
+
+        private string Equation(BASIS_FUNCTION inSelectedRBF)
+        {
+            switch (inSelectedRBF)
+            {
+                default:
+                case BASIS_FUNCTION.GAUSSIAN: return "e^-(d*c)\u00B2";
+                case BASIS_FUNCTION.MULTIQUADRATIC: return "√(1 + c\u00B2 * d²)";
+                case BASIS_FUNCTION.INVERSE_QUADRATIC: return "1/(1 + c\u00B2 * d²)";
+                case BASIS_FUNCTION.INVERSE_MULTIQUADRATIC: return "1/√(1 + c\u00B2 * d²)";
+                case BASIS_FUNCTION.THIN_PLATE: return "d² ln(d)";
+            }
         }
     }
 }

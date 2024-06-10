@@ -28,8 +28,6 @@ namespace DiplomovaPracaLB
         private int[] inputSize;
 
         public double shape_param;
-        private double Hardy_param;
-        private double Fasshauer_param;
 
         private BASIS_FUNCTION type_of_basis;
 
@@ -196,10 +194,7 @@ namespace DiplomovaPracaLB
             matinvreport matinvreport = new matinvreport();
             int info = 0;
             alglib.densesolverlsreport densesolverlsreportt;
-            //            rmatrixinverse( ref RBFvalues, num_of_input_points, out info,  out matinvreport);
 
-            // solve A^(-1)*z = w; w =? ZLE SOM POCHOPILA FCIU Z ALGLIB
-            //rmatrixsolvefast(RBFvalues, num_of_input_points, ref inOutArray, out info);
             rmatrixsolvels(RBFvalues, num_of_input_points, num_of_input_points, inOutArray, 0.0, out info, out densesolverlsreportt, out wieghts);
 
             for (int i = 0; i < num_of_input_points; i++)

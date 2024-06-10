@@ -389,6 +389,7 @@
             </Border>
         </StackPanel>
         <TextBox x:Name="TextBox3" HorizontalAlignment="Left" Margin="1013,20,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="153" Height="74" Grid.Row="1"/>
+        <CheckBox x:Name="Eval_CheckBox" Content="Show Evaluation" Checked="CheckBoxChecked" Unchecked="CheckBoxUnChecked" HorizontalAlignment="Left" Margin="1013,103,0,0" Grid.Row="1" VerticalAlignment="Top" Height="21" Width="187" IsChecked="False"/>
 
     </Grid>
 </Window>

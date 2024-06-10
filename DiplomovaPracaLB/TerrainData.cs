@@ -23,6 +23,7 @@ using static OpenTK.Graphics.OpenGL.GL;
 using System.Drawing;
 using System.Windows.Media.Animation;
 
+
 namespace DiplomovaPracaLB
 {
     public abstract class TerrainData
@@ -37,21 +38,26 @@ namespace DiplomovaPracaLB
         public Vector3 posunutie;
         public Matrix3 skalovanie;
 
-        private int density = 1;  //hustota podmnoziny datasetu    
+        private int density = 1;  //hustota vyberu podmnoziny datasetu. Vybera sa kazdy (density). bod
         private float min_z, max_z, min_x, max_x, min_y, max_y;
-        private double average_of_minimal_distances;
+        private double average_of_minimal_distances, approx_enclosing_sphere_diameter; //useful for RBF
+
 
         public DMesh3 MeshDataAll;
 
         protected void Initialize(int input_density)
         {
             //OriginalData su uz nacitane
+
             SetDensity(input_density);
             WeightedDataPointsSample = SelectSampleFromOrigData();
             ZalohujSample();
-            FindMinMaxAverageDist();
+
+            //vypocitanie uzitocnych hodnot
+            FindMinMax();
             MeshDataAll = CreateMesh(ref DataPointsAll);
             average_of_minimal_distances = FindAverageMinimalDistances(ref DataPointsSample);
+            approx_enclosing_sphere_diameter = FindApproxEnclosingDiameter(ref DataPointsSample);
         }
 
         private Vector4[,] SelectSampleFromOrigData()
@@ -109,7 +115,7 @@ namespace DiplomovaPracaLB
             }
         }
 
-        protected void FindMinMaxAverageDist()
+        protected void FindMinMax()
         {
             float span_x, span_y, span_z, mid_x, mid_y, mid_z;
 
@@ -151,7 +157,7 @@ namespace DiplomovaPracaLB
             skalovanie = Matrix3.CreateScale(2 / scale, 2 / scale, 2 / scale);
         }
 
-        double FindAverageMinimalDistances(ref Vector4[,] PointGrid)
+        private double FindAverageMinimalDistances(ref Vector4[,] PointGrid)
         {
             int total_num = PointGrid.GetLength(0) * PointGrid.GetLength(1);
 
@@ -175,12 +181,24 @@ namespace DiplomovaPracaLB
                     {
                         if (min_Distance > distance[k]) min_Distance = distance[k];
                     }
+
+                    sum_of_minimal_distances += min_Distance;
                 }
             }
 
             return sum_of_minimal_distances / total_num;
         }
 
+        private double FindApproxEnclosingDiameter(ref Vector4[,] PointGrid)
+        {
+            //Polomer je minimalne dlhsia diagonala mriezky.
+            //Rozsah nadmorskych vysok realneho terenu je casto zanedbatelna voci jeho rozlohe.
+
+            double diag0011 = (PointGrid[0, 0] - PointGrid[PointGrid.GetLength(0) - 1, PointGrid.GetLength(1) - 1]).Length;
+            double diag0110 = (PointGrid[0, PointGrid.GetLength(1) - 1] - PointGrid[PointGrid.GetLength(0) - 1, 0]).Length;
+
+            return (diag0011 > diag0110) ? diag0011 : diag0110;
+        }
 
         private g3.DMesh3 CreateMesh(ref Vector4[,] PointGrid)
         {
@@ -279,9 +297,14 @@ namespace DiplomovaPracaLB
             return new int[] { DataPointsSample.GetLength(0), DataPointsSample.GetLength(1) };
         }
 
-        public double GetAverageMinimalDistance()
+        public double GetAverageMinimalDistanceOfSample()
         {
             return average_of_minimal_distances;
+        }
+
+        public double GetApproximateDiameterOfSample()
+        {
+            return approx_enclosing_sphere_diameter;
         }
     }
 }

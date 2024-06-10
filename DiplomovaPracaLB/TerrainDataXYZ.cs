@@ -89,7 +89,7 @@ namespace DiplomovaPracaLB
 
                         double x = double.Parse(coordinates[0]);
                         double y = double.Parse(coordinates[1]);
-                        double z = double.Parse(coordinates[2]) * 3;
+                        double z = double.Parse(coordinates[2]);
                         float w = 1.0f;
 
                         Console.WriteLine(x + " " + y + " " + z);

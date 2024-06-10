@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Media.Media3D;
 using g3;
 using OpenTK;
 
@@ -16,7 +15,7 @@ namespace DiplomovaPracaLB
         private Vector3[,] Normals;              //normalove vektory v lavych dolnych rohov jemneho vzorkovania
         private double[,] ErrorValues;
         public bool isRBF = false;
-
+        private double RMSE = 0;
 
 
         public void Interpolate(ref TerrainData RefTerrain)
@@ -142,6 +141,26 @@ namespace DiplomovaPracaLB
                     }
                 }
             }
+
+            RMSE = CalculateRMSE();
+        }
+
+        private double CalculateRMSE()
+        {
+            //RMSE = sqrt((1/N)*SUM{1 to N}(error^2))
+
+            int N = ErrorValues.GetLength(0) * ErrorValues.GetLength(1);
+            double sum_of_squared_errors = 0;
+
+            for (int i = 0; i < ErrorValues.GetLength(0); i++)
+            {
+                for (int j = 0; j < ErrorValues.GetLength(1); j++)
+                {
+                    sum_of_squared_errors += ErrorValues[i, j] * ErrorValues[i, j];
+                }
+            }
+
+            return Math.Sqrt(sum_of_squared_errors / N);
         }
 
         private bool ValidateDimensions()
@@ -183,5 +202,12 @@ namespace DiplomovaPracaLB
             }
             return 0;
         }
+
+        public double GetRMSE()
+        {
+            return RMSE;
+        }
+
+
     }
 }

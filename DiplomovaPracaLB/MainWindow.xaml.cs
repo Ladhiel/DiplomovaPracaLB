@@ -27,7 +27,6 @@ using static alglib;
 using g3;
 
 
-
 namespace DiplomovaPracaLB
 {
     public partial class MainWindow : Window
@@ -55,12 +54,13 @@ namespace DiplomovaPracaLB
         float pointsize;
         bool show_Axes, show_Points, show_Wireframe, show_Quads, do_not_recompute;
         TypeOfShading selectedShadingType;
-        TerrainInputData selectedTerrainType;
-        bool show_evaluation = true; //color of terrain depends of vertical distance from real dataset
+        bool show_evaluation = false; //color of terrain depends of vertical distance from real dataset
 
         //data
-        public int LevelOfDetail;    //pocet bodov zjemnenia medzi 2 vstupnymi bodmi, LOD=0 su vstupne data, medzi 2 vstupmnymi bodmi bude LOD bodov
+        int input_density;
+        TerrainInputData selectedTerrainType;
         public TerrainData DisplayedTerrain;
+        public int LevelOfDetail;    //pocet bodov zjemnenia medzi 2 vstupnymi bodmi, LOD=0 su vstupne data, medzi 2 vstupmnymi bodmi bude LOD bodov
         public Splajn DisplayedSplajn;
 
         private enum TypeOfShading
@@ -78,11 +78,6 @@ namespace DiplomovaPracaLB
             GeoTiff_HradLitava_GEO_cutout,
             GeoTiff_NizkeTatry_GEO_cutout,
             GeoTiff_Senica_GEO_cutout,
-            /* GeoTiff_Hlohovec_UTM_cutout,
-             * GeoTiff_HradLitava_UTM_cutout,
-             * GeoTiff_NizkeTatry_UTM_cutout,
-             * GeoTiff_Senica_UTM_cutout,
-             */
             XYZ_Hlohovec_UTM_cutout,
             XYZ_HradLitava_UTM_cutout,
             XYZ_NizkeTatry_UTM_cutout,
@@ -106,10 +101,14 @@ namespace DiplomovaPracaLB
             show_Quads = true;
             selectedShadingType = TypeOfShading.FLAT;
 
+            //******************************************************* Hlavne ******************************************************* 
+
             //Input Data Processing  
-            int input_density = 3;  //min = 1
-            selectedTerrainType = TerrainInputData.HEIGHTMAP;
-            DisplayedTerrain = LoadTerrainData(selectedTerrainType, input_density);
+            input_density = 10;  //min = 1
+            selectedTerrainType = TerrainInputData.GeoTiff_HradLitava_GEO_cutout;         //VSTUPNY TEREN
+            LoadTerrainData(selectedTerrainType, input_density, ref DisplayedTerrain);
+
+            //******************************************************* Hlavne ******************************************************* 
 
             if (DisplayedTerrain == null)
             {
@@ -120,50 +119,65 @@ namespace DiplomovaPracaLB
             LevelOfDetail = input_density - 1;
             InitializeComponent();  //Tu sa nacita okno. Pri nacitani okna sa nacita Page. Pri nacitani Page sa vytvara splajn.
             TextBox_LOD.Text = LevelOfDetail.ToString();
+
+
         }
 
-        private TerrainData LoadTerrainData(TerrainInputData inTerrainInput, int input_density)
+        private void LoadTerrainData(TerrainInputData inTerrainInput, int input_density, ref TerrainData outTerrainData)
         {
+            //redirect to a different folder than "bin/Debug"
+            string working_directory = Directory.GetCurrentDirectory();
+            string project_directory = Directory.GetParent(working_directory).Parent.FullName;
+            string datasets_directory = project_directory + "\\Datafiles";
+            Directory.SetCurrentDirectory(datasets_directory);
+
             switch (inTerrainInput)
             {
-                default:
                 case (TerrainInputData.MATLAB):
-                    return new TerrainDataMatlab(input_density, "TerrainSample2022-11-02.txt", 256);  // subor sa nachadza v bin/debug
-
+                    outTerrainData = new TerrainDataMatlab(input_density, "TerrainSample2022-11-02.txt", 256);
+                    break;
                 case (TerrainInputData.GeoTiff_MaleKarpaty_OneWholeFileFromUSGS):
-                    return new TerrainDataGeoTiff(input_density, "n48_e017_1arc_v3.tif", 400, 400);
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "n48_e017_1arc_v3.tif", 400, 400);
+                    break;
 
 
-
+                default:
                 case (TerrainInputData.GeoTiff_Hlohovec_GEO_cutout):
-                    return new TerrainDataGeoTiff(input_density, "Hlohovec" + "GEO_cutoutTIF.tif", 100, 100);
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "Hlohovec" + "GEO_cutoutTIF.tif", 100, 100);
+                    break;
 
                 case (TerrainInputData.GeoTiff_HradLitava_GEO_cutout):
-                    return new TerrainDataGeoTiff(input_density, "HradLitava" + "GEO_cutoutTIF.tif", 100, 100);
-
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "HradLitava" + "GEO_cutoutTIF.tif", 100, 100);
+                    break;
                 case (TerrainInputData.GeoTiff_NizkeTatry_GEO_cutout):
-                    return new TerrainDataGeoTiff(input_density, "NizkeTatry" + "GEO_cutoutTIF.tif", 100, 100);
-
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "NizkeTatry" + "GEO_cutoutTIF.tif", 100, 100);
+                    break;
                 case (TerrainInputData.GeoTiff_Senica_GEO_cutout):
-                    return new TerrainDataGeoTiff(input_density, "Senica" + "GEO_cutoutTIF.tif", 100, 100);
-
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "Senica" + "GEO_cutoutTIF.tif", 100, 100);
+                    break;
 
 
                 case (TerrainInputData.XYZ_Hlohovec_UTM_cutout):
-                    return new TerrainDataXYZ(input_density, "Hlohovec" + "UTM_cutoutXYZ.xyz", 100);
+                    outTerrainData = new TerrainDataXYZ(input_density, "Hlohovec" + "UTM_cutoutXYZ.xyz", 100);
+                    break;
 
                 case (TerrainInputData.XYZ_HradLitava_UTM_cutout):
-                    return new TerrainDataXYZ(input_density, "HradLitava" + "UTM_cutoutXYZ.xyz", 100);
+                    outTerrainData = new TerrainDataXYZ(input_density, "HradLitava" + "UTM_cutoutXYZ.xyz", 100);
+                    break;
 
                 case (TerrainInputData.XYZ_NizkeTatry_UTM_cutout):
-                    return new TerrainDataXYZ(input_density, "NizkeTatry" + "UTM_cutoutXYZ.xyz", 100);
-
+                    outTerrainData = new TerrainDataXYZ(input_density, "NizkeTatry" + "UTM_cutoutXYZ.xyz", 100);
+                    break;
                 case (TerrainInputData.XYZ_Senica_UTM_cutout):
-                    return new TerrainDataXYZ(input_density, "Senica" + "UTM_cutoutXYZ.xyz", 100);
-
+                    outTerrainData = new TerrainDataXYZ(input_density, "Senica" + "UTM_cutoutXYZ.xyz", 100);
+                    break;
                 case (TerrainInputData.PARABHYPERB):
-                    return new TerrainParabHyperb(input_density, 100);
+                    outTerrainData = new TerrainParabHyperb(input_density, 100);
+                    break;
             }
+
+            //redirect back to "bin/Debug"
+            Directory.SetCurrentDirectory(working_directory);
         }
 
         //-----------------------------------------------------------------------------------------------------------------------
@@ -260,7 +274,7 @@ namespace DiplomovaPracaLB
             pointsize = ChangePointSize();
 
             //farby terénu
-            FarebnaLegendaHodnoty = new float[] { -100.0f, -0.5f, 200, 500, 1000, 1500 };
+            FarebnaLegendaHodnoty = new float[] { -0.5f, 200, 500, 800, 1000, 1200 };
             FarebnaLegendaFarby = new float[][] {
                 new float[3] { 0.0f, 0.4f, 0.55f },   //modrá
                 new float[3] { 0.34f, 0.57f, 0.16f }, //zelená
@@ -279,9 +293,12 @@ namespace DiplomovaPracaLB
             };
         }
 
+
         // drawing 
         private void GLControl_Paint(object sender, swf.PaintEventArgs e)
         {
+            TextBox3.Text = (DisplayedSplajn.GetRMSE().ToString());
+
             // Modelview matrix
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
@@ -1002,6 +1019,13 @@ namespace DiplomovaPracaLB
                 TextBox_LOD.Text = new_LOD.ToString();      //toto je len pre buttony; pre textbox sa nic nezmeni, ale lepsie prepisat na to iste, nez na zle a zase naspat.
 
                 DisplayedSplajn.ReInterpolate(ref DisplayedTerrain, new_LOD);
+
+                if (!IsEvaluationPossible())
+                {
+                    show_evaluation = false;
+                    Eval_CheckBox.IsChecked = false;
+                }
+
                 glControl.Invalidate();
             }
             else
@@ -1009,6 +1033,7 @@ namespace DiplomovaPracaLB
                 TextBox_LOD.Text = LevelOfDetail.ToString();  //do TextBoxu napisem ostavajucu hodnotu LOD
             }
         }
+
         private void RadioButton_ShadingFlat_Checked(object sender, RoutedEventArgs e)
         {
             selectedShadingType = TypeOfShading.FLAT;
@@ -1019,6 +1044,39 @@ namespace DiplomovaPracaLB
         {
             selectedShadingType = TypeOfShading.GOURAUD;
             GL.ShadeModel(ShadingModel.Smooth);
+            glControl.Invalidate();
+        }
+
+        private bool IsEvaluationPossible()
+        {
+            if (LevelOfDetail == input_density - 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void CheckBoxChecked(object sender, RoutedEventArgs e)
+        {
+            if (DisplayedSplajn == null) return;
+
+            if (IsEvaluationPossible())
+            {
+                show_evaluation = true;
+                glControl.Invalidate();
+            }
+            else
+            {
+                MessageBox.Show("LOD musí byť rovné hodnote density-1, t.j." + (input_density - 1).ToString() + " \nHodnota density sa nastavuje v zdrojovom kóde v MainWindow().");
+            }
+        }
+
+        private void CheckBoxUnChecked(object sender, RoutedEventArgs e)
+        {
+            show_evaluation = false;
             glControl.Invalidate();
         }
 
@@ -1164,5 +1222,12 @@ namespace DiplomovaPracaLB
             //naskaluje viewport na velkost zaciatocneho okna
             GL.Viewport(0, 0, glControl.Width, glControl.Height);
         }
+
+
+        /*
+         
+         
+         
+         */
     }
 }
