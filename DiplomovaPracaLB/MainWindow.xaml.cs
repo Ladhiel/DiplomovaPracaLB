@@ -105,7 +105,7 @@ namespace DiplomovaPracaLB
 
             //Input Data Processing  
             input_density = 10;  //min = 1
-            selectedTerrainType = TerrainInputData.HEIGHTMAP;         //VSTUPNY TEREN
+            selectedTerrainType = TerrainInputData.GeoTiff_HradLitava_GEO_cutout;         //VSTUPNY TEREN
             LoadTerrainData(selectedTerrainType, input_density, ref DisplayedTerrain);
 
             //******************************************************* Hlavne ******************************************************* 
@@ -140,7 +140,7 @@ namespace DiplomovaPracaLB
                     outTerrainData = new TerrainDataMatlab(input_density, "Heightmap.png", 256);
                     break;
                 case (TerrainInputData.GeoTiff_MaleKarpaty_OneWholeFileFromUSGS):
-                    outTerrainData = new TerrainDataGeoTiff(input_density, "n48_e017_1arc_v3.tif", 400, 400);
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "n48_e017_1arc_v3MaleKarpaty.tif", 200, 200);
                     break;
 
 
@@ -175,7 +175,7 @@ namespace DiplomovaPracaLB
                     outTerrainData = new TerrainDataXYZ(input_density, "Senica" + "UTM_cutoutXYZ.xyz", 100);
                     break;
                 case (TerrainInputData.PARABHYPERB):
-                    outTerrainData = new TerrainParabHyperb(input_density, 100);
+                    outTerrainData = new TerrainParabHyperb(input_density, 50);
                     break;
             }
 
@@ -323,11 +323,9 @@ namespace DiplomovaPracaLB
             //TU SA KRESLIA PRIMITIVY BEZ MATERIALU
             if (show_Axes) DrawAxes();
             if (show_Points) DrawPoints(DisplayedTerrain.WeightedDataPointsSample);
-            if (DisplayedSplajn.TmpPoints != null)
+            if (show_evaluation && DisplayedSplajn.TmpPoints != null)
             {
-                //DrawPointsRed(DisplayedSplajn.TmpPoints);
                 DrawWireframe(DisplayedTerrain.DataPointsAll);
-                //g3ShapeDrawTriangles(ref DisplayedSplajn.vymazmaMesh);
             }
             if (show_Wireframe) DrawWireframe(DisplayedSplajn.GetPoints());
 

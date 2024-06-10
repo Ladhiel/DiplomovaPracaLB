@@ -109,7 +109,7 @@
                         <Border Grid.RowSpan="10" Background="#FF475448" Margin="-2,-2,-2,-2"/>
 
                         <Border Grid.Row="0">
-                            <RadioButton x:Name="RadioButton_Kard" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" Checked="RadioButton_SplajnKard_Checked" IsChecked="False"/>
+                            <RadioButton x:Name="RadioButton_Kard" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" Checked="RadioButton_SplajnKard_Checked" IsChecked="True"/>
                         </Border>
                         <TextBlock Text="Kardinálny splajn" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
 
@@ -121,7 +121,7 @@
                         <TextBlock Text="  Radiálny bázický splajn s bázou:" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" IsHitTestVisible="False" Foreground="#FFC4CDC1" FontSize="14"/>
 
                         <Border Grid.Row="3">
-                            <RadioButton x:Name="RadioButton_RBF_GAUSSIAN" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" Checked="RadioButton_RBF_GAUSSIAN_Checked" IsChecked="True"/>
+                            <RadioButton x:Name="RadioButton_RBF_GAUSSIAN" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" Checked="RadioButton_RBF_GAUSSIAN_Checked" IsChecked="False"/>
                         </Border>
                         <TextBlock Text="Gaussovská" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
 
