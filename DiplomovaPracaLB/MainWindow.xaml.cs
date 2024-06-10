@@ -105,7 +105,7 @@ namespace DiplomovaPracaLB
 
             //Input Data Processing  
             input_density = 10;  //min = 1
-            selectedTerrainType = TerrainInputData.GeoTiff_HradLitava_GEO_cutout;         //VSTUPNY TEREN
+            selectedTerrainType = TerrainInputData.HEIGHTMAP;         //VSTUPNY TEREN
             LoadTerrainData(selectedTerrainType, input_density, ref DisplayedTerrain);
 
             //******************************************************* Hlavne ******************************************************* 
@@ -135,6 +135,9 @@ namespace DiplomovaPracaLB
             {
                 case (TerrainInputData.MATLAB):
                     outTerrainData = new TerrainDataMatlab(input_density, "TerrainSample2022-11-02.txt", 256);
+                    break;
+                case (TerrainInputData.HEIGHTMAP):
+                    outTerrainData = new TerrainDataMatlab(input_density, "Heightmap.png", 256);
                     break;
                 case (TerrainInputData.GeoTiff_MaleKarpaty_OneWholeFileFromUSGS):
                     outTerrainData = new TerrainDataGeoTiff(input_density, "n48_e017_1arc_v3.tif", 400, 400);
