@@ -16,7 +16,7 @@ namespace DiplomovaPracaLB
         private double[,] ErrorValues;
         public bool isRBF = false;
 
-        public DMesh3 vymazmaMesh;
+        
 
         public void Interpolate(ref TerrainData RefTerrain)
         {
@@ -109,68 +109,8 @@ namespace DiplomovaPracaLB
             TmpPoints = new Vector4[m, n];
             ErrorValues = new double[m, n];
 
-            //Official g3Sharp tutorial: https://www.gradientspace.com/tutorials/2017/7/20/basic-mesh-creation-with-g3sharp
-
-            DMesh3 DataMesh = new DMesh3(MeshComponents.All);
-
-            int i_max = RefTerrain.DataPointsAll.GetLength(0);
-            int j_max = RefTerrain.DataPointsAll.GetLength(1);
-
-            //Add vertices to mesh
-            for (int i = 0; i < i_max; i++)
-            {
-                for (int j = 0; j < j_max; j++)
-                {
-                    // [i, j] --> [i * j_max + j]
-                    DataMesh.AppendVertex(new g3.Vector3f(RefTerrain.DataPointsAll[i, j].X, RefTerrain.DataPointsAll[i, j].Y, RefTerrain.DataPointsAll[i, j].Z));
-                }
-            }
-
-            //Make mesh from datagrid
-            int vi00, vi01, vi10, vi11;
-            for (int i = 0; i < i_max - 1; i++)
-            {
-                for (int j = 0; j < j_max - 1; j++)
-                {
-                    //vrcholy priesotorveho stvoruholnika maju indexy:
-                    vi00 = i * j_max + j;
-                    vi01 = i * j_max + j + 1;
-                    vi10 = (i + 1) * j_max + j;
-                    vi11 = (i + 1) * j_max + j + 1;
-
-
-                    double diag0011 = SquaredEuclidianDist2D(RefTerrain.DataPointsAll[i, j], RefTerrain.DataPointsAll[i + 1, j + 1]);
-                    double diag1001 = SquaredEuclidianDist2D(RefTerrain.DataPointsAll[i + 1, j], RefTerrain.DataPointsAll[i, j + 1]);
-
-                    if (diag0011 < diag1001) //Kratsia diagonala predeluje stvoruholnik na dva trojuholniky (standardny postup)
-                    {
-                        DataMesh.AppendTriangle(vi00, vi01, vi11);
-                        DataMesh.AppendTriangle(vi00, vi11, vi10);
-                        /*
-                            v00 ---- v01
-                              | \     |
-                              |   \   |
-                              |     \ |
-                            v10 ---- v11
-                        */
-                    }
-                    else
-                    {
-                        DataMesh.AppendTriangle(vi00, vi01, vi10);
-                        DataMesh.AppendTriangle(vi01, vi11, vi10);
-                        /*
-                            v00 ---- v01
-                              |     / |
-                              |   /   |
-                              | /     |
-                            v10 ---- v11
-                        */
-                    }
-                }
-            }
-
-            //BuildAABB
-            g3.DMeshAABBTree3 Spatial = new DMeshAABBTree3(DataMesh);
+            //BuildAABB using g3shapr library
+            g3.DMeshAABBTree3 Spatial = new DMeshAABBTree3(RefTerrain.MeshDataAll);
             Spatial.Build();
 
             //Find collided triangle
@@ -188,7 +128,7 @@ namespace DiplomovaPracaLB
                     //If collided
                     if (hit_tid != DMesh3.InvalidID)
                     {
-                        IntrRay3Triangle3 Intersection = MeshQueries.TriangleIntersection(DataMesh, hit_tid, ZRay);
+                        IntrRay3Triangle3 Intersection = MeshQueries.TriangleIntersection(RefTerrain.MeshDataAll, hit_tid, ZRay);
 
                         //Result = point on mesh
                         TmpPoints[i, j] = new Vector4(
@@ -201,8 +141,6 @@ namespace DiplomovaPracaLB
                     }
                 }
             }
-
-            vymazmaMesh = DataMesh;
         }
 
         private bool ValidateDimensions()

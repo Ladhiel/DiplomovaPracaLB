@@ -18,7 +18,6 @@ namespace DiplomovaPracaLB
         MULTIQUADRATIC, //tato je vraj dobra na tereny
         INVERSE_QUADRATIC,
         INVERSE_MULTIQUADRATIC,
-        POLYHARMONIC,
         THIN_PLATE  //tato je vraj dobra na tereny
     }
 
@@ -35,13 +34,11 @@ namespace DiplomovaPracaLB
         private BASIS_FUNCTION type_of_basis;
 
         //obe su velkosti cca (n*m)*(m*m-1)/2
-        //private double[,] distances; // vzdialenosti pre kazde 2 body budu rovnake pre rovnaky vstup - zavisi od vstupu
         private double[,] RBFvalues; //hodnoty vzialenodstnej funkcie pre kazde 2 body - zavisi od vstupu a voľby bázy
         private double[] wieghts;
 
         public SplajnRadialBasis(ref TerrainData RefTerrain, int LOD, BASIS_FUNCTION type, double input_shape_param)
         {
-
             isRBF = true;
             type_of_basis = type;
             shape_param = input_shape_param;
@@ -76,7 +73,6 @@ namespace DiplomovaPracaLB
             double y;
             double z;
             double w = 1;
-#if true
 
             for (int i = 0; i < Vstup.GetLength(0) - 1; i++)
             {
@@ -95,36 +91,7 @@ namespace DiplomovaPracaLB
                     }
                 }
             }
-#else
 
-
-            double dx = (x_max - x_min) / (m - 1);  //krok v x-ovej suradnici
-            double dy = (y_max - y_min) / (n - 1);
-
-            //rozdiel je asi 10 metrov pri rozmere
-            double dx0 = Math.Abs((Vstup[0, 0].X                         - Vstup[Vstup.GetLength(0) - 1, 0                       ].X)) / (m-1);
-            double dxn = Math.Abs((Vstup[0, Vstup.GetLength(1) - 1].X    - Vstup[Vstup.GetLength(0) - 1, Vstup.GetLength(1) - 1  ].X)) / (m - 1);
-
-            double dy0 = Math.Abs((Vstup[0, 0].Y                         - Vstup[0, Vstup.GetLength(1) - 1].Y)) / (n - 1);
-            double dym = Math.Abs((Vstup[Vstup.GetLength(0) - 1, 0].Y    - Vstup[Vstup.GetLength(0) - 1, Vstup.GetLength(1) - 1  ].Y)) / (n - 1);
-
-            x = x_min;
-            for (int i = 0; i < m; i++)
-            {
-                y = y_min;
-                for (int j = 0; j < n; j++)
-                {
-                    {
-                        z = CalculateZ(x, y, Vstup);
-                        IP[i, j] = new Vector4((float)x, (float)y, (float)z, (float)w);
-                    }
-                    y += dy;
-
-                }
-                x += dx;
-            }
-
-#endif
             return IP;
         }
 
@@ -147,36 +114,24 @@ namespace DiplomovaPracaLB
                     }
                     int idx = i * inputSize[1] + j;
                     double tempw = wieghts[idx];
-                    double temprbf = RBFunction(squared_dist, true);
+                    double temprbf = RBFunction(squared_dist);
                     z += tempw * temprbf;
-                    //z += wieghts[i * inputSize[1]+j] * RBFunction(squared_dist);
                 }
             }
             return z;
         }
 
-        private double RBFunction(double squared_distance, bool vymazma)
+        private double RBFunction(double squared_distance)
         {
-            double temp_shape_param;
-            if (vymazma)
-            {
-                temp_shape_param = shape_param;
-            }
-            else
-            {
-                temp_shape_param = 1;
-            }
-
-
-            double rrcc = squared_distance * temp_shape_param * temp_shape_param;
+            double rr = squared_distance;
+            double cc = shape_param * shape_param;
+            double rrcc = rr * cc;
 
             switch (type_of_basis)
             {
                 case (BASIS_FUNCTION.GAUSSIAN):
                     {
-                        if (temp_shape_param == 0) return temp_shape_param + 0.000001;
                         return Math.Exp(-rrcc);
-                        //return Math.Exp(-0.5 * rrcc);
                     }
                 case BASIS_FUNCTION.MULTIQUADRATIC:
                     {
@@ -184,12 +139,16 @@ namespace DiplomovaPracaLB
                     }
                 case BASIS_FUNCTION.INVERSE_QUADRATIC:
                     {
+                        return 1 / (1 + rrcc);
+                    }
+                case BASIS_FUNCTION.INVERSE_MULTIQUADRATIC:
+                    {
                         return 1 / Math.Sqrt(1 + rrcc);
                     }
-                case BASIS_FUNCTION.THIN_PLATE:
+                case BASIS_FUNCTION.THIN_PLATE:  //todo veeelmi pomale
                     {
-                        if (temp_shape_param == 0) return 0;
-                        return (rrcc * Math.Log(Math.Sqrt(squared_distance)));  //todo over
+                        //return (rr == 0) ? 0 : rr * Math.Log(Math.Sqrt(squared_distance)); 
+                        return (rr == 0) ? 0 : rrcc* Math.Log(Math.Sqrt(rrcc)); 
                     }
                 default:
                     return 0;
@@ -198,28 +157,21 @@ namespace DiplomovaPracaLB
 
         private void ComputeRBFunctionValuesForDistances(ref Vector4[,] Vstup, ref double[,] MatrixOfValues)
         {
-            //distances = new double[num_of_input_points, num_of_input_points];
             MatrixOfValues = new double[num_of_input_points, num_of_input_points];
-            double tempSquaredDist = 0, tempRBFVal = 0;
-
             //TODO prerobit, ak bude cas: najdi najblizsi bod, jeho indexy a okruhom prechadzaj body s najpodobnejsim indexom, ukonci "kruzenie" vtedy, ak prirastok bude mensi ako nejake epsilon
 
             for (int i = 0; i < inputSize[0]; i++)
             {
                 for (int j = 0; j < inputSize[1]; j++)
                 {
-                    MatrixOfValues[i * inputSize[1] + j, i * inputSize[1] + j] = RBFunction(0, false);  //diagonala
-
-                    for (int k = i + 1; k < inputSize[0]; k++)
+                    int idx1 = i * inputSize[1] + j;
+                    for (int k = 0; k < inputSize[0]; k++)
                     {
-                        for (int l = j + 1; l < inputSize[1]; l++)
+                        for (int l = 0; l < inputSize[1]; l++)
                         {
-                            tempSquaredDist = SquaredEuclidianDist2D(Vstup[i, j], Vstup[k, l]);
-                            tempRBFVal = RBFunction(tempSquaredDist, false);
-                            MatrixOfValues[i * inputSize[1] + j, k * inputSize[1] + l] = tempRBFVal;
-                            MatrixOfValues[k * inputSize[1] + l, i * inputSize[1] + j] = tempRBFVal;
-                            Console.WriteLine("[{0}, {1}] d = {2} \t rbf = {3}", i * inputSize[1] + j, k * inputSize[1] + l, tempSquaredDist, tempRBFVal);
-
+                            int idx2 = k * inputSize[1] + l;
+                            double dist = SquaredEuclidianDist2D(Vstup[i, j], Vstup[k, l]);
+                            MatrixOfValues[idx1, idx2] = RBFunction(dist);
                         }
                     }
                 }

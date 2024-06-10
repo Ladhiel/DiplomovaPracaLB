@@ -69,7 +69,7 @@ namespace DiplomovaPracaLB
             GOURAUD
         };
 
-        private enum TerrainInputData
+        private enum TerrainInputData   //TU SA VYBERAJU ZDROJOVOVE DATASETY
         {
             MATLAB,
             HEIGHTMAP,
@@ -107,7 +107,7 @@ namespace DiplomovaPracaLB
             selectedShadingType = TypeOfShading.FLAT;
 
             //Input Data Processing  
-            int input_density = 10;  //min = 1
+            int input_density = 3;  //min = 1
             selectedTerrainType = TerrainInputData.GeoTiff_HradLitava_GEO_cutout;
             DisplayedTerrain = LoadTerrainData(selectedTerrainType, input_density);
 
@@ -717,29 +717,24 @@ namespace DiplomovaPracaLB
         public void UseKardBilin(float tenstion)
         {
             DisplayedSplajn = new SplajnKardinalnyBilinearny(ref DisplayedTerrain, LevelOfDetail, tenstion);
-            // DisplayedSplajn.Evaluate(ref DisplayedTerrain);
             if (glControl != null) glControl.Invalidate();
         }
 
         public void UseKardBicubic(float tenstion)
         {
             DisplayedSplajn = new SplajnKardinalnyBikubicky(ref DisplayedTerrain, LevelOfDetail, tenstion);
-            // DisplayedSplajn.Evaluate(ref DisplayedTerrain);
-
             if (glControl != null) glControl.Invalidate();
         }
 
         public void UseKochanekBartels(float tenstion, float continuity, float bias)
         {
             DisplayedSplajn = new KochanekBartelsSplajn(ref DisplayedTerrain, LevelOfDetail, tenstion, continuity, bias);
-            //DisplayedSplajn.Evaluate(ref DisplayedTerrain);
             if (glControl != null) glControl.Invalidate();
         }
 
         public void UseRBF(BASIS_FUNCTION eRBFType, double param)
         {
             DisplayedSplajn = new SplajnRadialBasis(ref DisplayedTerrain, LevelOfDetail, eRBFType, param);
-            // DisplayedSplajn.Evaluate(ref DisplayedTerrain);
             if (glControl != null) glControl.Invalidate();
         }
 
@@ -789,10 +784,6 @@ namespace DiplomovaPracaLB
         private void RadioButton_RBF_INVERSE_MULTIQUADRATIC_Checked(object sender, RoutedEventArgs e)
         {
             SplineParamFrame.Content = new Page_RBF(this, BASIS_FUNCTION.INVERSE_MULTIQUADRATIC);
-        }
-        private void RadioButton_RBF_POLYHARMONIC_Checked(object sender, RoutedEventArgs e)
-        {
-            SplineParamFrame.Content = new Page_RBF(this, BASIS_FUNCTION.POLYHARMONIC);
         }
         private void RadioButton_RBF_TIN_Checked(object sender, RoutedEventArgs e)
         {

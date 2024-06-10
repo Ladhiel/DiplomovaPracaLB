@@ -23,6 +23,7 @@ using OpenTK.Graphics.OpenGL;
 using System.Windows.Media.Animation;
 using System.Numerics;
 using System.Xml.Linq;
+using g3;
 
 namespace DiplomovaPracaLB
 {

@@ -89,7 +89,6 @@
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="30"/>
-                            <RowDefinition Height="30"/>
                         </Grid.RowDefinitions>
                         <Grid.Resources>
                             <Style TargetType="{x:Type Border}">
@@ -142,11 +141,6 @@
                         <TextBlock Text="Inverzná multikvadratická" Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
 
                         <Border Grid.Row="7">
-                            <RadioButton x:Name="RadioButton_RBF_POLYHARMONIC" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" Checked="RadioButton_RBF_POLYHARMONIC_Checked" IsChecked="False"/>
-                        </Border>
-                        <TextBlock Text="Polyharmonická" Grid.Row="7" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
-
-                        <Border Grid.Row="8">
                             <RadioButton x:Name="RadioButton_RBF_TIN" Checked="RadioButton_RBF_TIN_Checked" Style="{StaticResource ShadingButtonTheme}" GroupName="RB_group_splajn" IsChecked="False"/>
                         </Border>
                         <TextBlock Text="Tenkostenný splajn" Grid.Row="8" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>

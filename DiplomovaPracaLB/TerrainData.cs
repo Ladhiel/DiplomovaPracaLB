@@ -18,7 +18,10 @@ using System.IO;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-
+using g3;
+using static OpenTK.Graphics.OpenGL.GL;
+using System.Drawing;
+using System.Windows.Media.Animation;
 
 namespace DiplomovaPracaLB
 {
@@ -36,6 +39,9 @@ namespace DiplomovaPracaLB
 
         private int density = 1;  //hustota podmnoziny datasetu    
         private float min_z, max_z, min_x, max_x, min_y, max_y;
+        private double average_of_minimal_distances;
+
+        public DMesh3 MeshDataAll;
 
         protected void Initialize(int input_density)
         {
@@ -43,7 +49,9 @@ namespace DiplomovaPracaLB
             SetDensity(input_density);
             WeightedDataPointsSample = SelectSampleFromOrigData();
             ZalohujSample();
-            FindExtremalCoordinates();
+            FindMinMaxAverageDist();
+            MeshDataAll = CreateMesh(ref DataPointsAll);
+            average_of_minimal_distances = FindAverageMinimalDistances(ref DataPointsSample);
         }
 
         private Vector4[,] SelectSampleFromOrigData()
@@ -101,7 +109,7 @@ namespace DiplomovaPracaLB
             }
         }
 
-        protected void FindExtremalCoordinates()
+        protected void FindMinMaxAverageDist()
         {
             float span_x, span_y, span_z, mid_x, mid_y, mid_z;
 
@@ -111,13 +119,16 @@ namespace DiplomovaPracaLB
             max_y = float.MinValue;
             min_z = float.MaxValue;
             max_z = float.MinValue;
-            for (int j = 0; j < WeightedDataPointsSample.GetLength(1); j++)
+
+
+            for (int j = 0; j < DataPointsSample.GetLength(1); j++)
             {
-                for (int i = 0; i < WeightedDataPointsSample.GetLength(0); i++)
+                for (int i = 0; i < DataPointsSample.GetLength(0); i++)
                 {
-                    float x = WeightedDataPointsSample[i, j].X;
-                    float y = WeightedDataPointsSample[i, j].Y;
-                    float z = WeightedDataPointsSample[i, j].Z;
+                    //minmax
+                    float x = DataPointsSample[i, j].X;
+                    float y = DataPointsSample[i, j].Y;
+                    float z = DataPointsSample[i, j].Z;
 
                     if (x < min_x) min_x = x;
                     if (x > max_x) max_x = x;
@@ -138,6 +149,101 @@ namespace DiplomovaPracaLB
 
             posunutie = new Vector3(-mid_x, -mid_y, -mid_z);
             skalovanie = Matrix3.CreateScale(2 / scale, 2 / scale, 2 / scale);
+        }
+
+        double FindAverageMinimalDistances(ref Vector4[,] PointGrid)
+        {
+            int total_num = PointGrid.GetLength(0) * PointGrid.GetLength(1);
+
+            double sum_of_minimal_distances = 0;
+
+            for (int i = 0; i < PointGrid.GetLength(0); i++)
+            {
+                for (int j = 0; j < PointGrid.GetLength(1); j++)
+                {
+                    double min_Distance = double.MaxValue;
+
+                    double[] distance = new double[4];
+
+                    //vyuzijem ze som v cca pravidelnej mriezke - najblizsi je niektory zo susedov
+                    distance[1] = (i > 0) ? (PointGrid[i, j] - PointGrid[i - 1, j]).Length : double.MaxValue;
+                    distance[3] = (j > 0) ? (PointGrid[i, j] - PointGrid[i, j - 1]).Length : double.MaxValue;
+                    distance[0] = (i < PointGrid.GetLength(0)-1) ? (PointGrid[i, j] - PointGrid[i + 1, j]).Length : double.MaxValue;
+                    distance[2] = (j < PointGrid.GetLength(1)-1) ? (PointGrid[i, j] - PointGrid[i, j + 1]).Length : double.MaxValue;
+
+                    for (int k = 0; k < 4; k++)
+                    {
+                        if (min_Distance > distance[k]) min_Distance = distance[k];
+                    }
+                }
+            }
+
+            return sum_of_minimal_distances / total_num;
+        }
+
+
+        private g3.DMesh3 CreateMesh(ref Vector4[,] PointGrid)
+        {
+            //Official g3Sharp tutorial: https://www.gradientspace.com/tutorials/2017/7/20/basic-mesh-creation-with-g3sharp
+
+            DMesh3 DataMesh = new DMesh3(MeshComponents.All);
+
+            int i_max = PointGrid.GetLength(0);
+            int j_max = PointGrid.GetLength(1);
+
+            //Add vertices to mesh
+            for (int i = 0; i < i_max; i++)
+            {
+                for (int j = 0; j < j_max; j++)
+                {
+                    // [i, j] --> [i * j_max + j]
+                    DataMesh.AppendVertex(new g3.Vector3f(PointGrid[i, j].X, PointGrid[i, j].Y, PointGrid[i, j].Z));
+                }
+            }
+
+            //Make mesh from datagrid
+            int vi00, vi01, vi10, vi11;
+            for (int i = 0; i < i_max - 1; i++)
+            {
+                for (int j = 0; j < j_max - 1; j++)
+                {
+                    //vrcholy priesotorveho stvoruholnika maju indexy:
+                    vi00 = i * j_max + j;
+                    vi01 = i * j_max + j + 1;
+                    vi10 = (i + 1) * j_max + j;
+                    vi11 = (i + 1) * j_max + j + 1;
+
+                    double diag0011 = (PointGrid[i, j] - PointGrid[i + 1, j + 1]).Length;
+                    double diag1001 = (PointGrid[i + 1, j] - PointGrid[i, j + 1]).Length;
+
+                    if (diag0011 < diag1001) //Kratsia diagonala predeluje stvoruholnik na dva trojuholniky (standardny postup)
+                    {
+                        DataMesh.AppendTriangle(vi00, vi01, vi11);
+                        DataMesh.AppendTriangle(vi00, vi11, vi10);
+                        /*
+                            v00 ---- v01
+                              | \     |
+                              |   \   |
+                              |     \ |
+                            v10 ---- v11
+                        */
+                    }
+                    else
+                    {
+                        DataMesh.AppendTriangle(vi00, vi01, vi10);
+                        DataMesh.AppendTriangle(vi01, vi11, vi10);
+                        /*
+                            v00 ---- v01
+                              |     / |
+                              |   /   |
+                              | /     |
+                            v10 ---- v11
+                        */
+                    }
+                }
+            }
+
+            return DataMesh;
         }
 
         //-----Getters------------------------------------------------------------------
@@ -171,6 +277,11 @@ namespace DiplomovaPracaLB
         public int[] GetSampleSize()
         {
             return new int[] { DataPointsSample.GetLength(0), DataPointsSample.GetLength(1) };
+        }
+
+        public double GetAverageMinimalDistance()
+        {
+            return average_of_minimal_distances;
         }
     }
 }

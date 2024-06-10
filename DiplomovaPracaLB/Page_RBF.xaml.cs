@@ -34,6 +34,9 @@ namespace DiplomovaPracaLB
             InitializeComponent();      //nacitanim hodnoty slidera sa spousti aj vykreslenie
             UsedRBFType = new_RBFType;
 
+            //default param:
+            double d = 1;   //TODO
+            param_c = 0.815 * d;         //chosen by Hardy 1971
             SetUIforThisRBFType(ref param_c);
 
             MW.UseRBF(UsedRBFType, param_c);
@@ -42,29 +45,19 @@ namespace DiplomovaPracaLB
 
         private void SetUIforThisRBFType(ref double outParam)
         {
-            min_param_val = double.MinValue;
-            max_param_val = double.MaxValue;
-
             min_param_val = 0;
-            outParam = 1;
-            max_param_val = 200;
+            max_param_val = 0.01;
             switch (UsedRBFType)
             {
                 default:
                 case (BASIS_FUNCTION.GAUSSIAN):
                     {
-                        TextBox_BazFcia.Text = "e^-(d/c)\u00B2";
-
-                        min_param_val = 0;
-                        max_param_val = 4;
-
+                        TextBox_BazFcia.Text = "e^-(d*c)\u00B2";
                     }
                     break;
                 case BASIS_FUNCTION.MULTIQUADRATIC:
                     {
                         TextBox_BazFcia.Text = "√(1 + c\u00B2 * d²)";
-                        min_param_val = 0;
-                        max_param_val = 1;
                     }
                     break;
                 case BASIS_FUNCTION.INVERSE_QUADRATIC:
@@ -77,28 +70,19 @@ namespace DiplomovaPracaLB
                         TextBox_BazFcia.Text = "1/√(1 + c\u00B2 * d²)";
                     }
                     break;
-                case BASIS_FUNCTION.POLYHARMONIC:
-                    {
-                        TextBox_BazFcia.Text = "ln(d)&#xB7;d^k";
-                        min_param_val = 0;
-                        max_param_val = 0;
-                    }
-                    break;
                 case BASIS_FUNCTION.THIN_PLATE:
                     {
                         //todo pridaj tvarovaci parameter
                         TextBox_BazFcia.Text = "d²&#xB7;ln(d)";
-                        min_param_val = 0;
-                        max_param_val = 0;
                     }
                     break;
             }
 
-            if (min_param_val == double.MinValue) TextBox_ParamRangeMin.Text = "- inf";
+            //if (min_param_val == double.MinValue) TextBox_ParamRangeMin.Text = "- inf";
             TextBox_ParamRangeMin.Text = min_param_val.ToString();
             Slider_RBFParam.Minimum = min_param_val;
 
-            if (max_param_val == double.MaxValue) TextBox_ParamRangeMax.Text = "inf";
+            //if (max_param_val == double.MaxValue) TextBox_ParamRangeMax.Text = "inf";
             TextBox_ParamRangeMax.Text = max_param_val.ToString();
             Slider_RBFParam.Maximum = max_param_val;
 
