@@ -24,16 +24,15 @@ namespace DiplomovaPracaLB
     {
         private MainWindow MW;
         //private float tension;
-        TerrainData TD;
         bool dragging;
 
-        public Page_Kard(TerrainData Displayed, MainWindow Hlavne_okno)
+        public Page_Kard(MainWindow Hlavne_okno)
         {
+
             dragging = false;
             MW = Hlavne_okno;
-            TD = Displayed; //iba referencia na teren
             InitializeComponent();      //nacitanim hodnoty slidera sa spousti aj vykreslenie
-            TD.UseKardBicubic(0, MW.LevelOfDetail);
+            MW.UseKardBicubic(0);
         }
 
         //zdroj spustenia slideru pri pusteni bezca
@@ -62,8 +61,8 @@ namespace DiplomovaPracaLB
         }
         private void ChangeTensionparameter(float new_tension)
         {
-            //TD.UseKardBilin(new_tension, MW.LevelOfDetail);
-            TD.UseKardBicubic(new_tension, MW.LevelOfDetail);
+            //TD.UseKardBilin(new_tension);
+            MW.UseKardBicubic(new_tension);
             MW.glControl.Invalidate();
 
         }

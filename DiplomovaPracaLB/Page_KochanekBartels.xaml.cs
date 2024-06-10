@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+
 namespace DiplomovaPracaLB
 {
     /// <summary>
@@ -23,21 +24,20 @@ namespace DiplomovaPracaLB
     {
         private MainWindow MW;
         private float tension, continuity, bias;
-        TerrainData TD;
         bool dragging;
 
-        public Page_KochanekBartels(TerrainData Displayed, MainWindow Hlavne_okno)
+        public Page_KochanekBartels(MainWindow Hlavne_okno)
         {
             dragging = false;
             MW = Hlavne_okno;
-            TD = Displayed; //iba referencia na teren
             InitializeComponent();      //nacitanim hodnoty slidera sa spousti aj vykreslenie
-            
+
             float default_tension = 0.0f;
             float default_continuity = 0.0f;
             float default_bias = 0.0f;
-            TD.UseKochanekBartels(default_tension, default_continuity, default_bias, MW.LevelOfDetail);
-            
+
+            MW.UseKochanekBartels(default_tension, default_continuity, default_bias);
+
         }
 
         //-----fcie--------------
@@ -61,10 +61,9 @@ namespace DiplomovaPracaLB
 
         private void ReCompute()
         {
-            TD.UseKochanekBartels(tension, continuity, bias, MW.LevelOfDetail);
+            MW.UseKochanekBartels(tension, continuity, bias);
             MW.glControl.Invalidate();
         }
-
 
         //----Slider-------------------
         private void Slider_Tension_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)

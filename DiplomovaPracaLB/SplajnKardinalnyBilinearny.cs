@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using static alglib;
 
 
 namespace DiplomovaPracaLB
@@ -7,21 +8,22 @@ namespace DiplomovaPracaLB
     {
         float tension;
 
-        public SplajnKardinalnyBilinearny(Vector4[,] Vstup, int _LOD, float _tension)
+        public SplajnKardinalnyBilinearny(ref TerrainData RefTerrain, int _LOD, float _tension)
         {
+            isRBF = false;
             tension = (1 - _tension) / 2;
-            LoadDimensions(_LOD, Vstup);
-            Interpolate(Vstup);
+            LoadDimensions(_LOD, RefTerrain.GetSampleSize());
+            Interpolate(ref RefTerrain);
         }
 
-        protected override void LoadDimensions(int _Level_Of_Detail, Vector4[,] Vstup)
+        protected override void LoadDimensions(int _Level_Of_Detail, int[] InputSize)
         {
             LOD = _Level_Of_Detail;
-            m = (M - 2 - 1) * (LOD + 1) + 1; //-2 krajne body z myslienky Anidiho twistov Coonsa odcitam od vstupnych 
-            n = (N - 2 - 1) * (LOD + 1) + 1;
+            m = (InputSize[0] - 2 - 1) * (LOD + 1) + 1; //-2 krajne body z myslienky Anidiho twistov Coonsa odcitam od vstupnych 
+            n = (InputSize[1] - 2 - 1) * (LOD + 1) + 1;
         }
 
-        protected override Vector4[,] CreateInterpolationPoints(Vector4[,] Vstup)
+        protected override Vector4[,] CreateInterpolationPoints(ref Vector4[,] Vstup)
         {
             Vector4[,] IP = new Vector4[m, n];
             float s = tension;
@@ -38,9 +40,9 @@ namespace DiplomovaPracaLB
             }
 
             IP[0, 0] = Vstup[1, 1]; //prvy bod interpolacie
-            for (int j = 1; j < N - 2; j++)
+            for (int j = 1; j < Vstup.GetLength(1) - 2; j++)
             {
-                for (int i = 1; i < M - 2; i++)
+                for (int i = 1; i < Vstup.GetLength(1) - 2; i++)
                 {
                     int a = (i - 1) * (LOD + 1); //index laveho dolneho rohu v IntrepolacncyhBodoch
                     int b = (j - 1) * (LOD + 1);

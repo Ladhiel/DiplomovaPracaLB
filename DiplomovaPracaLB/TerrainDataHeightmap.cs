@@ -29,12 +29,12 @@ namespace DiplomovaPracaLB
     public class TerrainDataHeightmap : TerrainData
     {
         private byte[,] Heightmap;
-        public TerrainDataHeightmap(string file_name)
+        public TerrainDataHeightmap(int input_density, string file_name)
         {
             Heightmap = LoadHeightmap(file_name);
-            OriginalDataPoints = CreatePoints();
+            DataPointsAll = CreatePoints();
 
-            Initialize();
+            Initialize(input_density);
         }
 
         private byte[,] LoadHeightmap(string file_name)
@@ -74,8 +74,8 @@ namespace DiplomovaPracaLB
                     //transformacia intervalov stary x patri [a,b] na novy y patri [c,d]; y=c+(x-a)*(d-c)/(b-a);          
                     //double z = Heightmap[i, j] * (max_height - min_height) / (255 - 0) + min_height;          
                     float z = Heightmap[i, j];// * (100 -0) / (255 - 0) ;   //zatial to preskaluvavam do stvorca 100^3
-                                //Points[i, j] = new Vector3(i*samplingSize, j*samplingSize,z );
-                    Points[i, j] = new Vector4(i*3, j*3, z, 1.0f); //tie trojky potom nahradit realnou hornodtou vzdialenosti
+                                              //Points[i, j] = new Vector3(i*samplingSize, j*samplingSize,z );
+                    Points[i, j] = new Vector4(i * 3, j * 3, z, 1.0f); //tie trojky potom nahradit realnou hornodtou vzdialenosti
                 }
             }
 

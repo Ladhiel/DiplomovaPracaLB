@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using System.Windows.Media.Media3D;
+using g3;
 using OpenTK;
 
 
@@ -7,35 +10,40 @@ namespace DiplomovaPracaLB
     public abstract partial class Splajn
     {
         protected int LOD;
-        protected int M, N; //pocet vrcholov vstupnych bodov v mriezke
         protected int m, n; //pocet vrcholov v zjemnenom vzorkovani      indexy od 0 po m-1
-        public Vector4[,] InterpolationPoints;
-        public Vector3[,] Normals;              //normalove vektory v lavych dolnych rohov jemneho vzorkovania
+        protected Vector4[,] InterpolationPoints;
+        public Vector4[,] TmpPoints;
+        private Vector3[,] Normals;              //normalove vektory v lavych dolnych rohov jemneho vzorkovania
+        private double[,] ErrorValues;
+        public bool isRBF = false;
 
-        protected void Interpolate(Vector4[,] Vstup)
-        {
-            M = Vstup.GetLength(0);
-            N = Vstup.GetLength(1);
-            InterpolationPoints = CreateInterpolationPoints(Vstup);
-            ComputeNormals(InterpolationPoints);
-        }
-        public void New(Vector4[,] Vstup)
-        {
-            Interpolate(Vstup);
-        }
 
-        public void AdjustLOD(Vector4[,] Vstup, int new_LOD)
+
+        public void Interpolate(ref TerrainData RefTerrain)
         {
-            LoadDimensions(new_LOD, Vstup);
-            Interpolate(Vstup);
+            if (ValidateDimensions())
+            {
+                InterpolationPoints = CreateInterpolationPoints(ref RefTerrain.WeightedDataPointsSample);
+                ComputeNormals(InterpolationPoints);
+                Evaluate(ref RefTerrain);
+            }
         }
 
-        protected virtual void LoadDimensions(int _Level_Of_Detail, Vector4[,] Vstup)
+        public void ReInterpolate(ref TerrainData RefTerrain, int new_LOD)
         {
-           //kazdy splajn svoje 
+            LoadDimensions(new_LOD, RefTerrain.GetSampleSize());
+            if (ValidateDimensions())
+            {
+                Interpolate(ref RefTerrain);
+            }
         }
 
-        protected virtual Vector4[,] CreateInterpolationPoints(Vector4[,] Vector)
+        protected virtual void LoadDimensions(int _Level_Of_Detail, int[] InputSize)
+        {
+            //kazdy splajn svoje 
+        }
+
+        protected virtual Vector4[,] CreateInterpolationPoints(ref Vector4[,] Vector)
         {
             //kazdy splajn svoje
             Vector4[,] IP = new Vector4[m, n];
@@ -47,7 +55,7 @@ namespace DiplomovaPracaLB
             //z homogennych do afinnych suradnic
             if (vertex[3] == 0)
             {
-                MessageBox.Show("pozor, bod ma nulovu vahu");
+                MessageBox.Show("pozor, bod ma nulovu vahu. Riadok 52 v Splajn.cs");
                 return Vector3.Zero;
             }
             if (vertex[3] == 1)
@@ -60,6 +68,12 @@ namespace DiplomovaPracaLB
 
         protected void ComputeNormals(Vector4[,] Vertices)
         {
+            if (m < 1 || n < 1)
+            {
+                Normals = new Vector3[0, 0];
+                return;
+            }
+
             Normals = new Vector3[m - 1, n - 1];
 
             for (int i = 0; i < m - 1; i++)
@@ -70,7 +84,7 @@ namespace DiplomovaPracaLB
                 }
             }
         }
-        
+
         private Vector3 ComputeNormalVectorInPoint(Vector4 V00, Vector4 V01, Vector4 V10)  //vypocita normalu pre plochu/bod danu vektormi V10-V00 a V01-V00
         {
             //normalove vektory su pocitane pre vsetky stvorceky, kt pocet je v danom smere o 1 menej ako bodov
@@ -88,6 +102,86 @@ namespace DiplomovaPracaLB
             return c;
         }
 
-        
+        public void Evaluate(ref TerrainData RefTerrain)
+        {
+            int dens = RefTerrain.GetDensity();
+            if (dens != LOD + 1) return;
+
+            TmpPoints = new Vector4[m, n];
+            ErrorValues = new double[m, n];
+
+            //BuildAABB using g3shapr library
+            g3.DMeshAABBTree3 Spatial = new DMeshAABBTree3(RefTerrain.MeshDataAll);
+            Spatial.Build();
+
+            //Find collided triangle
+            g3.Vector3f RayDir = new Vector3f(0, 0, 1);
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    //Ray parallel to z axis
+                    g3.Ray3d ZRay = new Ray3d(new Vector3f(InterpolationPoints[i, j].X, InterpolationPoints[i, j].Y, RefTerrain.GetMinMaxVal(false, 2) - 1), RayDir);
+
+                    //Collide ray and mesh
+                    int hit_tid = Spatial.FindNearestHitTriangle(ZRay);
+
+                    //If collided
+                    if (hit_tid != DMesh3.InvalidID)
+                    {
+                        IntrRay3Triangle3 Intersection = MeshQueries.TriangleIntersection(RefTerrain.MeshDataAll, hit_tid, ZRay);
+
+                        //Result = point on mesh
+                        TmpPoints[i, j] = new Vector4(
+                            (float)ZRay.PointAt(Intersection.RayParameter).x,
+                            (float)ZRay.PointAt(Intersection.RayParameter).y,
+                            (float)ZRay.PointAt(Intersection.RayParameter).z,
+                            1.0f);
+
+                        ErrorValues[i, j] = Math.Abs(TmpPoints[i, j].Z - InterpolationPoints[i, j].Z);
+                    }
+                }
+            }
+        }
+
+        private bool ValidateDimensions()
+        {
+            if (m < 0 || n < 0)
+            {
+                m = 0; n = 0;
+                MessageBox.Show("Not enough points in dataset to create intepolation. Decrease density or pick some bigger dataset.");
+                return false;
+            }
+            return true;
+        }
+
+        public ref Vector4[,] GetPoints()
+        {
+            return ref InterpolationPoints;
+        }
+
+        public ref Vector3[,] GetNormals()
+        {
+            return ref Normals;
+        }
+
+        public int GetSize(int k)
+        {
+            if (k == 0) return m;
+            if (k == 1) return n;
+            return 0;
+        }
+
+        public double GetErrorValue(int i, int j)
+        {
+            if (ErrorValues != null)
+            {
+                if (0 <= i && i <= m && 0 <= j && j <= n)
+                {
+                    return ErrorValues[i, j];
+                }
+            }
+            return 0;
+        }
     }
 }

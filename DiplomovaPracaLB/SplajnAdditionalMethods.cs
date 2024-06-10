@@ -23,6 +23,7 @@ using OpenTK.Graphics.OpenGL;
 using System.Windows.Media.Animation;
 using System.Numerics;
 using System.Xml.Linq;
+using g3;
 
 namespace DiplomovaPracaLB
 {
@@ -94,7 +95,7 @@ namespace DiplomovaPracaLB
             return uMv;
         }
 
-        public Matrix3 MyMultiply(Matrix3 M, Vector3 v0, Vector3 v1, Vector3 v2 )
+        public Matrix3 MyMultiply(Matrix3 M, Vector3 v0, Vector3 v1, Vector3 v2)
         {
             return Matrix3.Mult(M, new Matrix3(v0, v1, v2));
         }
@@ -148,6 +149,29 @@ namespace DiplomovaPracaLB
             Console.WriteLine("[ " + M[1, 0] + " " + M[1, 1] + " " + M[1, 2] + " " + M[1, 3] + " ]");
             Console.WriteLine("[ " + M[2, 0] + " " + M[2, 1] + " " + M[2, 2] + " " + M[2, 3] + " ]");
             Console.WriteLine("[ " + M[3, 0] + " " + M[3, 1] + " " + M[3, 2] + " " + M[3, 3] + " ]");
+        }
+
+        public void BilinearInterp(int lod_i, int lod_j, int i, int j, ref Vector4[,] Vstup, out double outX, out double outY)
+        {
+            float i_dir_param = (float)lod_i / (LOD + 1);
+            float j_dir_param = (float)lod_j / (LOD + 1);
+            Vector4 V1 = (1 - i_dir_param) * Vstup[i, j] + i_dir_param * Vstup[i + 1, j];
+            Vector4 V2 = (1 - i_dir_param) * Vstup[i, j + 1] + i_dir_param * Vstup[i + 1, j + 1];
+            Vector4 V = (1 - j_dir_param) * V1 + j_dir_param * V2;
+            outX = V.X;
+            outY = V.Y;
+        }
+
+        public double SquaredEuclidianDist2D(Vector4 V1, Vector4 V2)
+        {
+            return SquaredEuclidianDist2D(V1.X, V1.Y, V2.X, V2.Y);
+        }
+
+        public double SquaredEuclidianDist2D(double x1, double y1, double x2, double y2)
+        {
+            double dx = x1 - x2;
+            double dy = y1 - y2;
+            return (dx * dx + dy * dy); // *(1/40000);
         }
     }
 }

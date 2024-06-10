@@ -15,105 +15,86 @@ using System.Windows.Shapes;
 using System.Windows.Forms.Integration;
 using System.IO;
 
-
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-
+using g3;
+using static OpenTK.Graphics.OpenGL.GL;
+using System.Drawing;
+using System.Windows.Media.Animation;
 
 namespace DiplomovaPracaLB
 {
-    /// <summary>
-    /// V Intrepolated Points budu data v pravidelnej mrieyke, zoradene (TODO: pridat triedu pre nepravidelne data)
-    /// </summary>
-
     public abstract class TerrainData
     {
-        protected Vector4[,] OriginalDataPoints;    //cely dataset bodov
-        public Vector4[,] InputDataPointsOriginal;  //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity, s povodnymi vahami
-        public Vector4[,] InputDataPoints;          //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity
+        public Vector4[,] DataPointsAll;               //cely dataset bodov
+        public Vector4[,] DataPointsSample;            //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity, s povodnymi vahami
+        public Vector4[,] WeightedDataPointsSample;    //body na vstupe - z ODP vybraty kadzny k-ty podla dentsity
 
-        private Splajn Interpolation;
+        public Vector[,] TempEvalPoints;
+
+        //private Splajn Interpolation;
         public Vector3 posunutie;
         public Matrix3 skalovanie;
 
-        private int density = 10;  //hustota podmnoziny datasetu    
-        private int[] border = new int[2];   //hranicne indexy pre porovnavaciu mriezku
+        private int density = 1;  //hustota podmnoziny datasetu    
+        private float min_z, max_z, min_x, max_x, min_y, max_y;
+        private double average_of_minimal_distances;
 
-        float min_z, max_z, min_x, max_x, min_y, max_y;
+        public DMesh3 MeshDataAll;
 
-        protected void Initialize()
+        protected void Initialize(int input_density)
         {
             //OriginalData su uz nacitane
-            InputDataPoints = SelectSampleFromOrigData(density);
-            SkopirujUdaje(InputDataPoints, ref InputDataPointsOriginal);
-            FindExtremalCoordinates();
+            SetDensity(input_density);
+            WeightedDataPointsSample = SelectSampleFromOrigData();
+            ZalohujSample();
+            FindMinMaxAverageDist();
+            MeshDataAll = CreateMesh(ref DataPointsAll);
+            average_of_minimal_distances = FindAverageMinimalDistances(ref DataPointsSample);
         }
 
-        private Vector4[,] SelectSampleFromOrigData(int dens)
+        private Vector4[,] SelectSampleFromOrigData()
         {
             //zapamatam ohranicenie mriezky, z kt. vyberam sample
-            int a = (OriginalDataPoints.GetLength(0) - 1) / dens; //vyuzivam celociselne delenie
-            int b = (OriginalDataPoints.GetLength(1) - 1) / dens;
-
-            border[0] = dens * a;
-            border[1] = dens * b;
+            int a = (DataPointsAll.GetLength(0) - 1) / density; //vyuzivam celociselne delenie
+            int b = (DataPointsAll.GetLength(1) - 1) / density;
 
             Vector4[,] IDP = new Vector4[a + 1, b + 1];
 
-            for (int i = 0; i * dens < OriginalDataPoints.GetLength(0); i++)
+            for (int i = 0; i * density < DataPointsAll.GetLength(0); i++)
             {
-                for (int j = 0; j * dens < OriginalDataPoints.GetLength(1); j++)
+                for (int j = 0; j * density < DataPointsAll.GetLength(1); j++)
                 {
-                    IDP[i, j] = OriginalDataPoints[i * dens, j * dens];
+                    IDP[i, j] = DataPointsAll[i * density, j * density];
                 }
             }
 
             return IDP;
         }
 
-        public void ReInterpolate(int new_LOD)
+        public void SetWeight(int active_m_index, int active_n_index, float new_weight)
         {
-            Interpolation.AdjustLOD(InputDataPoints, new_LOD);
+            WeightedDataPointsSample[active_m_index, active_n_index].X = new_weight * DataPointsSample[active_m_index, active_n_index].X;
+            WeightedDataPointsSample[active_m_index, active_n_index].Y = new_weight * DataPointsSample[active_m_index, active_n_index].Y;
+            WeightedDataPointsSample[active_m_index, active_n_index].Z = new_weight * DataPointsSample[active_m_index, active_n_index].Z;
+            WeightedDataPointsSample[active_m_index, active_n_index].W = new_weight;
         }
 
-        public void ReInterpolate(int active_m_index, int active_n_index, float new_weight)
+        public void ResetWeight(int i, int j)
         {
-            InputDataPoints[active_m_index, active_n_index].X = new_weight * InputDataPointsOriginal[active_m_index, active_n_index].X;
-            InputDataPoints[active_m_index, active_n_index].Y = new_weight * InputDataPointsOriginal[active_m_index, active_n_index].Y;
-            InputDataPoints[active_m_index, active_n_index].Z = new_weight * InputDataPointsOriginal[active_m_index, active_n_index].Z;
-            InputDataPoints[active_m_index, active_n_index].W = new_weight;
-            Interpolation.New(InputDataPoints);
+            WeightedDataPointsSample[i, j] = new Vector4(DataPointsSample[i, j]);
+        }
+        private void ZalohujSample()
+        {
+            SkopirujUdaje(ref WeightedDataPointsSample, ref DataPointsSample);
+        }
+        public void ObnovSample()
+        {
+            SkopirujUdaje(ref DataPointsSample, ref WeightedDataPointsSample);    //nacitaju sa povodne
         }
 
-        public void UseKardBilin(float tenstion, int LOD)
-        {
-            Interpolation = new SplajnKardinalnyBilinearny(InputDataPoints, LOD, tenstion);
-        }
-
-        public void UseKardBicubic(float tenstion, int LOD)
-        {
-            Interpolation = new SplajnKardinalnyBikubicky(InputDataPoints, LOD, tenstion);
-        }
-
-        public void UseKochanekBartels(float tenstion, float continuity, float bias, int LOD)
-        {
-            Interpolation = new KochanekBartelsSplajn(InputDataPoints, LOD, tenstion, continuity, bias);
-        }
-
-        public void ResetAllWeights()
-        {
-            SkopirujUdaje(InputDataPointsOriginal, ref InputDataPoints);    //nacitaju sa povodne
-            Interpolation.New(InputDataPoints);
-        }
-
-        public void ResetThisWeight(int i, int j)
-        {
-            InputDataPoints[i, j] = new Vector4(InputDataPointsOriginal[i, j]);
-            Interpolation.New(InputDataPoints);
-        }
-
-        private void SkopirujUdaje(Vector4[,] Odkial, ref Vector4[,] Kam)
+        private void SkopirujUdaje(ref Vector4[,] Odkial, ref Vector4[,] Kam)
         {
             int a = Odkial.GetLength(0);
             int b = Odkial.GetLength(1);
@@ -128,9 +109,8 @@ namespace DiplomovaPracaLB
             }
         }
 
-        protected void FindExtremalCoordinates()
+        protected void FindMinMaxAverageDist()
         {
-            
             float span_x, span_y, span_z, mid_x, mid_y, mid_z;
 
             min_x = float.MaxValue;
@@ -139,13 +119,16 @@ namespace DiplomovaPracaLB
             max_y = float.MinValue;
             min_z = float.MaxValue;
             max_z = float.MinValue;
-            for (int j = 0; j < InputDataPoints.GetLength(1); j++)
+
+
+            for (int j = 0; j < DataPointsSample.GetLength(1); j++)
             {
-                for (int i = 0; i < InputDataPoints.GetLength(0); i++)
+                for (int i = 0; i < DataPointsSample.GetLength(0); i++)
                 {
-                    float x = InputDataPoints[i, j].X;
-                    float y = InputDataPoints[i, j].Y;
-                    float z = InputDataPoints[i, j].Z;
+                    //minmax
+                    float x = DataPointsSample[i, j].X;
+                    float y = DataPointsSample[i, j].Y;
+                    float z = DataPointsSample[i, j].Z;
 
                     if (x < min_x) min_x = x;
                     if (x > max_x) max_x = x;
@@ -168,16 +151,137 @@ namespace DiplomovaPracaLB
             skalovanie = Matrix3.CreateScale(2 / scale, 2 / scale, 2 / scale);
         }
 
-        //-----Getters------------------------------------------------------------------
-
-        public Vector4[,] GetInterpolationPoints()
+        double FindAverageMinimalDistances(ref Vector4[,] PointGrid)
         {
-            return Interpolation.InterpolationPoints;
+            int total_num = PointGrid.GetLength(0) * PointGrid.GetLength(1);
+
+            double sum_of_minimal_distances = 0;
+
+            for (int i = 0; i < PointGrid.GetLength(0); i++)
+            {
+                for (int j = 0; j < PointGrid.GetLength(1); j++)
+                {
+                    double min_Distance = double.MaxValue;
+
+                    double[] distance = new double[4];
+
+                    //vyuzijem ze som v cca pravidelnej mriezke - najblizsi je niektory zo susedov
+                    distance[1] = (i > 0) ? (PointGrid[i, j] - PointGrid[i - 1, j]).Length : double.MaxValue;
+                    distance[3] = (j > 0) ? (PointGrid[i, j] - PointGrid[i, j - 1]).Length : double.MaxValue;
+                    distance[0] = (i < PointGrid.GetLength(0) - 1) ? (PointGrid[i, j] - PointGrid[i + 1, j]).Length : double.MaxValue;
+                    distance[2] = (j < PointGrid.GetLength(1) - 1) ? (PointGrid[i, j] - PointGrid[i, j + 1]).Length : double.MaxValue;
+
+                    for (int k = 0; k < 4; k++)
+                    {
+                        if (min_Distance > distance[k]) min_Distance = distance[k];
+                    }
+                }
+            }
+
+            return sum_of_minimal_distances / total_num;
         }
 
-        public Vector3[,] GetNormals()
+
+        private g3.DMesh3 CreateMesh(ref Vector4[,] PointGrid)
         {
-            return Interpolation.Normals;
+            //Official g3Sharp tutorial: https://www.gradientspace.com/tutorials/2017/7/20/basic-mesh-creation-with-g3sharp
+
+            DMesh3 DataMesh = new DMesh3(MeshComponents.All);
+
+            int i_max = PointGrid.GetLength(0);
+            int j_max = PointGrid.GetLength(1);
+
+            //Add vertices to mesh
+            for (int i = 0; i < i_max; i++)
+            {
+                for (int j = 0; j < j_max; j++)
+                {
+                    // [i, j] --> [i * j_max + j]
+                    DataMesh.AppendVertex(new g3.Vector3f(PointGrid[i, j].X, PointGrid[i, j].Y, PointGrid[i, j].Z));
+                }
+            }
+
+            //Make mesh from datagrid
+            int vi00, vi01, vi10, vi11;
+            for (int i = 0; i < i_max - 1; i++)
+            {
+                for (int j = 0; j < j_max - 1; j++)
+                {
+                    //vrcholy priesotorveho stvoruholnika maju indexy:
+                    vi00 = i * j_max + j;
+                    vi01 = i * j_max + j + 1;
+                    vi10 = (i + 1) * j_max + j;
+                    vi11 = (i + 1) * j_max + j + 1;
+
+                    double diag0011 = (PointGrid[i, j] - PointGrid[i + 1, j + 1]).Length;
+                    double diag1001 = (PointGrid[i + 1, j] - PointGrid[i, j + 1]).Length;
+
+                    if (diag0011 < diag1001) //Kratsia diagonala predeluje stvoruholnik na dva trojuholniky (standardny postup)
+                    {
+                        DataMesh.AppendTriangle(vi00, vi01, vi11);
+                        DataMesh.AppendTriangle(vi00, vi11, vi10);
+                        /*
+                            v00 ---- v01
+                              | \     |
+                              |   \   |
+                              |     \ |
+                            v10 ---- v11
+                        */
+                    }
+                    else
+                    {
+                        DataMesh.AppendTriangle(vi00, vi01, vi10);
+                        DataMesh.AppendTriangle(vi01, vi11, vi10);
+                        /*
+                            v00 ---- v01
+                              |     / |
+                              |   /   |
+                              | /     |
+                            v10 ---- v11
+                        */
+                    }
+                }
+            }
+
+            return DataMesh;
+        }
+
+        //-----Getters------------------------------------------------------------------
+
+        public float GetMinMaxVal(bool false_is_min_and_true_is_max, int axis_index)
+        {
+            if (false_is_min_and_true_is_max)
+            {
+                if (axis_index == 0) return max_x;
+                if (axis_index == 1) return max_y;
+                return max_z;
+            }
+            if (axis_index == 0) return min_x;
+            if (axis_index == 1) return min_y;
+            return min_z;
+        }
+
+        public void SetDensity(int new_density)
+        {
+            if (0 <= new_density && new_density < DataPointsAll.GetLength(0) && new_density < DataPointsAll.GetLength(1))
+            {
+                density = new_density;
+            }
+        }
+
+        public int GetDensity()
+        {
+            return density;
+        }
+
+        public int[] GetSampleSize()
+        {
+            return new int[] { DataPointsSample.GetLength(0), DataPointsSample.GetLength(1) };
+        }
+
+        public double GetAverageMinimalDistance()
+        {
+            return average_of_minimal_distances;
         }
     }
 }

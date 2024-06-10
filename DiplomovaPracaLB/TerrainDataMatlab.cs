@@ -23,18 +23,19 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
+
 namespace DiplomovaPracaLB
 {
     public class TerrainDataMatlab : TerrainData
     {
         private int a, b;
-        public TerrainDataMatlab(string file_name, int hmap_num_patterns)
+        public TerrainDataMatlab(int input_density, string file_name, int hmap_num_patterns)
         {
             a = hmap_num_patterns + 1;
             b = hmap_num_patterns + 1;
-            OriginalDataPoints = MatlabDataIntoGrid(MatlabDataLoadText(file_name));
+            DataPointsAll = MatlabDataIntoGrid(MatlabDataLoadText(file_name));
 
-            Initialize();
+            Initialize(input_density);
         }
 
         private List<Vector4> MatlabDataLoadText(string file_name)
@@ -83,7 +84,18 @@ namespace DiplomovaPracaLB
                 }
             }
 
-            return PlanarGrid;
+
+            Vector4[,] PlanarGridSmaller = new Vector4[20, 20];
+            for (int j = 0; j < 20; j++)
+            {
+                for (int i = 0; i < 20; i++)
+                {
+                    PlanarGridSmaller[i, j] = PlanarGrid[i, j];
+                }
+            }
+            a = 20;
+            b = 20;
+            return PlanarGridSmaller;
         }
     }
 }
