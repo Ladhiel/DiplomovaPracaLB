@@ -300,7 +300,7 @@ namespace DiplomovaPracaLB
         // drawing 
         private void GLControl_Paint(object sender, swf.PaintEventArgs e)
         {
-            TextBox3.Text = (DisplayedSplajn.GetRMSE().ToString());
+            TextBox3.Text = "RMSE = "+(DisplayedSplajn.GetRMSE().ToString());
 
             // Modelview matrix
             GL.MatrixMode(MatrixMode.Modelview);
