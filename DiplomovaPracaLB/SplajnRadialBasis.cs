@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,7 +63,26 @@ namespace DiplomovaPracaLB
 
         protected override Vector4[,] CreateInterpolationPoints(ref Vector4[,] Vstup)
         {
+#if true
+            //Garbage Colletion
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            //Stopwatch
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             SolveSystemToGetWeights(ref Vstup);
+
+            sw.Stop();
+            Console.WriteLine("      Elapsed SolveSystemToGetWeights = {0}", sw.Elapsed);
+            sw.Reset();
+#else
+            SolveSystemToGetWeights(ref Vstup);
+#endif
+
+
+
 
             //create points of interpolation with LOD:
             Vector4[,] IP = new Vector4[m, n];
@@ -189,18 +209,55 @@ namespace DiplomovaPracaLB
             }
 
             //we must solve Aw = z, w=?
+
+#if true
+            //Garbage Colletion
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            //Stopwatch
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             ComputeRBFunctionValuesForDistances(ref Vstup, ref RBFvalues);  //velke PHI
+
+            sw.Stop();
+            Console.WriteLine("      Elapsed ComputeRBFunctionValuesForDistances = {0}", sw.Elapsed);
+            sw.Reset();
+#else
+             ComputeRBFunctionValuesForDistances(ref Vstup, ref RBFvalues);  //velke PHI
+#endif
+
+#if true
+            sw.Start();
+
             //inverse matrix
             matinvreport matinvreport = new matinvreport();
+
+            sw.Stop();
+            Console.WriteLine("      Elapsed matinvreport = {0}", sw.Elapsed);
+            sw.Reset();
+#else
+             //inverse matrix
+            matinvreport matinvreport = new matinvreport();
+#endif
+
+#if true
+            sw.Start();
+
             int info = 0;
             alglib.densesolverlsreport densesolverlsreportt;
-
             rmatrixsolvels(RBFvalues, num_of_input_points, num_of_input_points, inOutArray, 0.0, out info, out densesolverlsreportt, out wieghts);
 
-            for (int i = 0; i < num_of_input_points; i++)
-            {
-                //wieghts[i] = inOutArray[i];   //assign W value (weight) to points from the array
-            }
+            sw.Stop();
+            Console.WriteLine("      Elapsed rmatrixsolvels = {0}", sw.Elapsed);
+            sw.Reset();
+#else
+           int info = 0;
+            alglib.densesolverlsreport densesolverlsreportt;
+            rmatrixsolvels(RBFvalues, num_of_input_points, num_of_input_points, inOutArray, 0.0, out info, out densesolverlsreportt, out wieghts);
+#endif
+
         }
     }
 }

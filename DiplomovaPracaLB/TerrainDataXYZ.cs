@@ -92,7 +92,7 @@ namespace DiplomovaPracaLB
                         double z = double.Parse(coordinates[2]);
                         float w = 1.0f;
 
-                        Console.WriteLine(x + " " + y + " " + z);
+                        //Console.WriteLine(x + " " + y + " " + z);
 
                         if (y_klesa)
                         {

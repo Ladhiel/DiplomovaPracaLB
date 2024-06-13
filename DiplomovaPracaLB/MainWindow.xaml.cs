@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -85,8 +86,18 @@ namespace DiplomovaPracaLB
             PARABHYPERB
         }
 
+        Stopwatch sw;     //sw.Elapsed = hodiny:minuty:sekundy (00:00:00.3 su 3 milisekundy)
+
         public MainWindow()     //************* MAIN WINDOW **************
         {
+            //Garbage Colletion
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            //Stopwatch
+            sw = new Stopwatch();
+
+
             //naciatanie GDAL
             GdalConfiguration.ConfigureGdal();
 
@@ -104,9 +115,14 @@ namespace DiplomovaPracaLB
             //******************************************************* Hlavne ******************************************************* 
 
             //Input Data Processing  
-            input_density = 2;  //min = 1
-            selectedTerrainType = TerrainInputData.MATLAB;         //VSTUPNY TEREN
+            input_density = 5;  //min = 1
+            selectedTerrainType = TerrainInputData.XYZ_NizkeTatry_UTM_cutout;         //VSTUPNY TEREN
+
+            sw.Start();
             LoadTerrainData(selectedTerrainType, input_density, ref DisplayedTerrain);
+            sw.Stop();
+            Console.WriteLine("      Elapsed TerainData={0}", sw.Elapsed);
+            sw.Restart();
 
             //******************************************************* Hlavne ******************************************************* 
 
@@ -140,39 +156,39 @@ namespace DiplomovaPracaLB
                     outTerrainData = new TerrainDataHeightmap(input_density, "Heightmap.png");
                     break;
                 case (TerrainInputData.GeoTiff_MaleKarpaty_OneWholeFileFromUSGS):
-                    outTerrainData = new TerrainDataGeoTiff(input_density, "n48_e017_1arc_v3MaleKarpaty.tif", 200, 200);
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "n48_e017_1arc_v3MaleKarpaty.tif", 101, 101);
                     break;
 
 
                 default:
                 case (TerrainInputData.GeoTiff_Hlohovec_GEO_cutout):
-                    outTerrainData = new TerrainDataGeoTiff(input_density, "Hlohovec" + "GEO_cutoutTIF.tif", 100, 100);
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "Hlohovec" + "GEO_cutoutTIF.tif", 101, 101);
                     break;
 
                 case (TerrainInputData.GeoTiff_HradLitava_GEO_cutout):
-                    outTerrainData = new TerrainDataGeoTiff(input_density, "HradLitava" + "GEO_cutoutTIF.tif", 100, 100);
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "HradLitava" + "GEO_cutoutTIF.tif", 101, 101);
                     break;
                 case (TerrainInputData.GeoTiff_NizkeTatry_GEO_cutout):
-                    outTerrainData = new TerrainDataGeoTiff(input_density, "NizkeTatry" + "GEO_cutoutTIF.tif", 100, 100);
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "NizkeTatry" + "GEO_cutoutTIF.tif", 101, 101);
                     break;
                 case (TerrainInputData.GeoTiff_Senica_GEO_cutout):
-                    outTerrainData = new TerrainDataGeoTiff(input_density, "Senica" + "GEO_cutoutTIF.tif", 100, 100);
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "Senica" + "GEO_cutoutTIF.tif", 101, 101);
                     break;
 
 
                 case (TerrainInputData.XYZ_Hlohovec_UTM_cutout):
-                    outTerrainData = new TerrainDataXYZ(input_density, "Hlohovec" + "UTM_cutoutXYZ.xyz", 100);
+                    outTerrainData = new TerrainDataXYZ(input_density, "Hlohovec" + "UTM_cutoutXYZ.xyz", 101);
                     break;
 
                 case (TerrainInputData.XYZ_HradLitava_UTM_cutout):
-                    outTerrainData = new TerrainDataXYZ(input_density, "HradLitava" + "UTM_cutoutXYZ.xyz", 100);
+                    outTerrainData = new TerrainDataXYZ(input_density, "HradLitava" + "UTM_cutoutXYZ.xyz", 101);
                     break;
 
                 case (TerrainInputData.XYZ_NizkeTatry_UTM_cutout):
-                    outTerrainData = new TerrainDataXYZ(input_density, "NizkeTatry" + "UTM_cutoutXYZ.xyz", 100);
+                    outTerrainData = new TerrainDataXYZ(input_density, "NizkeTatry" + "UTM_cutoutXYZ.xyz", 101);
                     break;
                 case (TerrainInputData.XYZ_Senica_UTM_cutout):
-                    outTerrainData = new TerrainDataXYZ(input_density, "Senica" + "UTM_cutoutXYZ.xyz", 100);
+                    outTerrainData = new TerrainDataXYZ(input_density, "Senica" + "UTM_cutoutXYZ.xyz", 101);
                     break;
                 case (TerrainInputData.PARABHYPERB):
                     outTerrainData = new TerrainParabHyperb(input_density, 50);
@@ -273,7 +289,8 @@ namespace DiplomovaPracaLB
             GL.Enable(EnableCap.Light0);
 
             // parameters for the camera
-            Phi = -0.6f; Theta = 0.3f; Dist = default_dist;
+            //Phi = -0.0f; Theta = 90.0f; Dist = default_dist;
+            Phi = -0.005f; Theta = 0.63f; Dist = 6.2f;
             pointsize = ChangePointSize();
 
             //farby terénu
@@ -300,7 +317,7 @@ namespace DiplomovaPracaLB
         // drawing 
         private void GLControl_Paint(object sender, swf.PaintEventArgs e)
         {
-            TextBox3.Text = "RMSE = "+(DisplayedSplajn.GetRMSE().ToString());
+            TextBox3.Text = "RMSE = " + (DisplayedSplajn.GetRMSE().ToString());
 
             // Modelview matrix
             GL.MatrixMode(MatrixMode.Modelview);
@@ -343,6 +360,7 @@ namespace DiplomovaPracaLB
 
             // the buffers need to swapped, so the scene is drawn, kvoli float bufferu
             glControl.SwapBuffers();
+
         }
         private void DrawAxes()
         {
@@ -740,19 +758,31 @@ namespace DiplomovaPracaLB
 
         public void UseKardBicubic(float tenstion)
         {
+            sw.Restart();
+            sw.Start();
             DisplayedSplajn = new SplajnKardinalnyBikubicky(ref DisplayedTerrain, LevelOfDetail, tenstion);
+            sw.Stop();
+            Console.WriteLine("      Elapsed Kar={0}", sw.Elapsed);
             if (glControl != null) glControl.Invalidate();
         }
 
         public void UseKochanekBartels(float tenstion, float continuity, float bias)
         {
+            sw.Restart();
+            sw.Start();
             DisplayedSplajn = new KochanekBartelsSplajn(ref DisplayedTerrain, LevelOfDetail, tenstion, continuity, bias);
+            sw.Stop();
+            Console.WriteLine("      Elapsed TCB={0}", sw.Elapsed);
             if (glControl != null) glControl.Invalidate();
         }
 
         public void UseRBF(BASIS_FUNCTION eRBFType, double param)
         {
+            sw.Restart();
+            sw.Start();
             DisplayedSplajn = new SplajnRadialBasis(ref DisplayedTerrain, LevelOfDetail, eRBFType, param);
+            sw.Stop();
+            Console.WriteLine("      Elapsed RBF={0}", sw.Elapsed);
             if (glControl != null) glControl.Invalidate();
         }
 
@@ -979,7 +1009,8 @@ namespace DiplomovaPracaLB
         }
         private void Button_ResetView_Click(object sender, RoutedEventArgs e)
         {
-            Phi = -0.6f; Theta = 0.3f; Dist = 3.8f;
+            //Phi = -0.6f; Theta = 0.3f; Dist = 3.8f;
+            Phi = -0.005f; Theta = 0.63f; Dist = 6.2f;
             pointsize = ChangePointSize();
             glControl.Invalidate();
         }

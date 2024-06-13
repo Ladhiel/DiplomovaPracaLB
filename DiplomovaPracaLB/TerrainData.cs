@@ -169,13 +169,17 @@ namespace DiplomovaPracaLB
                 {
                     double min_Distance = double.MaxValue;
 
-                    double[] distance = new double[4];
+                    double[] distance = new double[8];
 
-                    //vyuzijem ze som v cca pravidelnej mriezke - najblizsi je niektory zo susedov
-                    distance[1] = (i > 0) ? (PointGrid[i, j] - PointGrid[i - 1, j]).Length : double.MaxValue;
-                    distance[3] = (j > 0) ? (PointGrid[i, j] - PointGrid[i, j - 1]).Length : double.MaxValue;
-                    distance[0] = (i < PointGrid.GetLength(0) - 1) ? (PointGrid[i, j] - PointGrid[i + 1, j]).Length : double.MaxValue;
-                    distance[2] = (j < PointGrid.GetLength(1) - 1) ? (PointGrid[i, j] - PointGrid[i, j + 1]).Length : double.MaxValue;
+                    //vyuzijem ze som v cca pravidelnej mriezke - najblizsi je niektory z 8 susedov
+                    distance[0] = (i > 0) ? (PointGrid[i, j] - PointGrid[i - 1, j]).Length : double.MaxValue;
+                    distance[1] = (j > 0) ? (PointGrid[i, j] - PointGrid[i, j - 1]).Length : double.MaxValue;
+                    distance[2] = (i < PointGrid.GetLength(0) - 1) ? (PointGrid[i, j] - PointGrid[i + 1, j]).Length : double.MaxValue;
+                    distance[3] = (j < PointGrid.GetLength(1) - 1) ? (PointGrid[i, j] - PointGrid[i, j + 1]).Length : double.MaxValue;
+                    distance[4] = (i > 0 && j > 0) ? (PointGrid[i, j] - PointGrid[i - 1, j - 1]).Length : double.MaxValue;
+                    distance[5] = (i > 0 && j < PointGrid.GetLength(1) - 1) ? (PointGrid[i, j] - PointGrid[i - 1, j + 1]).Length : double.MaxValue;
+                    distance[6] = (i < PointGrid.GetLength(0) - 1 && j < PointGrid.GetLength(1) - 1) ? (PointGrid[i, j] - PointGrid[i + 1, j + 1]).Length : double.MaxValue;
+                    distance[7] = (i < PointGrid.GetLength(0) - 1 && j > 0) ? (PointGrid[i, j] - PointGrid[i + 1, j - 1]).Length : double.MaxValue;
 
                     for (int k = 0; k < 4; k++)
                     {
@@ -191,12 +195,20 @@ namespace DiplomovaPracaLB
 
         private double FindApproxEnclosingDiameter(ref Vector4[,] PointGrid)
         {
+            double diag0011, diag0110;
             //Polomer je minimalne dlhsia diagonala mriezky.
             //Rozsah nadmorskych vysok realneho terenu je casto zanedbatelna voci jeho rozlohe.
+            try
+            {
+                diag0011 = (PointGrid[0, 0] - PointGrid[PointGrid.GetLength(0) - 1, PointGrid.GetLength(1) - 1]).Length;
+                diag0110 = (PointGrid[0, PointGrid.GetLength(1) - 1] - PointGrid[PointGrid.GetLength(0) - 1, 0]).Length;
 
-            double diag0011 = (PointGrid[0, 0] - PointGrid[PointGrid.GetLength(0) - 1, PointGrid.GetLength(1) - 1]).Length;
-            double diag0110 = (PointGrid[0, PointGrid.GetLength(1) - 1] - PointGrid[PointGrid.GetLength(0) - 1, 0]).Length;
-
+            }
+            catch
+            {
+                diag0011 = 0;
+                diag0110 = 0;
+            }
             return (diag0011 > diag0110) ? diag0011 : diag0110;
         }
 

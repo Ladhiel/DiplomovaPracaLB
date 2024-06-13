@@ -49,6 +49,8 @@ namespace DiplomovaPracaLB
                 line.Trim();    //spredu a zozadu odoberie WhiteSpace
                 string[] coordinates = line.Split(' ');     //rozdeli string podla medzier na slova
 
+                TestNumberDecimalSeparator(coordinates[2]);
+
                 //msg.MessageBox.Show(coordinates[0]+" " +coordinates[1]+" "+ coordinates[2]);
                 if (coordinates.Length > 0)
                 {
@@ -96,6 +98,33 @@ namespace DiplomovaPracaLB
             a = 20;
             b = 20;
             return PlanarGridSmaller;
+        }
+
+        private bool TestNumberDecimalSeparator(string lineOfText)  //duplikat z XYZ
+        {
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+
+            float parsed;
+            try
+            {
+                parsed = float.Parse(lineOfText);
+                return true;
+            }
+            catch
+            {
+                customCulture.NumberFormat.NumberDecimalSeparator = ".";
+                System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+
+                try
+                {
+                    parsed = float.Parse(lineOfText);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
         }
     }
 }

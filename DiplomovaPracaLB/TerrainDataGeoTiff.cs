@@ -127,11 +127,11 @@ namespace DiplomovaPracaLB
 
             int i_max = rasterXSize;
             int j_max = rasterYSize;
-            if (0 < x_max_pixel_count || x_max_pixel_count < rasterXSize)
+            if (0 < x_max_pixel_count && x_max_pixel_count < rasterXSize)
             {
                 i_max = x_max_pixel_count;
             }
-            if (0 < y_max_pixel_count || y_max_pixel_count < rasterYSize)
+            if (0 < y_max_pixel_count && y_max_pixel_count < rasterYSize)
             {
                 j_max = y_max_pixel_count;
             }
@@ -150,7 +150,7 @@ namespace DiplomovaPracaLB
                     CoordTransform.TransformPoint(coord);
 
                     LD[i, j_max - j - 1] = new Vector4((float)coord[0], (float)coord[1], (float)coord[2], 1.0f);
-                    Console.WriteLine("[" + coord[0] + "\t" + coord[1] + "\t" + coord[2] + "]");
+                    //Console.WriteLine("[" + coord[0] + "\t" + coord[1] + "\t" + coord[2] + "]");
                 }
             }
 

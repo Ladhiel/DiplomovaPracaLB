@@ -116,7 +116,8 @@ namespace DiplomovaPracaLB
                     float new_tension = float.Parse(TextBox_ParamCValue.Text);
                     if (/*Slider_RBFParam.Maximum >= new_tension &&*/ Slider_RBFParam.Minimum <= new_tension)
                     {
-                        Slider_RBFParam.Value = new_tension;     //zmena sa iniciuje sliderom
+                        //Slider_RBFParam.Value = new_tension;     //zmena sa iniciuje sliderom
+                        ChangeParameter(new_tension);
                     }
                     else MessageBox.Show("Vstup mimo rozahu!");
                 }
@@ -130,16 +131,19 @@ namespace DiplomovaPracaLB
         private void Button_RBFParamHardy_Click(object sender, RoutedEventArgs e)
         {
             SetUI(ref Hardy_param);
+            ChangeParameter(Hardy_param);
         }
 
         private void Button_RBFParamFranke_Click(object sender, RoutedEventArgs e)
         {
             SetUI(ref Franke_param);
+            ChangeParameter(Hardy_param);
         }
 
         private void Button_RBFParamFasshauer_Click(object sender, RoutedEventArgs e)
         {
             SetUI(ref Fasshauer_param);
+            ChangeParameter(Hardy_param);
         }
 
         private string Equation(BASIS_FUNCTION inSelectedRBF)
