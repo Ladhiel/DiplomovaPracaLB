@@ -115,8 +115,8 @@ namespace DiplomovaPracaLB
             //******************************************************* Hlavne ******************************************************* 
 
             //Input Data Processing  
-            input_density = 5;  //min = 1
-            selectedTerrainType = TerrainInputData.XYZ_NizkeTatry_UTM_cutout;         //VSTUPNY TEREN
+            input_density = 10;  //min = 1
+            selectedTerrainType = TerrainInputData.GeoTiff_NizkeTatry_GEO_cutout;         //VSTUPNY TEREN
 
             sw.Start();
             LoadTerrainData(selectedTerrainType, input_density, ref DisplayedTerrain);
@@ -342,7 +342,7 @@ namespace DiplomovaPracaLB
             if (show_Points) DrawPoints(DisplayedTerrain.WeightedDataPointsSample);
             if (show_evaluation && DisplayedSplajn.TmpPoints != null)
             {
-                DrawWireframe(DisplayedTerrain.DataPointsAll);
+                //DrawWireframe(DisplayedTerrain.DataPointsAll);
             }
             if (show_Wireframe) DrawWireframe(DisplayedSplajn.GetPoints());
 

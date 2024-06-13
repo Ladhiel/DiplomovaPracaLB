@@ -16,8 +16,8 @@
                 <TextBlock x:Name="TextBox_BazFcia" Text="predpis" TextAlignment="Center"  VerticalAlignment="Center" FontStyle="Italic"/>
             </StackPanel>
             <StackPanel  Orientation="Horizontal" Canvas.Left="10" Canvas.Top="50" Height="35">
-                <TextBlock Text="Tvarovací &#x0a; parameter c = " TextAlignment="Center"  VerticalAlignment="Center" />
-                <TextBox x:Name="TextBox_ParamCValue" Text="hodnota" TextAlignment="Center" VerticalContentAlignment="Center" Width="100" KeyDown="TextBox_Parameter_KeyDown"/>
+                <TextBlock Text="Tvarovací &#x0a; parameter c " TextAlignment="Center"  VerticalAlignment="Center" Height="35"/>
+                <TextBox x:Name="TextBox_ParamCValue"  Text="hodnota" TextAlignment="Center" VerticalContentAlignment="Center" Width="100" KeyDown="TextBox_Parameter_KeyDown"/>
             </StackPanel>
             <StackPanel  Orientation="Horizontal" Canvas.Left="10" Canvas.Top="130" Height="35">
                 <TextBlock Text="Rozsah pre c : [ " TextAlignment="Center"  VerticalAlignment="Center" />

@@ -120,7 +120,9 @@ namespace DiplomovaPracaLB
                 for (int j = 0; j < n; j++)
                 {
                     //Ray parallel to z axis
-                    g3.Ray3d ZRay = new Ray3d(new Vector3f(InterpolationPoints[i, j].X, InterpolationPoints[i, j].Y, RefTerrain.GetMinMaxVal(false, 2) - 1), RayDir);
+
+                    Vector3 RatIP = Rational(InterpolationPoints[i, j]);
+                    g3.Ray3d ZRay = new Ray3d(new Vector3f(RatIP.X, RatIP.Y, RefTerrain.GetMinMaxVal(false, 2) - 1), RayDir);
 
                     //Collide ray and mesh
                     int hit_tid = Spatial.FindNearestHitTriangle(ZRay);
@@ -137,7 +139,12 @@ namespace DiplomovaPracaLB
                             (float)ZRay.PointAt(Intersection.RayParameter).z,
                             1.0f);
 
-                        ErrorValues[i, j] = Math.Abs(TmpPoints[i, j].Z - InterpolationPoints[i, j].Z);
+                        ErrorValues[i, j] = Math.Abs(TmpPoints[i, j].Z - RatIP.Z);
+
+                        if (ErrorValues[i, j]==0)
+                        {
+
+                        }
                     }
                 }
             }

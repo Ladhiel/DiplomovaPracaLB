@@ -173,5 +173,7 @@ namespace DiplomovaPracaLB
             double dy = y1 - y2;
             return (dx * dx + dy * dy); // *(1/40000);
         }
+
+      
     }
 }
