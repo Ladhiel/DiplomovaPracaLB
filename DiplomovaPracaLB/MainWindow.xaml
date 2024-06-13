@@ -310,7 +310,7 @@
                             </Button.Resources>
                         </Button>
 
-                        <Button x:Name="Button_ShowWireframe" Click="Button_ShowWireframe_Click" Grid.Column="1" Background="#BFC8BF">
+                        <Button x:Name="Button_ShowWireframe" Click="Button_ShowWireframe_Click" Grid.Column="1" Background="#FF607560">
                             <Image Source="Images/ImageShowWireframe.png" Stretch="Fill"/>
                             <Button.Resources>
                                 <Style TargetType="Border">
@@ -389,7 +389,7 @@
             </Border>
         </StackPanel>
         <TextBox x:Name="TextBox3" HorizontalAlignment="Left" Margin="1013,20,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="153" Height="74" Grid.Row="1"/>
-        <CheckBox x:Name="Eval_CheckBox" Content="Show Evaluation" Checked="CheckBoxChecked" Unchecked="CheckBoxUnChecked" HorizontalAlignment="Left" Margin="1013,103,0,0" Grid.Row="1" VerticalAlignment="Top" Height="21" Width="187" IsChecked="False"/>
+        <CheckBox x:Name="Eval_CheckBox" Content="Zobraz evaluáciu" Checked="CheckBoxChecked" Unchecked="CheckBoxUnChecked" HorizontalAlignment="Left" Margin="1013,103,0,0" Grid.Row="1" VerticalAlignment="Top" Height="21" Width="187" IsChecked="False"/>
 
     </Grid>
 </Window>

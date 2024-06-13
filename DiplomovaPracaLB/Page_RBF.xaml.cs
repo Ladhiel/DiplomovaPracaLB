@@ -43,7 +43,8 @@ namespace DiplomovaPracaLB
             double sample_size = MW.DisplayedTerrain.GetSampleSize()[0] * MW.DisplayedTerrain.GetSampleSize()[1];
             double sqrt_sample_size = Math.Sqrt(sample_size);
             Hardy_param = 0.815 * MW.DisplayedTerrain.GetAverageMinimalDistanceOfSample() / sample_size;  // chosen by Hardy 1971: 0.815 * (sum of nearest neightbour distances of N points)/N)
-            Franke_param = 1.25 * MW.DisplayedTerrain.GetApproximateDiameterOfSample() / sqrt_sample_size;
+            //Franke_param = 1.25 * MW.DisplayedTerrain.GetApproximateDiameterOfSample() / sqrt_sample_size;
+            Franke_param = 0.8 * sqrt_sample_size / MW.DisplayedTerrain.GetApproximateDiameterOfSample();
             Fasshauer_param = 2 / sqrt_sample_size;
 
             param_c = 0.00164;

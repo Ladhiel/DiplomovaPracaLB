@@ -75,7 +75,7 @@ namespace DiplomovaPracaLB
                     //double z = Heightmap[i, j] * (max_height - min_height) / (255 - 0) + min_height;          
                     float z = Heightmap[i, j];// * (100 -0) / (255 - 0) ;   //zatial to preskaluvavam do stvorca 100^3
                                               //Points[i, j] = new Vector3(i*samplingSize, j*samplingSize,z );
-                    Points[i, j] = new Vector4(i * 100, j * 100, z*20, 1.0f); //tie trojky potom nahradit realnou hornodtou vzdialenosti
+                    Points[i, j] = new Vector4(i * 10, j * 10, z, 1.0f); //tie trojky potom nahradit realnou hornodtou vzdialenosti
                 }
             }
 

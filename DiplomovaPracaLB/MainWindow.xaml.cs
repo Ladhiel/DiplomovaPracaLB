@@ -86,7 +86,7 @@ namespace DiplomovaPracaLB
             PARABHYPERB
         }
 
-        Stopwatch sw;     //sw.Elapsed = hodiny:minuty:sekundy (00:00:00.3 su 3 milisekundy)
+        public Stopwatch sw;     //sw.Elapsed = hodiny:minuty:sekundy (00:00:00.3 su 3 milisekundy)
 
         public MainWindow()     //************* MAIN WINDOW **************
         {
@@ -96,8 +96,6 @@ namespace DiplomovaPracaLB
             GC.Collect();
             //Stopwatch
             sw = new Stopwatch();
-
-
             //naciatanie GDAL
             GdalConfiguration.ConfigureGdal();
 
@@ -115,14 +113,15 @@ namespace DiplomovaPracaLB
             //******************************************************* Hlavne ******************************************************* 
 
             //Input Data Processing  
-            input_density = 4;  //min = 1
-            selectedTerrainType = TerrainInputData.HEIGHTMAP;         //VSTUPNY TEREN
+            input_density = 10;  //min = 1
+            selectedTerrainType = TerrainInputData.GeoTiff_NizkeTatry_GEO_cutout;         //VSTUPNY TEREN
 
+            sw.Reset();
             sw.Start();
             LoadTerrainData(selectedTerrainType, input_density, ref DisplayedTerrain);
             sw.Stop();
             Console.WriteLine("      Elapsed TerainData={0}", sw.Elapsed);
-            sw.Restart();
+
 
             //******************************************************* Hlavne ******************************************************* 
 
@@ -132,7 +131,10 @@ namespace DiplomovaPracaLB
             }
 
             //Output Data Processing
-            LevelOfDetail = input_density - 1;
+
+            //LevelOfDetail = input_density - 1;
+            LevelOfDetail = 0;
+
             InitializeComponent();  //Tu sa nacita okno. Pri nacitani okna sa nacita Page. Pri nacitani Page sa vytvara splajn.
             TextBox_LOD.Text = LevelOfDetail.ToString();
 
@@ -162,17 +164,17 @@ namespace DiplomovaPracaLB
 
                 default:
                 case (TerrainInputData.GeoTiff_Hlohovec_GEO_cutout):
-                    outTerrainData = new TerrainDataGeoTiff(input_density, "Hlohovec" + "GEO_cutoutTIF.tif", 101, 101);
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "Hlohovec" + "GEO_cutoutTIF.tif", 0, 0);
                     break;
 
                 case (TerrainInputData.GeoTiff_HradLitava_GEO_cutout):
-                    outTerrainData = new TerrainDataGeoTiff(input_density, "HradLitava" + "GEO_cutoutTIF.tif", 101, 101);
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "HradLitava" + "GEO_cutoutTIF.tif", 0, 0);
                     break;
                 case (TerrainInputData.GeoTiff_NizkeTatry_GEO_cutout):
-                    outTerrainData = new TerrainDataGeoTiff(input_density, "NizkeTatry" + "GEO_cutoutTIF.tif", 101, 101);
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "NizkeTatry" + "GEO_cutoutTIF.tif", 0, 0);
                     break;
                 case (TerrainInputData.GeoTiff_Senica_GEO_cutout):
-                    outTerrainData = new TerrainDataGeoTiff(input_density, "Senica" + "GEO_cutoutTIF.tif", 101, 101);
+                    outTerrainData = new TerrainDataGeoTiff(input_density, "Senica" + "GEO_cutoutTIF.tif", 0, 0);
                     break;
 
 
@@ -290,7 +292,9 @@ namespace DiplomovaPracaLB
 
             // parameters for the camera
             //Phi = -0.0f; Theta = 90.0f; Dist = default_dist;
-            Phi = -0.005f; Theta = 0.63f; Dist = 6.2f;
+            //Phi = -0.005f; Theta = 0.63f; Dist = 6.2f;
+            Phi = -1.4f; Theta = 1.5f; Dist = 6.2f; //pohlad zhora
+
             pointsize = ChangePointSize();
 
             //farby terénu
@@ -342,7 +346,7 @@ namespace DiplomovaPracaLB
             if (show_Points) DrawPoints(DisplayedTerrain.WeightedDataPointsSample);
             if (show_evaluation && DisplayedSplajn.TmpPoints != null)
             {
-                DrawWireframe(DisplayedTerrain.DataPointsAll);
+                //DrawWireframe(DisplayedTerrain.DataPointsAll);
             }
             if (show_Wireframe) DrawWireframe(DisplayedSplajn.GetPoints());
 
@@ -360,8 +364,8 @@ namespace DiplomovaPracaLB
 
             // the buffers need to swapped, so the scene is drawn, kvoli float bufferu
             glControl.SwapBuffers();
-
         }
+
         private void DrawAxes()
         {
             GL.Begin(PrimitiveType.Lines);
@@ -758,7 +762,7 @@ namespace DiplomovaPracaLB
 
         public void UseKardBicubic(float tenstion)
         {
-            sw.Restart();
+            sw.Reset();
             sw.Start();
             DisplayedSplajn = new SplajnKardinalnyBikubicky(ref DisplayedTerrain, LevelOfDetail, tenstion);
             sw.Stop();
@@ -768,7 +772,7 @@ namespace DiplomovaPracaLB
 
         public void UseKochanekBartels(float tenstion, float continuity, float bias)
         {
-            sw.Restart();
+            sw.Reset();
             sw.Start();
             DisplayedSplajn = new KochanekBartelsSplajn(ref DisplayedTerrain, LevelOfDetail, tenstion, continuity, bias);
             sw.Stop();
@@ -778,7 +782,7 @@ namespace DiplomovaPracaLB
 
         public void UseRBF(BASIS_FUNCTION eRBFType, double param)
         {
-            sw.Restart();
+            sw.Reset();
             sw.Start();
             DisplayedSplajn = new SplajnRadialBasis(ref DisplayedTerrain, LevelOfDetail, eRBFType, param);
             sw.Stop();
@@ -1009,8 +1013,7 @@ namespace DiplomovaPracaLB
         }
         private void Button_ResetView_Click(object sender, RoutedEventArgs e)
         {
-            //Phi = -0.6f; Theta = 0.3f; Dist = 3.8f;
-            Phi = -0.005f; Theta = 0.63f; Dist = 6.2f;
+            Phi = -0.6f; Theta = 0.3f; Dist = 3.8f;
             pointsize = ChangePointSize();
             glControl.Invalidate();
         }

@@ -165,8 +165,7 @@ namespace DiplomovaPracaLB
                     }
                 case BASIS_FUNCTION.THIN_PLATE:  //todo veeelmi pomale
                     {
-                        //return (rr == 0) ? 0 : rr * Math.Log(Math.Sqrt(squared_distance)); 
-                        return (rr == 0) ? 0 : rrcc * Math.Log(Math.Sqrt(rrcc));
+                        return (rr == 0) ? 0 : rr * Math.Log(Math.Sqrt(squared_distance));
                     }
                 default:
                     return 0;
